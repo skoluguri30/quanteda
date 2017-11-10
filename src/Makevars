@@ -1,3 +1,5 @@
 PKG_LIBS = $(BLAS_LIBS) $(LAPACK_LIBS) # $(FLIBS) `$(R_HOME)/bin/Rscript -e "RcppParallel::RcppParallelLibs()"`
 PKG_CPPFLAGS = -I. -DARMA_DONT_PRINT_OPENMP_WARNING
 CXX_STD = CXX11
+CC = clang -std=gnu99 -fsanitize=undefined -fno-omit-frame-pointer
+CXX = clang -fsanitize=undefined -fno-omit-frame-pointer
