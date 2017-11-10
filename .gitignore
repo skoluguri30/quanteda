@@ -12,5 +12,5 @@ __MACOSX
 *.dll
 quanteda.pdf
 API_notes.md
-
 /revdep/.cache.rds
+tests/valgrind.out
