@@ -297,12 +297,12 @@ as.tokens.default <- function(x, concatenator = "", ...) {
 as.tokens.list <- function(x, concatenator = "_", ...) {
     result <- structure(tokens_serialize(x),
                         class = "tokens",
+                        padding = FALSE,
                         names = docnames(x),
                         what = "word",
                         ngrams = 1L,
                         skip = 0L, 
-                        concatenator = concatenator,
-                        padding = FALSE)
+                        concatenator = concatenator)
     docvars(result) <- data.frame(row.names = docnames(x))
     return(result)
 }
@@ -457,7 +457,7 @@ print.tokens <- function(x, ...) {
 #' toks[c(1,3)]
 "[.tokens" <- function(x, i, ...) {
     attrs <- attributes(x)
-    x <- unclass(x)[i]
+    tokens <- unclass(x)[i]
     if (is.data.frame(attrs$docvars)) {
         attr(x, "docvars") <- attrs$docvars[i,,drop = FALSE]
     }
@@ -832,7 +832,7 @@ tokens_recompile <- function(x, method = c("C++", "R")) {
     if (method == "C++") {
         x <- qatd_cpp_tokens_recompile(x, types(x))
         attributes(x, FALSE) <- attrs
-        class(x) <- c("tokens", "tokenizedTexts")
+        class(x) <- "tokens"
         return(x)
     }
     
@@ -862,7 +862,7 @@ tokens_recompile <- function(x, method = c("C++", "R")) {
         types(x) <- types_unique
     }
     Encoding(types(x)) <- "UTF-8"
-    class(x) <- c("tokens", "tokenizedTexts")
+    class(x) <- "tokens"
     return(x)
 }
 
