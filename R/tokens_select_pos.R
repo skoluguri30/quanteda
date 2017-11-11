@@ -22,19 +22,6 @@
 #' @return a \link{tokens} object with tokens selected or removed based on their
 #'   match to \code{pattern}
 #' @export
-#' @examples 
-#' ## tokens_select with simple examples
-#' toks <- tokens(c("This is a sentence.", "This is a second sentence."), 
-#'                  remove_punct = TRUE)
-#' tokens_select_pos(toks, c("is", "a", "this"), selection = "keep", padding = FALSE)
-#' tokens_select_pos(toks, c("is", "a", "this"), selection = "keep", padding = TRUE)
-#' tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", padding = FALSE)
-#' tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", padding = TRUE)
-#' 
-#' # how case_insensitive works
-#' tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", case_insensitive = TRUE)
-#' tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", case_insensitive = FALSE)
-#' 
 tokens_select_pos <- function(x, pattern, selection = c("keep", "remove"), 
                           valuetype = c("glob", "regex", "fixed"),
                           case_insensitive = TRUE, padding = FALSE, verbose = quanteda_options("verbose")) {
@@ -116,14 +103,6 @@ tokens_select_pos.tokens <- function(x, pattern, selection = c("keep", "remove")
 
 #' @rdname tokens_select
 #' @export
-#' @examples
-#' ## tokens_remove example
-#' txt <- c(wash1 <- "Fellow citizens, I am again called upon by the voice of my country to 
-#'                    execute the functions of its Chief Magistrate.",
-#'          wash2 <- "When the occasion proper for it shall arrive, I shall endeavor to express
-#'                    the high sense I entertain of this distinguished honor.")
-#' tokens_remove_pos(tokens(txt, remove_punct = TRUE), stopwords("english"))
-#'
 tokens_remove_pos <- function(x, pattern, valuetype = c("glob", "regex", "fixed"),
                           case_insensitive = TRUE, padding = FALSE, verbose = quanteda_options("verbose")) {
     UseMethod("tokens_remove_pos")
@@ -137,14 +116,14 @@ tokens_remove_pos.tokens <- function(x, pattern, valuetype = c("glob", "regex", 
                       case_insensitive = case_insensitive, padding = padding, verbose = verbose)
 }
 
-#' @rdname as.tokens
-#' @export
-as.tokens.spacyr_parsed <- function(x, concatenator = '_') {
-    result <- as.tokens(base::split(x$token, factor(x$doc_id, levels = unique(x$doc_id))))
-    pos <- as.tokens(base::split(x$pos, factor(x$doc_id, levels = unique(x$doc_id))))
-    attr(result, 'annotation') <- as.annotation(pos, attr(pos, 'types'))
-    return(result)
-}
+#' #' @rdname as.tokens
+#' #' @export
+#' as.tokens.spacyr_parsed <- function(x, concatenator = '_') {
+#'     result <- as.tokens(base::split(x$token, factor(x$doc_id, levels = unique(x$doc_id))))
+#'     pos <- as.tokens(base::split(x$pos, factor(x$doc_id, levels = unique(x$doc_id))))
+#'     attr(result, 'annotation') <- as.annotation(pos, attr(pos, 'types'))
+#'     return(result)
+#' }
 
 #' @keywords internal
 has_annotation <- function(x) {
