@@ -17,7 +17,7 @@ tokens_select_pos(x, pattern, selection = c("keep", "remove"),
 \item{selection}{whether to \code{"keep"} or \code{"remove"} the tokens 
 matching \code{pattern}}
 
-\item{valuetype}{how to interpret keyword expressions: \code{"glob"} for 
+\item{valuetype}{the type of pattern matching: \code{"glob"} for 
 "glob"-style wildcard expressions; \code{"regex"} for regular expressions;
 or \code{"fixed"} for exact matching. See \link{valuetype} for details.}
 
@@ -43,18 +43,4 @@ usage for \code{tokens_remove} will be to eliminate stop words from a text or
 text-based object, while the most common use of \code{tokens_select} will be 
 to select tokens with only positive pattern matches from a list of regular 
 expressions, including a dictionary.
-}
-\examples{
-## tokens_select with simple examples
-toks <- tokens(c("This is a sentence.", "This is a second sentence."), 
-                 remove_punct = TRUE)
-tokens_select_pos(toks, c("is", "a", "this"), selection = "keep", padding = FALSE)
-tokens_select_pos(toks, c("is", "a", "this"), selection = "keep", padding = TRUE)
-tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", padding = FALSE)
-tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", padding = TRUE)
-
-# how case_insensitive works
-tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", case_insensitive = TRUE)
-tokens_select_pos(toks, c("is", "a", "this"), selection = "remove", case_insensitive = FALSE)
-
 }

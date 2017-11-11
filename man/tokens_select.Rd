@@ -108,11 +108,4 @@ tokens_remove(tokens(txt, remove_punct = TRUE), stopwords("english"))
 
 # token_keep example: keep two-letter words
 tokens_keep(tokens(txt, remove_punct = TRUE), "??")
-## tokens_remove example
-txt <- c(wash1 <- "Fellow citizens, I am again called upon by the voice of my country to 
-                   execute the functions of its Chief Magistrate.",
-         wash2 <- "When the occasion proper for it shall arrive, I shall endeavor to express
-                   the high sense I entertain of this distinguished honor.")
-tokens_remove_pos(tokens(txt, remove_punct = TRUE), stopwords("english"))
-
 }
