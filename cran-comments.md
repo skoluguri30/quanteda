@@ -1,13 +1,13 @@
 ## Submission notes
 
-Thhis is a resubmission to fix errors on the Solaris tests in v0.9.9-22.  These were due to compiler warnings/errors due to unsigned integer comparisons, now resolved.
+Bug fixes and stability improvements to existing 0.99.12 CRAN version.
 
 ## Test environments
 
-* local OS X install, R 3.3.2
-* ubuntu Ubuntu 14.04.5 LTS (on travis-ci), R 3.3.2
-* Windows Server 2012 R2 x64 (build 9600), R 3.3.2 (on Appveyor)
-* local Windows 10, R 3.3.2
+* local OS X install, R 3.4.1
+* ubuntu Ubuntu 14.04.5 LTS (on travis-ci), R 3.4.1
+* Windows Server 2012 R2 x64 (build 9600), R 3.4.1 (on Appveyor)
+* local Windows 10, R 3.4.1
 * win-builder (devel and release)
 
 ## R CMD check results
@@ -18,27 +18,26 @@ None.
 
 ### NOTES
 
-There were 3 NOTES:
+None (on macOS Sierra 10.12.6).
 
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: 'Kenneth Benoit <kbenoit@lse.ac.uk>'
+Only this from the results of testing on win-builder.r-project.org:
 
-Days since last update: 5
-
-Possibly mis-spelled words in DESCRIPTION:
-  toolset (4:31)
-  
 * checking installed package size ... NOTE
-  installed size is  7.8Mb
+  installed size is  5.2Mb
   sub-directories of 1Mb or more:
-    data   2.3Mb
-    doc    2.3Mb
-    libs   2.3Mb 
- 
-* checking for GNU extensions in Makefiles ... NOTE
-GNU make is a SystemRequirements.
+    libs   2.9Mb
 
 
 ## Downstream dependencies
 
-No changes in this release affect the (few) downstream packages that Import **quanteda**.
+Only the following was revelead by `devtools::revdep_check()` to confirm.
+
+`Checked tidytext      : 1 error  | 0 warnings | 0 notes`
+
+This was because **tidytext** uses a function call that has been deprecated for over a year.  I have issues a [pull request](https://github.com/juliasilge/tidytext/pull/87) for **tidytext** and notified the package maintainers to fix this, nearly three weeks ago.
+
+We are updating our CRAN version because of a messaged from Hadley Wickham that he will soon (13 November) update **testthat** and that our package tests will fail unless we change to the new **testthat** 2.0 syntax.  So while we will break one test in **tidytext**, we will break a **testthat** test in our own package without the update.
+
+## Other
+
+We have tried hard to investigate the UBSan issues indicated from our previous release, and believe that we have found the source of the problem and fixed it.  However if this is not the problem - which we cannot replicate exactly on any of our own tests - then the issue is something in RcppParallel and its interaction with the TBB library and the precise choice of compiler that is used.  On our tests (on the systems above) we have been unable to reproduce the exact issue.

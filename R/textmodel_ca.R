@@ -25,20 +25,25 @@ setClass("textmodel_ca_fitted",
 #'   serial version of the function; only applicable when \code{sparse = TRUE}
 #' @param residual_floor specifies the threshold for the residual matrix for 
 #'   calculating the truncated svd.Larger value will reduce memory and time cost
-#'   but might sacrify the accuracy; only applicable when \code{sparse = TRUE}
+#'   but might reduce accuracy; only applicable when \code{sparse = TRUE}
 
 #' @author Kenneth Benoit and Haiyan Wang
 #' @references Nenadic, O. and Greenacre, M. (2007). Correspondence analysis in 
 #'   R, with two- and three-dimensional graphics: The ca package. \emph{Journal 
-#'   of Statistical Software}, 20 (3), \url{http://www.jstatsoft.org/v20/i03/}
+#'   of Statistical Software}, 20 (3), \url{http://www.jstatsoft.org/v20/i03/}.
 #'   
 #' @details \link[RSpectra]{svds} in the \pkg{RSpectra} package is applied to 
 #'   enable the fast computation of the SVD.
 #' @note Setting threads larger than 1 (when \code{sparse = TRUE}) will trigger 
-#'   parallel computation, which retains sparsity of all involved matrices. You
-#'   may need to increase the value of \code{residual_floor} to ignore less
-#'   important information and hence to reduce the memory cost when you have a
+#'   parallel computation, which retains sparsity of all involved matrices. You 
+#'   may need to increase the value of \code{residual_floor} to ignore less 
+#'   important information and hence to reduce the memory cost when you have a 
 #'   very big \link{dfm}.
+#'   
+#'   If your attempt to fit the model fails due to the matrix being too large, 
+#'   this is probably because of the memory demands of computing the \eqn{V
+#'   \times V} residual matrix.  To avoid this, consider increasing the value of
+#'   \code{residual_floor} by 0.1, until the model can be fit.
 #' @examples 
 #' ieDfm <- dfm(data_corpus_irishbudget2010)
 #' wca <- textmodel_ca(ieDfm)
@@ -58,6 +63,7 @@ textmodel_ca.dfm <- function(x, smooth = 0, nd = NA,
                              threads = 1,
                              residual_floor = 0.1) {
     
+    x <- as.dfm(x)
     x <- x + smooth  # smooth by the specified amount
     
     I <- dim(x)[1] 
@@ -92,7 +98,7 @@ textmodel_ca.dfm <- function(x, smooth = 0, nd = NA,
         S  <- (P - eP) / sqrt(eP)
     } else {
         # c++ function to keep the residual matrix sparse
-        S <- cacpp(P, threads, residual_floor/sqrt(n))
+        S <- qutd_cpp_ca(P, threads, residual_floor/sqrt(n))
     }
     
     #dec <- rsvd::rsvd(S, nd)   #rsvd is not as stable as RSpectra

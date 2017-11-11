@@ -9,8 +9,8 @@
 #'   documents, you need to slice out the document(s) from the dfm or tokens
 #'   object.
 #'   
-#'   Comparison word cloud plots may be plotted by setting \code{comparison = 
-#'   TRUE}, which plots a separate grouping for \emph{each document} in the dfm.
+#'   Comparison wordcloud plots may be plotted by setting \code{comparison = TRUE}, 
+#'   which plots a separate grouping for \emph{each document} in the dfm.
 #'   This means that you will need to slice out just a few documents from the 
 #'   dfm, or to create a dfm where the "documents" represent a subset or a 
 #'   grouping of documents by some document variable.
@@ -50,6 +50,8 @@ textplot_wordcloud <- function(x, comparison = FALSE, ...) {
 #' @noRd
 #' @export
 textplot_wordcloud.dfm <- function(x, comparison = FALSE, ...) {
+    
+    x <- as.dfm(x)
     if (comparison) {
         if (ndoc(x) > 8) stop("Too many documents to plot comparison, use 8 or fewer documents.")
         wordcloud::comparison.cloud(t(as.matrix(x)), ...)
@@ -60,8 +62,8 @@ textplot_wordcloud.dfm <- function(x, comparison = FALSE, ...) {
 
 #' @noRd
 #' @export
-textplot_wordcloud.tokenizedTexts <- function(x, comparison = FALSE, ...) {
+textplot_wordcloud.tokens <- function(x, comparison = FALSE, ...) {
     textplot_wordcloud(dfm(x, verbose = FALSE), comparison = comparison, ...)
 }
-    
+
 

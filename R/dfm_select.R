@@ -1,13 +1,19 @@
 #' select features from a dfm or fcm
 #' 
-#' This function selects or discards features from a \link{dfm} or \link{fcm}, 
+#' This function selects or removes features from a \link{dfm} or \link{fcm}, 
 #' based on feature name matches with \code{pattern}.  The most common usages 
 #' are to eliminate features from a dfm already constructed, such as stopwords, 
 #' or to select only terms of interest from a dictionary.
+#' 
 #' @param x the \link{dfm} or \link{fcm} object whose features will be selected
 #' @inheritParams pattern
 #' @param selection whether to \code{keep} or \code{remove} the features
-#' @inheritParams valuetype
+#' @param valuetype the type of pattern matching: \code{"glob"} for "glob"-style
+#'   wildcard expressions; \code{"regex"} for regular expressions; or
+#'   \code{"fixed"} for exact matching. See \link{valuetype} for details.
+#'
+#'   For \code{dfm_select}, \code{pattern} may also be a \link{dfm}; see Value
+#'   below.
 #' @param case_insensitive ignore the case of dictionary values if \code{TRUE}
 #' @param min_nchar,max_nchar numerics specifying the minimum and maximum length
 #'   in characters for features to be removed or kept; defaults are 1 and 
@@ -17,11 +23,15 @@
 #'   matches.
 #' @param verbose if \code{TRUE} print message about how many pattern were 
 #'   removed
-#' @param ... supplementary arguments passed to the underlying functions in 
-#'   \code{\link[stringi]{stri_detect_regex}}
-#' @details \code{dfm_remove} and \code{fcm_remove} are simply a convenience 
+#' @param ... used only for passing arguments from \code{*_remove} to
+#'   \code{*_select} functions
+#' @details \code{dfm_remove} and \code{fcm_remove} are simply a convenience
 #'   wrappers to calling \code{dfm_select} and \code{fcm_select} with 
 #'   \code{selection = "remove"}.
+#'   
+#'   \code{dfm_keep} and \code{fcm_keep} are simply a convenience
+#'   wrappers to calling \code{dfm_select} and \code{fcm_select} with 
+#'   \code{selection = "keep"}.
 #' @note This function selects features based on their labels.  To select 
 #'   features based on the values of the document-feature matrix, use 
 #'   \code{\link{dfm_trim}}.
@@ -71,7 +81,7 @@ dfm_select <- function(x, pattern = NULL,
                        selection = c("keep", "remove"), 
                        valuetype = c("glob", "regex", "fixed"),
                        case_insensitive = TRUE,
-                       min_nchar = 1, max_nchar = 63,
+                       min_nchar = 1L, max_nchar = 79L,
                        verbose = quanteda_options("verbose"), ...) {
     UseMethod("dfm_select")
 }
@@ -83,8 +93,10 @@ dfm_select.dfm <-  function(x, pattern = NULL,
                             selection = c("keep", "remove"), 
                             valuetype = c("glob", "regex", "fixed"),
                             case_insensitive = TRUE,
-                            min_nchar = 1, max_nchar = 63,
+                            min_nchar = 1L, max_nchar = 79L,
                             verbose = quanteda_options("verbose"), ...) {
+    
+    x <- as.dfm(x)
     selection <- match.arg(selection)
     valuetype <- match.arg(valuetype)
     attrs <- attributes(x)
@@ -126,25 +138,14 @@ dfm_select.dfm <-  function(x, pattern = NULL,
     # select features based on feature length
     if (!padding) {
         features_keep <- intersect(features_keep, which(stri_length(featnames(x)) >= min_nchar & 
-                                                            stri_length(featnames(x)) <= max_nchar))
+                                                        stri_length(featnames(x)) <= max_nchar))
     }
     
     if (!length(features_keep)) features_keep <- 0
     temp <- x[, features_keep]    
 
-    features_add <- character() # avoid error in verbose message
-
     if (valuetype == 'fixed' && padding) {
-        
-        # add non-existent features
-        features_add <- setdiff(pattern, featnames(temp))
-        if (length(features_add)) {
-            pad_feature <- as(sparseMatrix(i = NULL, j = NULL, 
-                                           dims = c(ndoc(temp), length(features_add)), 
-                                           dimnames = list(docnames(temp), features_add)), 
-                              "dgCMatrix")
-            temp <- cbind(temp, new("dfmSparse", pad_feature))
-        }
+        temp <- pad_dfm(temp, pattern)
         temp <- reassign_slots(temp, x)
     }
     if (is_dfm) {
@@ -154,8 +155,7 @@ dfm_select.dfm <-  function(x, pattern = NULL,
     }
     
     if (verbose) {
-        message_select(selection, length(features_id), 0, 
-                       length(features_add), 0)
+        message_select(selection, length(features_id), 0, nfeature(temp) - nfeature(x), 0)
     }
     attributes(x, FALSE) <- attrs
     return(result)
@@ -170,14 +170,21 @@ dfm_select.dfm <-  function(x, pattern = NULL,
 #'               verbose = FALSE)
 #' tmpdfm
 #' dfm_remove(tmpdfm, stopwords("english"))
-dfm_remove <- function(x, pattern = NULL, ...) {
-    UseMethod("dfm_remove")
+dfm_remove <- function(x, ...) {
+    if ("selection" %in% names(list(...))) {
+        stop("dfm_remove cannot include selection argument")
+    }
+    dfm_select(x, ..., selection = "remove")
 }
 
-#' @noRd
+
+#' @rdname dfm_select
 #' @export
-dfm_remove.dfm <- function(x, pattern = NULL, ...) {
-    dfm_select(x, pattern, selection = "remove", ...)
+dfm_keep <- function(x, ...) {
+    if ("selection" %in% names(list(...))) {
+        stop("dfm_keep cannot include selection argument")
+    }
+    dfm_select(x, ..., selection = "keep")
 }
 
 

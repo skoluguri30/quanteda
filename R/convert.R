@@ -1,16 +1,16 @@
 #' convert a dfm to a non-quanteda format
 #' 
-#' Convert a quanteda \link{dfm} object to a format useable by other text 
-#' analysis packages.  The general function \code{convert} provides easy 
-#' conversion from a dfm to the document-term representations used in all other 
-#' text analysis packages for which conversions are defined.    See also 
-#' \link{convert-wrappers} for convenience functions for specific package converters.
-#' 
+#' Convert a quanteda \link{dfm} object to a format useable by other text
+#' analysis packages.  The general function \code{convert} provides easy
+#' conversion from a dfm to the document-term representations used in all other
+#' text analysis packages for which conversions are defined.    See also
+#' \link{convert-wrappers} for convenience functions for specific package
+#' converters.
 #' @param x dfm to be converted
 #' @param to target conversion format, consisting of the name of the package 
 #'   into whose document-term matrix representation the dfm will be converted: 
 #'   \describe{ \item{\code{"lda"}}{a list with components "documents" and 
-#'   "vocab" as needed by \link[lda]{lda.collapsed.gibbs.sampler} from the 
+#'   "vocab" as needed by the function \link[lda]{lda.collapsed.gibbs.sampler} from the 
 #'   \pkg{lda} package} \item{\code{"tm"}}{a \link[tm]{DocumentTermMatrix} from 
 #'   the \pkg{tm} package} \item{\code{"stm"}}{the  format for the \pkg{stm} 
 #'   package} \item{\code{"austin"}}{the \code{wfm} format from the 
@@ -18,9 +18,9 @@
 #'   used by the \pkg{topicmodels} package} 
 #'   \item{\code{"lsa"}}{the "textmatrix" format as 
 #'   used by the \pkg{lsa} package} }
-#' @param docvars optional data.frame of document variables used as the 
+#' @param docvars optional data.frame of document variables used as the
 #'   \code{meta} information in conversion to the STM package format.  This aids
-#'   in selecting the document variables only corresponding to the documents 
+#'   in selecting the document variables only corresponding to the documents
 #'   with non-zero counts.
 #' @param ... unused
 #' @return A converted object determined by the value of \code{to} (see above). 
@@ -47,7 +47,7 @@
 #' str(stmdfm2)
 #'  
 #' \dontrun{
-#' #' # tm's DocumentTermMatrix format
+#' # tm's DocumentTermMatrix format
 #' tmdfm <- convert(quantdfm, to = "tm")
 #' str(tmdfm)
 #' 
@@ -67,6 +67,8 @@ convert <- function(x, to = c("lda", "tm", "stm", "austin", "topicmodels", "lsa"
 #' @export
 convert.dfm <- function(x, to = c("lda", "tm", "stm", "austin", "topicmodels", "lsa",
                                   "matrix", "data.frame"), docvars = NULL, ...) {
+    
+    x <- as.dfm(x)
     to <- match.arg(to)
     if (length(addedArgs <- list(...)))
         warning("Argument", if (length(addedArgs) > 1L) "s " else " ", names(addedArgs), " not used.", sep = "")
@@ -104,7 +106,7 @@ convert.dfm <- function(x, to = c("lda", "tm", "stm", "austin", "topicmodels", "
 #' 
 #' To make the usage as consistent as possible with other packages, quanteda
 #' also provides shortcut wrappers to \code{\link{convert}}, designed to be
-#' similar in syntax to analagous commands in the packages to whose format they
+#' similar in syntax to analogous commands in the packages to whose format they
 #' are converting.
 #' @param x the dfm to be converted
 #' @param ... additional arguments used only by \code{as.DocumentTermMatrix}
@@ -142,11 +144,12 @@ as.wfm <- function(x) {
 #' @method as.wfm dfm
 #' @export
 as.wfm.dfm <- function(x) {
+    x <- as.dfm(x)
     convert(x, to = "austin")
 }
 
 dfm2austinformat <- function(d) {
-    d <- as.matrix(d)
+    d <- as.matrix(as(d, 'dgeMatrix'))
     names(dimnames(d))[2] <- "words"
     class(d) <- c("wfm", "matrix")
     d
@@ -154,9 +157,9 @@ dfm2austinformat <- function(d) {
 
 ## convert to tm format
 dfm2tmformat <- function(x, weighting = tm::weightTf) {
-    if (!requireNamespace("tm")) 
+    if (!requireNamespace("tm", quietly = TRUE)) 
         stop("You must install the tm package installed for this conversion.")
-    if (!requireNamespace("slam"))
+    if (!requireNamespace("slam", quietly = TRUE))
         stop("You must install the slam package installed for this conversion.")
     sl <- slam::as.simple_triplet_matrix(x)
     td <- tm::as.DocumentTermMatrix(sl, weighting = weighting)
@@ -188,13 +191,14 @@ as.DocumentTermMatrix <- function(x, ...) {
 #' @method as.DocumentTermMatrix dfm
 #' @export
 as.DocumentTermMatrix.dfm <- function(x, ...) {
+    x <- as.dfm(x)
     convert(x, to = "tm", ...)
 }
 
 #' @rdname convert-wrappers
 #' @details
 #' \code{dfm2ldaformat} provides converts a \link{dfm} into the list representation
-#' of terms in documents used by tghe \pkg{lda} package (a list with components 
+#' of terms in documents used by the \pkg{lda} package (a list with components 
 #' "documents" and "vocab" as needed by 
 #'   \code{\link[lda]{lda.collapsed.gibbs.sampler}}).
 #' @export
@@ -211,7 +215,8 @@ dfm2ldaformat <- function(x) {
 #' @noRd
 #' @export
 dfm2ldaformat.dfm <- function(x) {
-    if (!requireNamespace("tm"))
+    x <- as.dfm(x)
+    if (!requireNamespace("tm", quietly = TRUE))
         stop("You must install the slam package installed for this conversion.")
     tmDTM <- dfm2tmformat(x)
     return(dtm2ldaformat(tmDTM))
@@ -220,7 +225,7 @@ dfm2ldaformat.dfm <- function(x) {
 
 ## from the package topicmodels
 dtm2ldaformat <- function (x, omit_empty = TRUE) {
-    if (!requireNamespace("slam"))
+    if (!requireNamespace("slam", quietly = TRUE))
         stop("You must install the slam package installed for this conversion.")
     
     split.matrix <- function(x, f, drop = FALSE, ...) lapply(split(seq_len(ncol(x)), 
@@ -251,18 +256,19 @@ dtm2ldaformat <- function (x, omit_empty = TRUE) {
 quantedaformat2dtm <- function(x) {
     UseMethod("quantedaformat2dtm")
 }
-    
+
 #' @noRd
 #' @export
 quantedaformat2dtm.dfm <- function(x) {
+    x <- as.dfm(x)
     d_lda <- convert(x, to = "lda")
     ldaformat2dtm(d_lda$documents, d_lda$vocab)
 }
 
 ldaformat2dtm <- function (documents, vocab, omit_empty = TRUE) {
-    if (!requireNamespace("tm"))
+    if (!requireNamespace("tm", quietly = TRUE))
         stop("You must install the tm package installed for this conversion.")
-    if (!requireNamespace("slam"))
+    if (!requireNamespace("slam", quietly = TRUE))
         stop("You must install the slam package installed for this conversion.")
     
     stm <- slam::simple_triplet_matrix(i = rep(seq_along(documents), vapply(documents, ncol, integer(1))), 
@@ -278,7 +284,7 @@ ldaformat2dtm <- function (documents, vocab, omit_empty = TRUE) {
 dfm2stmformat <- function(data, meta) {
     # get docvars (if any)
     dvars <- docvars(data)
-        
+    
     # sort features into alphabetical order
     data <- data[, order(featnames(data))]
     data <- as(data, "dgTMatrix")

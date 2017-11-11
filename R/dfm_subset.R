@@ -1,6 +1,6 @@
 #' extract a subset of a dfm
 #' 
-#' Returns \emph{document} subsets of a dfm that meet certain conditions,
+#' Returns document subsets of a dfm that meet certain conditions,
 #' including direct logical operations on docvars (document-level variables). 
 #' \code{dfm_subset} functions identically to \code{\link{subset.data.frame}},
 #' using non-standard evaluation to evaluate conditions based on the
@@ -9,7 +9,7 @@
 #' To select or subset \emph{features}, see \code{\link{dfm_select}} instead.
 #' @param x \link{dfm} object to be subsetted
 #' @param subset logical expression indicating the documents to keep: missing 
-#'   values are taken as false
+#'   values are taken as \code{FALSE}
 #' @param select expression, indicating the docvars to select from the dfm; or a
 #'   dfm, in which case the returned dfm will contain the same documents as the
 #'   original dfm, even if these are empty.  See Details.
@@ -47,7 +47,8 @@ dfm_subset <- function(x, subset, select, ...) {
 #' @noRd    
 #' @export
 dfm_subset.dfm <- function(x, subset, select, ...) {
-
+    
+    x <- as.dfm(x)
     if (length(addedArgs <- list(...)))
         warning("Argument", if (length(addedArgs) > 1L) "s " else " ", names(addedArgs), " not used.", sep = "")
     
@@ -66,7 +67,7 @@ dfm_subset.dfm <- function(x, subset, select, ...) {
             r & !is.na(r)
         }
     }
-
+    
     vars <- if (missing(select)) {
         TRUE
     } else {
@@ -74,7 +75,8 @@ dfm_subset.dfm <- function(x, subset, select, ...) {
         names(nl) <- names(docvars(x))
         eval(substitute(select), nl, parent.frame())
     }
-    docvars(x) <- docvars(x)[, vars, drop = FALSE]
+    if (ncol(docvars(x)))
+        docvars(x) <- docvars(x)[, vars, drop = FALSE]
     
     x[which(r), ]
 }

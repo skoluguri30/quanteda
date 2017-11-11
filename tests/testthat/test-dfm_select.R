@@ -265,7 +265,7 @@ test_that("dfm_select errors when dictionary has multi-word features, issue 775"
     )
     expect_equal(
         featnames(dfm_select(dfm_inaug, pattern = phrase(testdict1), valuetype = "glob")),
-        c("party", "political", "election", "part", "parties", "elections", "partisan", "company", "participation", "partisanship", "partial", "companies")    
+        c("political", "election", "part", "parties", "elections", "partisan", "company", "participation", "party", "partisanship", "partial", "companies")    
     )
     expect_equal(
         featnames(dfm_select(dfm_inaug, pattern = testdict2, valuetype = "glob")),
@@ -273,7 +273,7 @@ test_that("dfm_select errors when dictionary has multi-word features, issue 775"
     )
     expect_equal(
         featnames(dfm_select(dfm_inaug, pattern = phrase(testdict2), valuetype = "glob")),
-        c("party", "political", "election", "part", "parties", "elections", "partisan", "company", "participation", "partisanship", "partial", "companies")    
+        c("political", "election", "part", "parties", "elections", "partisan", "company", "participation", "party", "partisanship", "partial", "companies")    
     )
 })
 
@@ -284,8 +284,8 @@ test_that("dfm_select works when selecting on collocations", {
     dfm_uni <- dfm(toks_uni)
     toks_bi <- tokens(txt, n = 2, concatenator = " ")
     dfm_bi <- dfm(toks_bi)
-    coll_bi <- textstat_collocations(toks_uni, method = "lr", size = 2)
-    coll_tri <- textstat_collocations(toks_uni, method = "lr", size = 3)
+    coll_bi <- textstat_collocations(toks_uni, size = 2, min_count = 2)
+    coll_tri <- textstat_collocations(toks_uni, size = 3, min_count = 2)
     
     expect_equal(
         dim(dfm_select(dfm_uni, coll_bi)),
@@ -304,4 +304,22 @@ test_that("dfm_select works when selecting on collocations", {
     expect_equal(featnames(dfm_select(dfm_bi, coll_tri)), character())
 })
 
+test_that("shortcut functions works", {
+    testdfm <- dfm(data_corpus_inaugural[1:5])
+    expect_equal(dfm_select(testdfm, stopwords('english'), selection = 'keep'),
+                 dfm_keep(testdfm, stopwords('english')))
+    expect_equal(dfm_select(testdfm, stopwords('english'), selection = 'remove'),
+                 dfm_remove(testdfm, stopwords('english')))
+})
 
+test_that("dfm_remove/keep fail if selection argument is used", {
+    thedfm <- tokens(c("a b c d d", "a a b c d"))
+    expect_error(
+        dfm_remove(thedfm, c("b", "c"), selection = "remove"),
+        "dfm_remove cannot include selection argument"
+    )
+    expect_error(
+        dfm_keep(thedfm, c("b", "c"), selection = "keep"),
+        "dfm_keep cannot include selection argument"
+    )
+})

@@ -2,7 +2,7 @@
 #' 
 #' @param x \link{tokens} object
 #' @inheritParams groups
-#' @keywords internal
+#' @keywords tokens internal
 #' @examples
 #' # dfm_group examples
 #' corp <- corpus(c("a a b", "a b c c", "a c d d", "a c c d"), 
@@ -13,11 +13,17 @@
 tokens_group <- function(x, groups = NULL) {
     attrs <- attributes(x)
     groups <- generate_groups(x, groups)
-    groups_index <- rep(groups, lengths(x))
-    x <- base::split(unlist(unclass(x), use.names = FALSE), factor(groups_index, levels = unique(groups)))
-    names(x) <- as.character(names(x))
+    groups_unique <- unique(groups)
+    if (length(groups_unique) > 1) {
+        x <- base::split(unlist(unclass(x), use.names = FALSE), 
+                         rep(factor(groups, levels = groups_unique), lengths(x)))
+    } else {
+        x <- list(unlist(unclass(x), use.names = FALSE))
+        names(x) <- as.character(groups[1])
+    }
+    x <- structure(x, class = 'tokens')
+    docvars(x) <- data.frame(row.names = docnames(x))
     attributes(x, FALSE) <- attrs
-    docvars(x) <- NULL
     return(x)
 }
 
@@ -30,5 +36,5 @@ generate_groups <- function(x, groups) {
         if (length(groups) != ndoc(x))
             stop("groups must name docvars or provide data matching the documents in x")
     }
-    groups
+    return(groups)
 }

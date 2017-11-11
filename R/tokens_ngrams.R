@@ -1,45 +1,3 @@
-#' deprecated function name for forming ngrams and skipgrams
-#' 
-#' Deprecated function names for forming ngrams and skipgrams; use 
-#' \code{\link{tokens_ngrams}} and \code{\link{tokens_skipgrams}} instead.
-#' @keywords internal tokens deprecated
-#' @export
-ngrams <- function(x, ...) {
-    .Deprecated("tokens_ngrams")
-    UseMethod("ngrams")
-}
-# @examples 
-# txt <- c("a b c d e", "c d e f g")
-# toks <- tokens(txt)
-# ngrams(toks, n = 2:3)
-
-#' @rdname ngrams
-#' @export
-ngrams.character <-  function(x, ...) {
-    char_ngrams(x, ...)
-}
-
-#' @rdname ngrams
-#' @export
-ngrams.tokenizedTexts <- function(x, ...) {
-    as.tokenizedTexts(tokens_ngrams(as.tokens(x), ...))
-}
-
-#' @rdname ngrams
-#' @export
-ngrams.tokens <- function(x, ...) {
-    tokens_ngrams(x, ...)
-}
-
-
-#' @rdname ngrams
-#' @keywords internal tokens deprecated
-#' @export
-skipgrams <- function(x, ...) {
-    ngrams(x, ...)
-}
-
-
 #' create ngrams and skipgrams from tokens
 #' 
 #' Create a set of ngrams (tokens in sequence) from already tokenized text
@@ -52,8 +10,8 @@ skipgrams <- function(x, ...) {
 #'   character vector
 #' @param x a tokens object, or a character vector, or a list of characters
 #' @param n integer vector specifying the number of elements to be concatenated 
-#'   in each ngram.  Each element of this vector will define a $n$ in the 
-#'   $n$-gram(s) that are produced.
+#'   in each ngram.  Each element of this vector will define a \eqn{n} in the 
+#'   \eqn{n}-gram(s) that are produced.
 #' @param skip integer vector specifying the adjacency skip size for tokens 
 #'   forming the ngrams, default is 0 for only immediately neighbouring words. 
 #'   For \code{skipgrams}, \code{skip} can be a vector of integers, as the 
@@ -148,21 +106,12 @@ tokens_ngrams.tokens <- function(x, n = 2L, skip = 0L, concatenator = "_") {
     return(x)
 }
 
-
-#' @rdname tokens_ngrams
-#' @noRd
-#' @export
-tokens_ngrams.tokenizedTexts <- function(x, n = 2L, skip = 0L, concatenator = "_") {
-    as.tokenizedTexts(tokens_ngrams(as.tokens(x), n = n, skip = skip, concatenator = concatenator))
-}
-
-
 #' @rdname tokens_ngrams
 #' @details 
-#'   \code{\link{tokens_skipgrams}} is a wrapper to \code{\link{ngrams}} that requires 
-#'   arguments to be supplied for both \code{n} and \code{skip}.  For
-#'   \eqn{k}-skip skipgrams, set \code{skip} to \code{0:}\eqn{k}, in order to
-#'   conform to the definition of skip-grams found in Guthrie et al (2006): A
+#'   \code{\link{tokens_skipgrams}} is a wrapper to \code{\link{tokens_ngrams}}
+#'   that requires arguments to be supplied for both \code{n} and \code{skip}.
+#'   For \eqn{k}-skip skipgrams, set \code{skip} to \code{0:}\eqn{k}, in order
+#'   to conform to the definition of skip-grams found in Guthrie et al (2006): A
 #'   \eqn{k} skip-gram is an ngram which is a superset of all ngrams and each
 #'   \eqn{(k-i)} skipgram until \eqn{(k-i)==0} (which includes 0 skip-grams).
 #' @export

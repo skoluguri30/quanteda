@@ -42,23 +42,28 @@
 #'   "thesaurus", and trimming and weighting features based on document
 #'   frequency, feature frequency, and related measures such as tf-idf.
 #'   
-#'   Once constructed, a \pkg{quanteda} "\link{dfm}"" can be easily analyzed using
+#'   Once constructed, a \pkg{quanteda} document-feature matrix ("\link{dfm}") 
+#'   can be easily analyzed using
 #'   either \pkg{quanteda}'s built-in tools for scaling document positions,
 #'   or used with a number of other text analytic tools, such as: topic models
 #'   (including converters for direct use with the topicmodels, LDA, and stm
 #'   packages) document scaling (using \pkg{quanteda}'s own functions for the
-#'   "wordfish" and "Wordscores" models, direct use with the ca package for
+#'   "wordfish" and "Wordscores" models, direct use with the \strong{ca} 
+#'   package for
 #'   correspondence analysis, or scaling with the austin package) machine
 #'   learning through a variety of other packages that take matrix or
 #'   matrix-like inputs.
 #'   
 #'   Additional features of \pkg{quanteda} include: \itemize{ 
+#'   \item{powerful, flexible tools for working with \link[=dictionary]{dictionaries};}
+#'   \item{the ability to identify \link[=textstat_keyness]{keywords} associated with documents or groups of documents;}
 #'   \item{the ability to explore texts using \link[=kwic]{key-words-in-context};}
 #'   \item{fast computation of a variety of \link[=textstat_readability]{readability indexes};}
 #'   \item{fast computation of a variety of \link[=textstat_lexdiv]{lexical diversity measures};}
-#'   \item{quick computation of word or document \link[=similarity]{similarities}, for clustering or to compute distances for other purposes; and}
+#'   \item{quick computation of word or document \link[=textstat_simil]{similarities}, for clustering or to compute distances for other purposes;}
 #'   \item{a comprehensive suite of \link[=summary.corpus]{descriptive statistics on text} such as the number of sentences, words, characters, or
-#'   syllables per document.}
+#'   syllables per document; and}
+#'   \item{flexible, easy to use graphical tools to portray many of the analyses available in the package.}
 #'   }
 #'   
 #' @section Source code and additional information:
@@ -70,7 +75,7 @@
 #' pattern matching using valuetype
 #' 
 #' Pattern matching in \pkg{quanteda} using the \code{valuetype} argument.
-#' @param valuetype how to interpret keyword expressions: \code{"glob"} for 
+#' @param valuetype the type of pattern matching: \code{"glob"} for 
 #'   "glob"-style wildcard expressions; \code{"regex"} for regular expressions;
 #'   or \code{"fixed"} for exact matching. See \link{valuetype} for details.
 #' @details Pattern matching in in \pkg{quanteda} uses "glob"-style pattern
@@ -96,7 +101,7 @@
 #' @name valuetype
 #' @seealso \code{\link[utils]{glob2rx}}, 
 #' \href{https://en.wikipedia.org/wiki/Glob_(programming)}{glob pattern matching (Wikipedia)}, 
-#' \link{regex}
+#' \code{\link[stringi]{stringi-search-regex}}, \code{\link[stringi]{stringi-search-fixed}}
 #' @keywords internal
 NULL
 
@@ -153,7 +158,7 @@ NULL
 #' (patt5 <- list(c('president?'), c('white', 'house'), c('house', '*', 'representatives')))
 #' 
 #' # dictionary with multi-word matches
-#' (dict1 <- dictionary(us = c('president', 'white house', 'house of representatives')))
+#' (dict1 <- dictionary(list(us = c('president', 'white house', 'house of representatives'))))
 #' phrase(dict1)
 #' @keywords internal
 NULL
