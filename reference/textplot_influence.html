@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function to serialized list-of-character tokens — tokens_serialize • quanteda</title>
+<title>influence plot for text scaling models — textplot_influence • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -114,35 +114,39 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to serialized list-of-character tokens</h1>
+    <h1>influence plot for text scaling models</h1>
     </div>
 
     
-    <p>Creates a serialized object of tokens, called by <code><a href='tokens.html'>tokens</a></code>.</p>
+    <p>Plot the results of a fitted scaling model, from (e.g.) a predicted 
+<a href='textmodel_affinity.html'>textmodel_affinity</a> model.</p>
     
 
-    <pre class="usage"><span class='fu'>tokens_serialize</span>(<span class='no'>x</span>, <span class='no'>types_reserved</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>textplot_influence</span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for summary_affinity_influence</span>
+<span class='fu'>textplot_influence</span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>a list of character vectors</p></td>
+      <td><p>the fitted or predicted scaling model object to be plotted</p></td>
     </tr>
     <tr>
-      <th>types_reserved</th>
-      <td><p>optional pre-existing types for mapping of tokens</p></td>
+      <th>n</th>
+      <td><p>the number of features whose influence will be plotted</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments</p></td>
+      <td><p>additional arguments passed to <code>plot</code></p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>a list the serialized tokens found in each text</p>
+    <p><code><a href='textmodel_affinity.html'>textmodel_affinity</a></code></p>
     
 
   </div>
@@ -151,8 +155,12 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
+      <li><a href="#see-also">See also</a></li>
           </ul>
+
+    <h2>Author</h2>
+    
+Patrick Perry and Kenneth Benoit
 
   </div>
 </div>

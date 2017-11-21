@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function to serialized list-of-character tokens — tokens_serialize • quanteda</title>
+<title>prediction for a fitted affinity textmodel — predict.textmodel_affinity_fitted • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -114,35 +114,46 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to serialized list-of-character tokens</h1>
+    <h1>prediction for a fitted affinity textmodel</h1>
     </div>
 
     
-    <p>Creates a serialized object of tokens, called by <code><a href='tokens.html'>tokens</a></code>.</p>
+    <p>Estimate \(\theta_i\) for each document, from a fitted <a href='textmodel_affinity.html'>textmodel_affinity</a> object.</p>
     
 
-    <pre class="usage"><span class='fu'>tokens_serialize</span>(<span class='no'>x</span>, <span class='no'>types_reserved</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for textmodel_affinity_fitted</span>
+<span class='fu'>predict</span>(<span class='no'>object</span>, <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>a list of character vectors</p></td>
+      <th>object</th>
+      <td><p>a fitted affinity textmodel</p></td>
     </tr>
     <tr>
-      <th>types_reserved</th>
-      <td><p>optional pre-existing types for mapping of tokens</p></td>
+      <th>newdata</th>
+      <td><p>dfm on which prediction should be made</p></td>
+    </tr>
+    <tr>
+      <th>level</th>
+      <td><p>probability level for confidence interval width</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>If <code>TRUE</code>, output status messages</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments</p></td>
+      <td><p>additional arguments passed to other functions</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list the serialized tokens found in each text</p>
+    <p>The <code>predict</code> method for a affinity fitted object returns a
+  list of format...</p>
     
 
   </div>

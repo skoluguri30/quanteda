@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function to serialized list-of-character tokens — tokens_serialize • quanteda</title>
+<title>compute feature influence from a predicted textmodel_affinity object — influence.textmodel_affinity_predicted • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -114,35 +114,36 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to serialized list-of-character tokens</h1>
+    <h1>compute feature influence from a predicted textmodel_affinity object</h1>
     </div>
 
     
-    <p>Creates a serialized object of tokens, called by <code><a href='tokens.html'>tokens</a></code>.</p>
+    <p>Computes the influence of features on scaled <a href='textmodel_affinity.html'>textmodel_affinity</a> applications.</p>
     
 
-    <pre class="usage"><span class='fu'>tokens_serialize</span>(<span class='no'>x</span>, <span class='no'>types_reserved</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for textmodel_affinity_predicted</span>
+<span class='fu'>influence</span>(<span class='no'>model</span>, <span class='kw'>subset</span> <span class='kw'>=</span> !<span class='no'>train</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>a list of character vectors</p></td>
+      <th>model</th>
+      <td><p>a fitted <a href='textmodel_affinity.html'>textmodel_affinity</a> object</p></td>
     </tr>
     <tr>
-      <th>types_reserved</th>
-      <td><p>optional pre-existing types for mapping of tokens</p></td>
+      <th>subset</th>
+      <td><p>whether to use all data or a subset (for instance, exclude the training set)</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments</p></td>
+      <td><p>unused</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>a list the serialized tokens found in each text</p>
+    <p><code>influence.lm</code></p>
     
 
   </div>
@@ -151,7 +152,7 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>

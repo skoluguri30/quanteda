@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Irish budget speeches from 2010 — data_corpus_irishbudget2010 • quanteda</title>
+<title>confidence debate from 1991 Irish Parliament — data_corpus_dailnoconf1991 • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -114,80 +114,59 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Irish budget speeches from 2010</h1>
+    <h1>confidence debate from 1991 Irish Parliament</h1>
     </div>
 
     
-    <p>Speeches and document-level variables from the debate over the Irish budget
-of 2010.</p>
+    <p>Texts of speeches from a no-confidence motion debated in the Irish Dail in
+October 1991 over the future of the Fianna Fail-Progressive Democrat
+coalition.  (See Laver and Benoit 2002 for details.)</p>
     
 
-    <pre class="usage"><span class='no'>data_corpus_irishbudget2010</span></pre>
+    <pre class="usage"><span class='no'>data_corpus_dailnoconf1991</span></pre>
         
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>The corpus object for the 2010 budget speeches, with document-level 
-  variables for year, debate, serial number, first and last name of the 
-  speaker, and the speaker's party.</p>
-    
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
-
-    <p>Dáil Éireann Debate, 
-<a href='http://oireachtasdebates.oireachtas.ie/debates%20authoring/debateswebpack.nsf/takes/dail2009120900022?opendocument'>Budget Statement 2010.</a>
-9 December 2009.  vol. 697, no. 3.</p>
+    <p><code>data_corpus_dailnoconf1991</code> is a corpus with 58 texts, 
+  including docvars for <code>name</code>, <code>party</code>, and <code>position</code>.</p>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Lowe, Will, and Kenneth R Benoit. 2013. "Validating Estimates of 
-  Latent Traits From Textual Data Using Human Judgment as a Benchmark." 
-  <em>Political Analysis</em> 21: 298-313.</p>
+    <p>Laver, Michael, and Kenneth Benoit. 2002. 
+  "<a href='http://www.kenbenoit.net/pdfs/Laver_Benoit_IPS_2002.pdf'>Locating 
+  TDs in Policy Spaces: Wordscoring Dail Speeches</a>." <em>Irish Political 
+  Studies</em> 17 (Summer): 59-73.</p>  
+<p>Laver, Michael, Kenneth Benoit, and John Garry. 2003. 
+  "<a href='http://www.kenbenoit.net/pdfs/WORDSCORESAPSR.pdf'>Estimating policy 
+  positions from political text using words as data.</a>" <em>American 
+  Political Science Review</em> 97(2): 311-331.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>summary</span>(<span class='no'>data_corpus_irishbudget2010</span>)</div><div class='output co'>#&gt; Corpus consisting of 14 documents:
-#&gt; 
-#&gt;                                   Text Types Tokens Sentences year debate
-#&gt;        2010_BUDGET_01_Brian_Lenihan_FF  1953   8641       374 2010 BUDGET
-#&gt;       2010_BUDGET_02_Richard_Bruton_FG  1040   4446       217 2010 BUDGET
-#&gt;         2010_BUDGET_03_Joan_Burton_LAB  1624   6393       307 2010 BUDGET
-#&gt;        2010_BUDGET_04_Arthur_Morgan_SF  1595   7107       343 2010 BUDGET
-#&gt;          2010_BUDGET_05_Brian_Cowen_FF  1629   6599       250 2010 BUDGET
-#&gt;           2010_BUDGET_06_Enda_Kenny_FG  1148   4232       153 2010 BUDGET
-#&gt;      2010_BUDGET_07_Kieran_ODonnell_FG   678   2297       133 2010 BUDGET
-#&gt;       2010_BUDGET_08_Eamon_Gilmore_LAB  1181   4177       201 2010 BUDGET
-#&gt;     2010_BUDGET_09_Michael_Higgins_LAB   488   1286        44 2010 BUDGET
-#&gt;        2010_BUDGET_10_Ruairi_Quinn_LAB   439   1284        59 2010 BUDGET
-#&gt;      2010_BUDGET_11_John_Gormley_Green   401   1030        49 2010 BUDGET
-#&gt;        2010_BUDGET_12_Eamon_Ryan_Green   510   1643        90 2010 BUDGET
-#&gt;      2010_BUDGET_13_Ciaran_Cuffe_Green   442   1240        45 2010 BUDGET
-#&gt;  2010_BUDGET_14_Caoimhghin_OCaolain_SF  1188   4044       176 2010 BUDGET
-#&gt;  number      foren     name party
-#&gt;      01      Brian  Lenihan    FF
-#&gt;      02    Richard   Bruton    FG
-#&gt;      03       Joan   Burton   LAB
-#&gt;      04     Arthur   Morgan    SF
-#&gt;      05      Brian    Cowen    FF
-#&gt;      06       Enda    Kenny    FG
-#&gt;      07     Kieran ODonnell    FG
-#&gt;      08      Eamon  Gilmore   LAB
-#&gt;      09    Michael  Higgins   LAB
-#&gt;      10     Ruairi    Quinn   LAB
-#&gt;      11       John  Gormley Green
-#&gt;      12      Eamon     Ryan Green
-#&gt;      13     Ciaran    Cuffe Green
-#&gt;      14 Caoimhghin OCaolain    SF
-#&gt; 
-#&gt; Source:  /Users/kbenoit/Dropbox (Personal)/GitHub/quanteda/* on x86_64 by kbenoit
-#&gt; Created: Wed Jun 28 22:04:18 2017
-#&gt; Notes:    </div></pre>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='no'>data_dfm_dailnoconf1991</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>data_corpus_dailnoconf1991</span>, <span class='kw'>removePunct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='no'>fitted</span> <span class='kw'>&lt;-</span> <span class='fu'>textmodel_mixfit</span>(<span class='no'>data_dfm_dailnoconf1991</span>,
+                           <span class='fu'>c</span>(<span class='st'>"Govt"</span>, <span class='st'>"Opp"</span>, <span class='st'>"Opp"</span>, <span class='fu'>rep</span>(<span class='fl'>NA</span>, <span class='fl'>55</span>)))
+(<span class='no'>pred</span> <span class='kw'>&lt;-</span> <span class='fu'>predict</span>(<span class='no'>fitted</span>))
+<span class='no'>tmpdf</span> <span class='kw'>&lt;-</span>
+    <span class='fu'>data.frame</span>(<span class='kw'>party</span> <span class='kw'>=</span> <span class='fu'>as.character</span>(<span class='fu'><a href='docvars.html'>docvars</a></span>(<span class='no'>data_corpus_dailnoconf1991</span>, <span class='st'>"party"</span>)),
+               <span class='kw'>govt</span> <span class='kw'>=</span> <span class='fu'>coef</span>(<span class='no'>pred</span>)[,<span class='st'>"Govt"</span>],
+               <span class='kw'>position</span> <span class='kw'>=</span> <span class='fu'>as.character</span>(<span class='fu'><a href='docvars.html'>docvars</a></span>(<span class='no'>data_corpus_dailnoconf1991</span>, <span class='st'>"position"</span>)),
+               <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='no'>bymedian</span> <span class='kw'>&lt;-</span> <span class='fu'>with</span>(<span class='no'>tmpdf</span>, <span class='fu'>reorder</span>(<span class='fu'>paste</span>(<span class='no'>party</span>, <span class='no'>position</span>), <span class='no'>govt</span>, <span class='no'>median</span>))
+<span class='fu'>par</span>(<span class='kw'>mar</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>4</span>, <span class='fl'>2</span>)+<span class='fl'>.1</span>)
+<span class='fu'>boxplot</span>(<span class='no'>govt</span> ~ <span class='no'>bymedian</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>tmpdf</span>,
+        <span class='kw'>horizontal</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>las</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+        <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Degree of support for government"</span>)
+<span class='fu'>abline</span>(<span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>7.5</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='st'>"red"</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='st'>"dashed"</span>)
+<span class='fu'>text</span>(<span class='fu'>c</span>(<span class='fl'>0.9</span>, <span class='fl'>0.9</span>), <span class='fu'>c</span>(<span class='fl'>8.5</span>, <span class='fl'>6.5</span>), <span class='fu'>c</span>(<span class='st'>"Goverment"</span>, <span class='st'>"Opposition"</span>))
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       
       <li><a href="#format">Format</a></li>
-
-      <li><a href="#source">Source</a></li>
 
       <li><a href="#references">References</a></li>
       
