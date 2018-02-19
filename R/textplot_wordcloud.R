@@ -70,12 +70,13 @@
 #' @import ggplot2
 textplot_wordcloud <- function(x, 
                                min_size = 0.5, 
-                               max_size = 4,
+                               max_size = 6,
                                max_words = 1000,
                                color = "skyblue",
                                font = NULL,
                                adjust = 0,
                                rotation = 0.1,
+                               spacing = 0.001,
                                random_order = TRUE,
                                random_color = FALSE,
                                ordered_color = FALSE,
@@ -229,44 +230,22 @@ wordcloud <- function(x, min_size, max_size, max_words,
     }
     word <- word[ord]
     freq <- freq[ord]
+    
+    words <- get_wordsize(word, freq, rotation, spacing, max_size, min_size)
+    if (random_color) {
+        words$col <- sample(color, nrow(words), replace = TRUE)
+    } else {
+        if (ordered_color) {
+            words$col <- color
+        } else {
+            words$col <- rep(color, each = ceiling(nrow(words)) / length(color),
+                             length.out = nrow(words))
+        }
+    }
 
     theta_step <- 0.1
     r_step <- 0.05
-    
-    freq <- freq / max(freq)
-    size <- (max_size - min_size) * freq + min_size
     boxes <- list()
-    
-    words <- data.frame()
-    for (i in seq_along(word)) {
-        words <- rbind(words, data.frame(
-            word = word[i],
-            height = as.numeric(grid::convertUnit(grid::unit(1, "strheight", word[i]), 'npc')),
-            width = as.numeric(grid::convertUnit(grid::unit(1, "strwidth", word[i]), 'npc'))
-        ))
-    }
-    
-    words$size <- words$height # original size of fonts
-    
-    tailed <- grepl(tails, words$word) # contain g, j, p, q, y
-    words$height[tailed] <- words$height[tailed] * 1.2
-    
-    words$scale <- (max_size - min_size) * freq + min_size
-    words <- words[order(words$scale, decreasing = TRUE),]
-    
-    # scale up by the frequency
-    words$size <- words$size *  words$scale
-    words$width <- words$width *  words$scale
-    words$height <- words$height *  words$scale
-    
-    # set height and width for layout
-    rotate <- stats::runif(nrow(words)) < rotation
-    words$angle <- rotate * 90
-    words[rotate, 'h'] <- words$width[rotate] + spacing
-    words[rotate, 'w'] <- words$height[rotate] + spacing
-    words[!rotate, 'w'] <- words$width[!rotate] + spacing
-    words[!rotate, 'h'] <- words$height[!rotate] + spacing
-    
     for (i in seq_len(nrow(words))) {
         
         r <- 0
@@ -283,20 +262,8 @@ wordcloud <- function(x, min_size, max_size, max_words,
                 x1 - 0.5 * wid > 0 && y1 - 0.5 * ht > 0 &&
                 x1 + 0.5 * wid < 1 && y1 + 0.5 * ht < 1) {
                 
-                if (!random_color) {
-                    if (ordered_color) {
-                        cc <- color[i]
-                    } else {
-                        cc <- ceiling(nc * freq[i])
-                        cc <- color[cc]
-                    }
-                } else {
-                    cc <- color[sample(seq(nc), 1)]
-                }
-                
                 words[i, 'x'] <- x1
                 words[i, 'y'] <- y1
-                words[i, 'col'] <- cc
                 
                 boxes[[length(boxes) + 1]] <- c(x1 - 0.5 * wid, y1 - 0.5 * ht, wid, ht)
                 is_overlaped <- FALSE
@@ -312,7 +279,6 @@ wordcloud <- function(x, min_size, max_size, max_words,
             }
         }
     }
-    
     
     words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'npc'), 'mm'))
     print(head(words))
@@ -534,4 +500,44 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
             panel.grid.major = element_blank())
     
     return(plot)
+}
+
+get_wordsize <- function(word, freq, rotation, spacing, max_size, min_size) {
+    
+    stopifnot(length(word) == length(freq))
+    
+    freq <- freq / max(freq)
+    size <- (max_size - min_size) * freq + min_size
+    
+    result <- data.frame()
+    for (i in seq_along(word)) {
+        result <- rbind(result, data.frame(
+            word = word[i],
+            height = as.numeric(grid::convertUnit(grid::unit(1, "strheight", word[i]), 'npc')),
+            width = as.numeric(grid::convertUnit(grid::unit(1, "strwidth", word[i]), 'npc'))
+        ))
+    }
+    
+    result$size <- result$height # original size of fonts
+    
+    tailed <- grepl("g|j|p|q|y", result$word) # contain g, j, p, q, y
+    result$height[tailed] <- result$height[tailed] * 1.2
+    
+    result$scale <- (max_size - min_size) * freq + min_size
+    result <- result[order(result$scale, decreasing = TRUE),]
+    
+    # scale up by the frequency
+    result$size <- result$size *  result$scale
+    result$width <- result$width *  result$scale
+    result$height <- result$height *  result$scale
+    
+    # set height and width for layout
+    rotate <- stats::runif(nrow(result)) < rotation
+    result$angle <- rotate * 90
+    result[rotate, 'h'] <- result$width[rotate] + spacing
+    result[rotate, 'w'] <- result$height[rotate] + spacing
+    result[!rotate, 'w'] <- result$width[!rotate] + spacing
+    result[!rotate, 'h'] <- result$height[!rotate] + spacing
+    
+    return(result)
 }
