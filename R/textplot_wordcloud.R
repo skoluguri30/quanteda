@@ -23,6 +23,7 @@
 #' @param adjust ajust sizes of words by a constant. Useful for non-Engish words
 #'   for which R failes to obtaine sizes correctly.
 #' @param rotation proportion words with 90 degree rotation colors
+#' @param spacing add fixed amount of spaces around words
 #' @param random_order plot words in random order. If \code{FALSE}, they will be
 #'   plotted in decreasing frequency.
 #' @param random_color choose colors randomly from the colors. If \code{FALSE},
@@ -192,8 +193,7 @@ wordcloud <- function(x, min_size, max_size, max_words,
         warning('use.r.layout is no longer used', call. = FALSE)
     }
     if (!missing(fixed.asp)) {
-        fixed_aspect <- fixed.asp
-        arg_dep <- c(arg_dep, 'fixed_aspect' = 'fixed.asp')
+        warning('fixed.asp is no longer used', call. = FALSE)
     }
     if (length(arg_dep))
         warning(paste(arg_dep), " is deprecated; use ", paste(names(arg_dep)), " instead", call. = FALSE)
@@ -201,90 +201,37 @@ wordcloud <- function(x, min_size, max_size, max_words,
     if (!fixed_aspect && rotation > 0)
         stop("Variable aspect ratio not supported for rotated words. Set rotation=0.")
     
-    tails <- "g|j|p|q|y"
-    nc <- length(color)
-    
     font <- check_font(font)
     freq <- Matrix::colSums(x)
-    word <- names(freq)
-    freq <- unname(freq)
-    
-    if (ordered_color) {
-        if (length(color) != 1 && length(color) != length(word)) {
-            stop("Length of color does not match length of word vector")
-        }
-    }
-    
-    ord <- rank(-freq, ties.method = "random")
-    word <- word[ord <= max_words]
-    freq <- freq[ord <= max_words]
-    if (ordered_color) {
-        color <- color[ord <= max_words]
-    }
-    
-    if (random_order) {
-        ord <- sample.int(length(word))
-    } else {
-        ord <- order(freq, decreasing = TRUE)
-    }
-    word <- word[ord]
-    freq <- freq[ord]
-    
-    words <- get_wordsize(word, freq, rotation, spacing, max_size, min_size)
+
+    words <- data.frame(word = names(freq), freq = unname(freq), stringsAsFactors = FALSE)
     if (random_color) {
         words$col <- sample(color, nrow(words), replace = TRUE)
+    } else if (ordered_color) {
+        if (length(color) != nrow(words))
+            stop("Length of color does not match length of word vector")
+        words$col <- color
     } else {
-        if (ordered_color) {
-            words$col <- color
-        } else {
-            words$col <- rep(color, each = ceiling(nrow(words)) / length(color),
-                             length.out = nrow(words))
-        }
+        words$col <- rep(color, each = ceiling(nrow(words)) / length(color),
+                         length.out = nrow(words))
     }
-
-    theta_step <- 0.1
-    r_step <- 0.05
-    boxes <- list()
-    for (i in seq_len(nrow(words))) {
-        
-        r <- 0
-        theta <- stats::runif(1, 0, 2 * pi)
-        x1 <- 0.5
-        y1 <- 0.5
-        
-        ht <- words[i, 'h']
-        wid <- words[i, 'w']
-        
-        is_overlaped <- TRUE
-        while (is_overlaped) {
-            if (!qatd_cpp_is_overlap(x1 - 0.5 * wid, y1 - 0.5 * ht, wid, ht, boxes) &&
-                x1 - 0.5 * wid > 0 && y1 - 0.5 * ht > 0 &&
-                x1 + 0.5 * wid < 1 && y1 + 0.5 * ht < 1) {
-                
-                words[i, 'x'] <- x1
-                words[i, 'y'] <- y1
-                
-                boxes[[length(boxes) + 1]] <- c(x1 - 0.5 * wid, y1 - 0.5 * ht, wid, ht)
-                is_overlaped <- FALSE
-            } else {
-                if (r > sqrt(0.5)) {
-                    warning(paste(word[i], "could not be fit on page. It will not be plotted."))
-                    is_overlaped <- FALSE
-                }
-                theta <- theta + theta_step
-                r <- r + r_step * theta_step / (2 * pi)
-                x1 <- 0.5 + r * cos(theta)
-                y1 <- 0.5 + r * sin(theta)
-            }
-        }
-    }
+    words <- head(words[order(words$freq, decreasing = TRUE),], max_words)
+    words <- set_wordsize(words, rotation, spacing, max_size, min_size)
+    
+    words$x <- NA
+    words$y <- NA
+    words <- set_wordposition(words, 1L, 2L)
+    
+    is_missed <- is.na(words$x)
+    if (any(is_missed))
+        warning(paste(words$word[is_missed], collapse = ', '), "could not be fit on page.", call. = FALSE)
     
     words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'snpc'), 'mm'))
     print(head(words))
     
-    x <- y <- label <- NULL
+    x <- y <- w <- h <- label <- NULL
     plot <- ggplot() + 
-        geom_text(data = words, aes(x, y, label = word), color = words$col, family = font,
+        geom_text(data = words, aes(x + 0.5 * w, y + 0.5 * h, label = word), color = words$col, family = font,
                   size = words$mm, angle = words$angle, 
                   lineheight = 1, vjust = "center") +
         #geom_point(data = words, aes(x, y)) + # for debug
@@ -320,7 +267,6 @@ wordcloud <- function(x, min_size, max_size, max_words,
 #' @param use.r.layout deprecated argument
 #' @param title.size deprecated argument
 #' @keywords internal
-#' @author Ian Fellows
 wordcloud_comparison <- function(x, min_size, max_size, max_words,
                                  color, font, adjust, rotation, spacing,
                                  random_order, random_color, ordered_color,
@@ -368,125 +314,62 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
     }
     
     font <- check_font(font)
-    x <- x / rowSums(x)
-    x <- x - rowMeans(x)
-    x <- t(as.matrix(x))
+    x <- dfm_weight(x, 'propmax')
+    #x <- x / rowSums(x)
+    #x <- x - rowMeans(x)
+    #x <- t(as.matrix(x))
 
-    ndoc <- ncol(x)
-    thetaBins <- seq(0, 2 * pi, length = ndoc + 1)
-
-    if (is.null(color) < ndoc)
-        color <- RColorBrewer::brewer.pal(8, "Dark2")
-    group <- apply(x, 1, which.max)
-    word <- rownames(x)
-    freq <- apply(x, 1, max)
-    
-    tails <- "g|j|p|q|y"
-    nc <- length(color)
-    
-    ord <- rank(-freq, ties.method = "random")
-    word <- word[ord <= max_words]
-    freq <- freq[ord <= max_words]
-    group <- group[ord <= max_words]
-    
-    if (random_order) {
-        ord <- sample.int(length(word))
-    } else {
-        ord <- order(freq, decreasing = TRUE)
-    }
-    word <- word[ord]
-    freq <- freq[ord]
-    group <- group[ord]
-    theta_step <- 0.05
-    r_step <- 0.05
-    
-    graphics::plot.new()
-    op <- graphics::par(no.readonly = TRUE)
-    graphics::par(mar = c(0, 0, 0, 0), family = font)
-    graphics::plot.window(c(0, 1), c(0, 1), asp = 1)
-    
-    freq <- freq / max(freq)
-    size <- (max_size - min_size) * freq + min_size
-    boxes <- list()
-    
     #add titles
     docnames <- colnames(x)
+    
+    theta_limit <- seq(0, 2 * pi, length = nrow(x) + 1)
+    
     words <- data.frame()
+    for (h in seq(nrow(x))) {
+        theta_label <- mean(theta_limit[seq(h, h + 1)])
+        # label <- docnames[h]
+        # if (labelsize > 0) {
+        #     wid <- graphics::strwidth(label, cex = labelsize)
+        #     ht <- graphics::strheight(label, cex = labelsize)
+        # 
+        #     # leaves 5% margin around the cloud
+        #     x1 <- 0.5 + ((0.45 + labeloffset) * cos(th))
+        #     y1 <- 0.5 + ((0.45 + labeloffset) * sin(th))
+        # 
+        #     words <- rbind(words, data.frame(x = x1, y = y1, word = label, size = labelsize, 
+        #                                      offset = 0, srt = 0, col = labelcolor))
+        # }
     
-    for (i in seq(ncol(x))) {
-        th <- mean(thetaBins[seq(i, i + 1)])
-        label <- docnames[i]
-        if (labelsize > 0) {
-            wid <- graphics::strwidth(label, cex = labelsize)
-            ht <- graphics::strheight(label, cex = labelsize)
-    
-            # leaves 5% margin around the cloud
-            x1 <- 0.5 + ((0.45 + labeloffset) * cos(th))
-            y1 <- 0.5 + ((0.45 + labeloffset) * sin(th))
-    
-            words <- rbind(words, data.frame(x = x1, y = y1, word = label, size = labelsize, 
-                                             offset = 0, srt = 0, col = labelcolor))
-            boxes[[length(boxes) + 1]] <- c(x1 - 0.5 * wid, y1 - 0.5 * ht, wid, ht)
-        }
-    }
-    
-    for (i in seq_along(word)) {
-        rot <- stats::runif(1) < rotation
-        r <- 0
-        theta <- stats::runif(1, 0, 2 * pi)
-        x1 <- 0.5
-        y1 <- 0.5
-        wid <- graphics::strwidth(word[i], cex = size[i], ...)
-        ht <- graphics::strheight(word[i], cex = size[i], ...)
+        freq <- Matrix::colSums(x[h,])
+        temp <- data.frame(word = names(freq), freq = unname(freq), stringsAsFactors = FALSE)
         
-        if (grepl(tails, word[i]))
-            ht <- ht * 1.2 # extra height for g, j, p, q, y
-        if (rot) {
-            tmp <- ht
-            ht <- wid
-            wid <- tmp
-        }
-        is_overlaped <- TRUE
-        while (is_overlaped) {
-            in_correct_region <- theta > thetaBins[group[i]] && theta < thetaBins[group[i] + 1]
-            if (in_correct_region && !qatd_cpp_is_overlap(
-                x1 - 0.5 * wid, y1 - 0.5 * ht, wid, ht, boxes) &&
-                x1 - 0.5 * wid > 0 && y1 - 0.5 * ht > 0 &&
-                x1 + 0.5 * wid < 1 && y1 + 0.5 * ht < 1) {
-                
-                # text(x1, y1, word[i], cex = size[i], offset = 0, srt = rot * 90, col = color[group[i]], ...)
-                words <- rbind(words, data.frame(x = x1, y = y1, word = word[i], size = size[i], 
-                                                 offset = 0, srt = rot * 90, col = color[group[i]]))
-                boxes[[length(boxes) + 1]] <- c(x1 - 0.5 * wid, y1 - 0.5 * ht, wid, ht)
-                is_overlaped <- FALSE
-                
-            } else {
-                if (r > sqrt(0.5)) {
-                    warning(paste(word[i], "could not be fit on page. It will not be plotted."))
-                    is_overlaped <- FALSE
-                }
-                theta <- theta + theta_step
-                if (theta > 2 * pi)
-                    theta <- theta - 2 * pi
-                r <- r + r_step * theta_step / (2 * pi)
-                x1 <- 0.5 + r * cos(theta)
-                y1 <- 0.5 + r * sin(theta)
-            }
-        }
+        temp$col <- h
+        temp$group <- h 
+        
+        temp <- head(temp[order(temp$freq, decreasing = TRUE),], max_words / nrow(x))
+        temp <- set_wordsize(temp, rotation, spacing, max_size, min_size)
+        words <- rbind(words, temp)
     }
-    # abline(v=0:1, h=0:1)
-    # abline(v=c(0.25, 0,75), h=c(0.25, 0,75), col='red')
-    graphics::par(op)
-    grDevices::dev.off()
     
-    x <- y <- label <- NULL
+    words$x <- NA
+    words$y <- NA
+    words <- set_wordposition(words)
+
+    is_missed <- is.na(words$x)
+    if (any(is_missed))
+        warning(paste(words$word[is_missed], collapse = ', '), "could not be fit on page.", call. = FALSE)
+    words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'snpc'), 'mm'))
+    print(head(words))
+    
+    x <- y <- w <- h <- label <- NULL
     plot <- ggplot() + 
-        geom_text(data = words, aes(x, y, label = word), color = words$col, family = font,
-                  size = words$size * 4 * (1 + adjust), angle = words$srt, 
+        geom_text(data = words, aes(x + 0.5 * w, y + 0.5 * h, label = word), color = words$col, family = font,
+                  size = words$mm, angle = words$angle, 
                   lineheight = 1, vjust = "center") +
-        coord_fixed() + 
+        #geom_point(data = words, aes(x, y)) + # for debug
         #geom_vline(xintercept = c(0, 0.25, 0.75, 1)) + # for debug
         #geom_hline(yintercept = c(0, 0.25, 0.75, 1)) + # for debug
+        coord_fixed() + 
         scale_x_continuous(limits = c(0, 1), breaks = NULL) + 
         scale_y_continuous(limits = c(0, 1), breaks = NULL) +
         theme(
@@ -501,28 +384,102 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
     return(plot)
 }
 
-get_wordsize <- function(word, freq, rotation, spacing, max_size, min_size) {
+
+set_wordposition <- function(data) {
     
-    stopifnot(length(word) == length(freq))
+    stopifnot('word' %in% names(data))
+    stopifnot('freq' %in% names(data))
+    stopifnot('x' %in% names(data))
+    stopifnot('y' %in% names(data))
+    stopifnot('w' %in% names(data))
+    stopifnot('h' %in% names(data))
     
-    freq <- freq / max(freq)
-    size <- (max_size - min_size) * freq + min_size
+    if (!'group' %in% names(data))
+        data$group <- 1L
     
-    result <- data.frame()
-    for (i in seq_along(word)) {
-        result <- rbind(result, data.frame(
-            word = word[i],
-            height = as.numeric(grid::convertUnit(grid::unit(1, "strheight", word[i]), 'npc')),
-            width = as.numeric(grid::convertUnit(grid::unit(1, "strwidth", word[i]), 'npc'))
+    group <- sort(unique(data$group))
+    theta_limit <- seq(0, 2 * pi, length = length(group) + 1)
+    
+    theta_step <- 0.1 / length(group)
+    r_step <- 0.05
+    x1 <- y1 <- 0.5
+    
+    for (g in group) {
+        for (i in seq_len(nrow(data))) {
+            if (data$group[i] != g) next
+            r <- 0
+            theta <- stats::runif(1, 0, 2 * pi)
+            is_overlaped <- TRUE
+            while (is_overlaped) {
+                w <- data$w[i]
+                h <- data$h[i] 
+                in_region <- theta > theta_limit[g] && theta < theta_limit[g + 1]
+                if (in_region && !qatd_cpp_is_overlap(x1 - 0.5 * w, y1 - 0.5 * h, w, h, data) &&
+                    x1 - 0.5 * w > 0 && y1 - 0.5 * h > 0 && x1 + 0.5 * w < 1 && y1 + 0.5 * h < 1) {
+                    
+                    data[i, 'x'] <- x1 - 0.5 * w
+                    data[i, 'y'] <- y1 - 0.5 * h
+                    
+                    is_overlaped <- FALSE
+                } else {
+                    if (r > sqrt(0.5)) {
+                        is_overlaped <- FALSE
+                    }
+                    # theta <- theta + theta_step
+                    # r <- r + r_step * theta_step / (2 * pi)
+                    # x1 <- 0.5 + r * cos(theta)
+                    # y1 <- 0.5 + r * sin(theta)
+                    
+                    theta <- theta + theta_step
+                    if (theta > 2 * pi)
+                        theta <- theta - 2 * pi
+                    r <- r + r_step * theta_step / (2 * pi)
+                    x1 <- 0.5 + r * cos(theta)
+                    y1 <- 0.5 + r * sin(theta)
+                }
+            }
+        }
+    }
+    return(data)
+}
+
+#' Experimental R++ version (not used for poor performance)
+is_wordoverlap <- function(data, x, y, w, h) {
+    #cat(x, y, w, h, '\n')
+    any(ifelse(data$x < x, data$x + data$w > x, x + w > data$x) &
+        ifelse(data$y < y, data$y + data$h > y, y + h > data$y))
+}
+
+#' Gauge sizes of words in Normalised Parent Coordinates 
+#'
+#' @param x a data.frame that contain columns for words (word) and their frequencies (freq)
+#' @inheritParams wordclound
+#'
+#' @return a data.frame with sizes of words in NPC
+#' @keywords internal
+set_wordsize <- function(data, rotation, spacing, max_size, min_size) {
+       
+    stopifnot('word' %in% names(data))
+    stopifnot('freq' %in% names(data))
+    
+    data$freq <- data$freq / max(data$freq)
+    size <- (max_size - min_size) * data$freq + min_size
+    
+    temp <- data.frame()
+    for (i in seq_len(nrow(data))) {
+        temp <- rbind(temp, data.frame(
+            height = as.numeric(grid::convertUnit(grid::unit(1, "strheight", data[i, 'word']), 'npc')),
+            width = as.numeric(grid::convertUnit(grid::unit(1, "strwidth", data[i, 'word']), 'npc'))
         ))
     }
     
+    result <- cbind(data, temp)
     result$size <- result$height # original size of fonts
     
     tailed <- grepl("g|j|p|q|y", result$word) # contain g, j, p, q, y
     result$height[tailed] <- result$height[tailed] * 1.2
     
-    result$scale <- (max_size - min_size) * freq + min_size
+    result$scale <- (max_size - min_size) * data$freq + min_size
     result <- result[order(result$scale, decreasing = TRUE),]
     
     # scale up by the frequency
