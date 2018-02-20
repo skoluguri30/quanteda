@@ -145,7 +145,6 @@ textplot_wordcloud.dfm <- function(x,
 #' @param use.r.layout deprecated argument
 #' @param fixed.asp deprecated argument
 #' @keywords internal
-#' @author Ian Fellows
 wordcloud <- function(x, min_size, max_size, max_words,
                       color, font, adjust, rotation, spacing,
                       random_order, random_color, ordered_color,
@@ -280,7 +279,7 @@ wordcloud <- function(x, min_size, max_size, max_words,
         }
     }
     
-    words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'npc'), 'mm'))
+    words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'snpc'), 'mm'))
     print(head(words))
     
     x <- y <- label <- NULL
