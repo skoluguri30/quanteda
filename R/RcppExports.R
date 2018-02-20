@@ -81,8 +81,8 @@ qatd_cpp_tbb_enabled <- function() {
     .Call(`_quanteda_qatd_cpp_tbb_enabled`)
 }
 
-qatd_cpp_is_overlap <- function(x11, y11, sw11, sh11, boxes1) {
-    .Call(`_quanteda_qatd_cpp_is_overlap`, x11, y11, sw11, sh11, boxes1)
+qatd_cpp_is_overlap <- function(x, y, w, h, words_) {
+    .Call(`_quanteda_qatd_cpp_is_overlap`, x, y, w, h, words_)
 }
 
 qatd_cpp_wordfish_dense <- function(wfm, dir, priors, tol, disp, dispfloor, abs_err) {

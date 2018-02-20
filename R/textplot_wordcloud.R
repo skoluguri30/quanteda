@@ -34,8 +34,6 @@
 #' @param labelsize size of group labels. Only used when \code{compariosn=TRUE}.
 #' @param labeloffset  position of group labels. Only used when
 #'   \code{compariosn=TRUE}.
-#' @param fixed_aspect if \code{TRUE}, the aspect ratio is fixed. Variable
-#'   aspect ratio only supported if rotation = 0
 #' @param comparison if \code{TRUE}, plot a wordclound that compares documents
 #'   in the same way as \code{\link[wordcloud]{comparison.cloud}}
 #' @param ... additional parameters passed to \link{text} (and \link{strheight},
@@ -81,10 +79,6 @@ textplot_wordcloud <- function(x,
                                random_order = TRUE,
                                random_color = FALSE,
                                ordered_color = FALSE,
-                               labelcolor = 'black',
-                               labelsize = 1,
-                               labeloffset = 0.1,
-                               fixed_aspect = TRUE,
                                ...,
                                comparison = FALSE) {
     UseMethod("textplot_wordcloud")
@@ -109,9 +103,8 @@ textplot_wordcloud.dfm <- function(x,
                                    random_color = FALSE,
                                    ordered_color = FALSE,
                                    labelcolor = 'black',
-                                   labelsize = 1,
-                                   labeloffset = 0.1,
-                                   fixed_aspect = TRUE,
+                                   labelsize = 4,
+                                   labeloffset = 0.05,
                                    ...,
                                    comparison = FALSE) {
 
@@ -122,12 +115,12 @@ textplot_wordcloud.dfm <- function(x,
         wordcloud_comparison(x, min_size , max_size, max_words,
                              color, font, adjust, rotation, spacing,
                              random_order, random_color, ordered_color,
-                             labelcolor, labelsize, labeloffset, fixed_aspect, ...)
+                             labelcolor, labelsize, labeloffset, ...)
     } else {
         wordcloud(x, min_size, max_size, max_words,
                   color, font, adjust, rotation, spacing,
                   random_order, random_color, ordered_color,
-                  labelcolor, labelsize, labeloffset, fixed_aspect, ...)
+                  labelcolor, labelsize, labeloffset, ...)
     }
 }
 
@@ -149,7 +142,7 @@ textplot_wordcloud.dfm <- function(x,
 wordcloud <- function(x, min_size, max_size, max_words,
                       color, font, adjust, rotation, spacing,
                       random_order, random_color, ordered_color,
-                      labelcolor, labelsize, labeloffset, fixed_aspect,
+                      labelcolor, labelsize, labeloffset,
                       # deprecated arguments
                       colors, scale, min.freq, max.words, random.order, 
                       random.color, rot.per, ordered.colors, use.r.layout, fixed.asp,
@@ -198,9 +191,6 @@ wordcloud <- function(x, min_size, max_size, max_words,
     if (length(arg_dep))
         warning(paste(arg_dep), " is deprecated; use ", paste(names(arg_dep)), " instead", call. = FALSE)
     
-    if (!fixed_aspect && rotation > 0)
-        stop("Variable aspect ratio not supported for rotated words. Set rotation=0.")
-    
     font <- check_font(font)
     freq <- Matrix::colSums(x)
 
@@ -220,16 +210,17 @@ wordcloud <- function(x, min_size, max_size, max_words,
     
     words$x <- NA
     words$y <- NA
-    words <- set_wordposition(words, 1L, 2L)
+    words <- set_wordposition(words)
     
     is_missed <- is.na(words$x)
     if (any(is_missed))
-        warning(paste(words$word[is_missed], collapse = ', '), "could not be fit on page.", call. = FALSE)
+        warning(paste(words$word[is_missed], collapse = ', '), " could not be fit in the plot.", call. = FALSE)
     
     words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'snpc'), 'mm'))
     print(head(words))
     
     x <- y <- w <- h <- label <- NULL
+    words <- na.omit(words)
     plot <- ggplot() + 
         geom_text(data = words, aes(x + 0.5 * w, y + 0.5 * h, label = word), color = words$col, family = font,
                   size = words$mm, angle = words$angle, 
@@ -247,7 +238,8 @@ wordcloud <- function(x, min_size, max_size, max_words,
             axis.title.y = element_blank(),
             legend.position = "none",
             panel.grid.minor = element_blank(), 
-            panel.grid.major = element_blank())
+            panel.grid.major = element_blank()
+        )
     
     return(plot)
 }
@@ -270,7 +262,7 @@ wordcloud <- function(x, min_size, max_size, max_words,
 wordcloud_comparison <- function(x, min_size, max_size, max_words,
                                  color, font, adjust, rotation, spacing,
                                  random_order, random_color, ordered_color,
-                                 labelcolor, labelsize, labeloffset, fixed_aspect,
+                                 labelcolor, labelsize, labeloffset,
                                  # deprecated arguments
                                  colors, scale, min.freq, max.words, 
                                  random.order, rot.per, use.r.layout, title.size,
@@ -315,35 +307,15 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
     
     font <- check_font(font)
     x <- dfm_weight(x, 'propmax')
-    #x <- x / rowSums(x)
-    #x <- x - rowMeans(x)
-    #x <- t(as.matrix(x))
-
-    #add titles
-    docnames <- colnames(x)
-    
-    theta_limit <- seq(0, 2 * pi, length = nrow(x) + 1)
+    if (length(color) < nrow(x))
+        color <- RColorBrewer::brewer.pal(max(3, nrow(x)), 'Paired')
     
     words <- data.frame()
     for (h in seq(nrow(x))) {
-        theta_label <- mean(theta_limit[seq(h, h + 1)])
-        # label <- docnames[h]
-        # if (labelsize > 0) {
-        #     wid <- graphics::strwidth(label, cex = labelsize)
-        #     ht <- graphics::strheight(label, cex = labelsize)
-        # 
-        #     # leaves 5% margin around the cloud
-        #     x1 <- 0.5 + ((0.45 + labeloffset) * cos(th))
-        #     y1 <- 0.5 + ((0.45 + labeloffset) * sin(th))
-        # 
-        #     words <- rbind(words, data.frame(x = x1, y = y1, word = label, size = labelsize, 
-        #                                      offset = 0, srt = 0, col = labelcolor))
-        # }
-    
         freq <- Matrix::colSums(x[h,])
         temp <- data.frame(word = names(freq), freq = unname(freq), stringsAsFactors = FALSE)
         
-        temp$col <- h
+        temp$col <- color[h]
         temp$group <- h 
         
         temp <- head(temp[order(temp$freq, decreasing = TRUE),], max_words / nrow(x))
@@ -357,11 +329,27 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
 
     is_missed <- is.na(words$x)
     if (any(is_missed))
-        warning(paste(words$word[is_missed], collapse = ', '), "could not be fit on page.", call. = FALSE)
+        warning(paste(words$word[is_missed], collapse = ', '), " could not be fit in the plot.", call. = FALSE)
+    
     words$mm <- (1 + adjust) * as.numeric(grid::convertUnit(unit(words$size, 'snpc'), 'mm'))
-    print(head(words))
+    #print(head(words))
+    
+    if (labelsize > 0) {
+        labels <- data.frame(word = rownames(x), stringsAsFactors = FALSE)
+        labels$freq <- 1 # dumy frequency get sizes
+        labels <- set_wordsize(labels, FALSE, 0, labelsize, labelsize)
+        for (h in seq(nrow(labels))) {
+            theta_limit <- seq(0, 2 * pi, length = nrow(x) + 1)
+            theta <- mean(theta_limit[seq(h, h + 1)])
+            labels$x[h] <- 0.5 + (0.5 + (labeloffset / 0.5)) * cos(theta)
+            labels$y[h] <- 0.5 + (0.5 + (labeloffset / 0.5)) * sin(theta)
+        }
+        labels$mm <- as.numeric(grid::convertUnit(unit(labels$size, 'snpc'), 'mm'))
+        #print(labels)
+    }
     
     x <- y <- w <- h <- label <- NULL
+    words <- na.omit(words)
     plot <- ggplot() + 
         geom_text(data = words, aes(x + 0.5 * w, y + 0.5 * h, label = word), color = words$col, family = font,
                   size = words$mm, angle = words$angle, 
@@ -370,8 +358,8 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
         #geom_vline(xintercept = c(0, 0.25, 0.75, 1)) + # for debug
         #geom_hline(yintercept = c(0, 0.25, 0.75, 1)) + # for debug
         coord_fixed() + 
-        scale_x_continuous(limits = c(0, 1), breaks = NULL) + 
-        scale_y_continuous(limits = c(0, 1), breaks = NULL) +
+        scale_x_continuous(limits = if (labelsize > 0) c(-0.1, 1.1) else c(0, 1), breaks = NULL) + 
+        scale_y_continuous(limits = if (labelsize > 0) c(-0.1, 1.1) else c(0, 1), breaks = NULL) +
         theme(
             plot.margin = margin(0, 0, 0, 0),
             panel.background = element_blank(), 
@@ -379,7 +367,15 @@ wordcloud_comparison <- function(x, min_size, max_size, max_words,
             axis.title.y = element_blank(),
             legend.position = "none",
             panel.grid.minor = element_blank(), 
-            panel.grid.major = element_blank())
+            panel.grid.major = element_blank()
+        )
+    
+    if (labelsize > 0) {
+        labels <- na.omit(labels)
+        plot <- plot + 
+            geom_text(data = labels, aes(x, y, label = word), color = labelcolor, 
+                      size = labels$mm, family = font, lineheight = 1, vjust = "center")
+    }
     
     return(plot)
 }
@@ -399,7 +395,6 @@ set_wordposition <- function(data) {
     
     group <- sort(unique(data$group))
     theta_limit <- seq(0, 2 * pi, length = length(group) + 1)
-    
     theta_step <- 0.1 / length(group)
     r_step <- 0.05
     x1 <- y1 <- 0.5
@@ -425,14 +420,10 @@ set_wordposition <- function(data) {
                     if (r > sqrt(0.5)) {
                         is_overlaped <- FALSE
                     }
-                    # theta <- theta + theta_step
-                    # r <- r + r_step * theta_step / (2 * pi)
-                    # x1 <- 0.5 + r * cos(theta)
-                    # y1 <- 0.5 + r * sin(theta)
-                    
+
                     theta <- theta + theta_step
                     if (theta > 2 * pi)
-                        theta <- theta - 2 * pi
+                        theta <- theta - 2 * pi # required for comparison cloud
                     r <- r + r_step * theta_step / (2 * pi)
                     x1 <- 0.5 + r * cos(theta)
                     y1 <- 0.5 + r * sin(theta)
@@ -463,7 +454,6 @@ set_wordsize <- function(data, rotation, spacing, max_size, min_size) {
     stopifnot('freq' %in% names(data))
     
     data$freq <- data$freq / max(data$freq)
-    size <- (max_size - min_size) * data$freq + min_size
     
     temp <- data.frame()
     for (i in seq_len(nrow(data))) {

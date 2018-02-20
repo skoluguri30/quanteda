@@ -282,17 +282,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // qatd_cpp_is_overlap
-RcppExport SEXP qatd_cpp_is_overlap(SEXP x11, SEXP y11, SEXP sw11, SEXP sh11, SEXP boxes1);
-RcppExport SEXP _quanteda_qatd_cpp_is_overlap(SEXP x11SEXP, SEXP y11SEXP, SEXP sw11SEXP, SEXP sh11SEXP, SEXP boxes1SEXP) {
+bool qatd_cpp_is_overlap(double x, double y, double w, double h, DataFrame words_);
+RcppExport SEXP _quanteda_qatd_cpp_is_overlap(SEXP xSEXP, SEXP ySEXP, SEXP wSEXP, SEXP hSEXP, SEXP words_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x11(x11SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type y11(y11SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type sw11(sw11SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type sh11(sh11SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type boxes1(boxes1SEXP);
-    rcpp_result_gen = Rcpp::wrap(qatd_cpp_is_overlap(x11, y11, sw11, sh11, boxes1));
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type w(wSEXP);
+    Rcpp::traits::input_parameter< double >::type h(hSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type words_(words_SEXP);
+    rcpp_result_gen = Rcpp::wrap(qatd_cpp_is_overlap(x, y, w, h, words_));
     return rcpp_result_gen;
 END_RCPP
 }
