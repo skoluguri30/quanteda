@@ -398,3 +398,16 @@ test_that("selection works with dfm with padding", {
     expect_silent(textstat_simil(mt, selection = c('doc2'), margin = 'documents'))
     
 })
+
+test_that("selection works with integer index", {
+    
+    d1 <- dfm(c("a b c", "a b c d"))
+    d2 <- dfm(letters[1:6])
+    dtest <- dfm_select(d1, d2)
+    
+    expect_equal(textstat_simil(dtest, margin = 'features', selection = 'a'),
+                 textstat_simil(dtest, margin = 'features', selection = 1))
+    
+    expect_equal(textstat_simil(dtest, margin = 'documents', selection = 'text2'),
+                 textstat_simil(dtest, margin = 'documents', selection = 2))
+})

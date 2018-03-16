@@ -70,7 +70,29 @@ textstat_dist.dfm <- function(x, selection = NULL,
     method <- char_tolower(method)
     
     if (!is.null(selection)) {
-        if (!is.character(selection)) {
+        if (is.character(selection) || is.numeric(selection)) {
+            if (margin == "features") {
+                if (is.numeric(selection)) {
+                    if (selection > nfeat(x))
+                        stop("The features specified by 'selection' do not exist.")
+                    selection <- featnames(x)[selection]
+                }
+                selection <- intersect(selection, featnames(x))
+                if (!length(selection))
+                    stop("The features specified by 'selection' do not exist.")
+                y <- x[, selection, drop = FALSE]
+            } else {
+                if (is.numeric(selection)) {
+                    if (selection > ndoc(x))
+                        stop("The documents specified by 'selection' do not exist.")
+                    selection <- docnames(x)[selection]
+                }
+                selection <- intersect(selection, docnames(x))
+                if (!length(selection))
+                    stop("The documents specified by 'selection' do not exist.")
+                y <- x[selection, , drop = FALSE]
+            }
+        } else {    
             if (!is.dfm(selection)) selection_dfm <- as.dfm(as.matrix(selection))
             if (margin == "features") {
                 if (ndoc(selection_dfm) != ndoc(x))
@@ -80,18 +102,6 @@ textstat_dist.dfm <- function(x, selection = NULL,
                 if (nfeat(selection_dfm) != nfeat(x))
                     stop("The vector/matrix specified by 'selection' must be conform to the object x in columns.")
                 y <- selection_dfm
-            }
-        } else {    
-            if (margin == "features") {
-                selection <- intersect(selection, featnames(x))
-                if (!length(selection))
-                    stop("The features specified by 'selection' do not exist.")
-                y <- x[, selection, drop = FALSE]
-            } else {
-                selection <- intersect(selection, docnames(x))
-                if (!length(selection))
-                    stop("The documents specified by 'selection' do not exist.")
-                y <- x[selection, , drop = FALSE]
             }
         }
     } else {
