@@ -5,7 +5,8 @@
 \title{Create a dictionary}
 \usage{
 dictionary(x, file = NULL, format = NULL, separator = " ",
-  tolower = TRUE, encoding = "auto")
+  valuetype = c("fixed", "glob", "regex"), tolower = TRUE,
+  encoding = "auto")
 }
 \arguments{
 \item{x}{a named list of character vector dictionary entries, including
@@ -26,6 +27,10 @@ software} \item{\code{"lexicoder"}}{format used by Lexicoder}
 
 \item{separator}{the character in between multi-word dictionary values. This
 defaults to \code{" "}.}
+
+\item{valuetype}{the type of pattern matching: \code{"glob"} for 
+"glob"-style wildcard expressions; \code{"regex"} for regular expressions;
+or \code{"fixed"} for exact matching. See \link{valuetype} for details.}
 
 \item{tolower}{if \code{TRUE}, convert all dictionary values to lowercase}
 

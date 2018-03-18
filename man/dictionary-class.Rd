@@ -58,6 +58,9 @@ consisting of a pattern match}
 
 \item{\code{concatenator}}{character object specifying space between multi-word
 values}
+
+\item{\code{valuetype}}{character object specifying a pattern match of type
+\link{valuetype} to be used by the dictionary values}
 }}
 
 \keyword{dictionary}

@@ -6,9 +6,12 @@
 #'   consisting of a pattern match
 #' @slot concatenator character object specifying space between multi-word
 #'   values
+#' @slot valuetype character object specifying a pattern match of type
+#'   \link{valuetype} to be used by the dictionary values
 setClass("dictionary2", contains = "list",
-         slots = c(concatenator = "character"),
-         prototype = prototype(concatenator = " "))
+         slots = c(concatenator = "character", valuetype = "character"),
+         prototype = prototype(concatenator = " ",
+                               valuetype = "fixed"))
 
 setValidity("dictionary2", function(object) {
     # does every element have a name? simply needs to pass
@@ -16,7 +19,7 @@ setValidity("dictionary2", function(object) {
 })
 
 # Internal function to chekc if dictionary eintries are all chracters
-validate_dictionary <- function(dict){
+validate_dictionary <- function(dict) {
     dict <- unclass(dict)
     if (is.null(names(dict))) {
         stop("Dictionary elements must be named: ",
@@ -30,6 +33,13 @@ validate_dictionary <- function(dict){
     if (is.null(dict@concatenator) || dict@concatenator == '') {
         stop("Concatenator cannot be null or an empty string")
     }
+    if (is.null(dict@valuetype) || dict@concatenator == '') {
+        stop("valuetype cannot be null or an empty string")
+    }
+    if (!dict@valuetype %in% c("glob", "fixed", "regex")) {
+        stop("invalid valuetype: must be glob, fixed, or regex")
+    }
+    
     check_entries(dict)
 }
 
@@ -186,6 +196,7 @@ setMethod("c",
 #'   \item{\code{"YAML"}}{the standard YAML format}}
 #' @param separator the character in between multi-word dictionary values. This
 #'   defaults to \code{" "}.
+#' @inheritParams valuetype
 #' @param encoding additional optional encoding value for reading in imported
 #'   dictionaries. This uses the \link{iconv} labels for encoding.  See the
 #'   "Encoding" section of the help for \link{file}.
@@ -250,7 +261,8 @@ setMethod("c",
 #' }
 #' @export
 dictionary <- function(x, file = NULL, format = NULL, 
-                       separator = " ", 
+                       separator = " ",
+                       valuetype = c("fixed", "glob", "regex"),
                        tolower = TRUE, encoding = "auto") {
     UseMethod("dictionary")
 }
@@ -259,9 +271,11 @@ dictionary <- function(x, file = NULL, format = NULL,
 #' @export
 dictionary.default <- function(x, file = NULL, format = NULL, 
                                separator = " ", 
+                               valuetype = c("fixed", "glob", "regex"),
                                tolower = TRUE, encoding = "auto") {
     if (!missing(x) & is.null(file))
         stop("x must be a list if file is not specified")
+    valuetype <- match.arg(valuetype)
     
     formats <- c(cat = "wordstat", 
                  dic = "LIWC", 
@@ -298,21 +312,25 @@ dictionary.default <- function(x, file = NULL, format = NULL,
     }
     if (tolower) x <- lowercase_dictionary_values(x)
     x <- merge_dictionary_values(x)
-    new("dictionary2", x, concatenator = " ") # keep concatenator attributes 
-                                              # for compatibility
+    
+    # keep concatenator attributes for compatibility
+    new("dictionary2", x, concatenator = " ", valuetype = valuetype) 
 }
 
 #' @export
 dictionary.dictionary2 <- function(x, file = NULL, format = NULL, 
                                    separator = " ", 
+                                   valuetype = c("fixed", "glob", "regex"),
                                    tolower = TRUE, encoding = "auto") {
     
     if (!is.null(file) | !is.null(format) | encoding != "auto")
         stop("cannot specify file, format, or encoding when x is a list")
     if (!is.character(separator) || stri_length(separator) == 0)
         stop("separator must be a non-empty character")
+    valuetype <- match.arg(valuetype)
     
     x@separator <- separator
+    x@valuetype <- valuetype
     if (tolower) x <- lowercase_dictionary_values(x)
     x <- merge_dictionary_values(x)
     return(x)
@@ -321,24 +339,27 @@ dictionary.dictionary2 <- function(x, file = NULL, format = NULL,
 #' @export
 dictionary.list <- function(x, file = NULL, format = NULL, 
                             separator = " ", 
+                            valuetype = c("fixed", "glob", "regex"),
                             tolower = TRUE, encoding = "auto") {
     if (!is.null(file) | !is.null(format) | encoding != "auto")
         stop("cannot specify file, format, or encoding when x is a list")
     if (!is.character(separator) || stri_length(separator) == 0)
         stop("separator must be a non-empty character")
+    valuetype <- match.arg(valuetype)
     x <- list2dictionary(x)
     if (tolower) x <- lowercase_dictionary_values(x)
     x <- replace_dictionary_values(x, separator, " ")
     x <- merge_dictionary_values(x)
-    new("dictionary2", x, concatenator = " ") # keep concatenator attributes 
-                                              # for compatibility
+    new("dictionary2", x, concatenator = " ", valuetype = valuetype)
 }
 
 #' @export
 dictionary.dictionary2 <- function(x, file = NULL, format = NULL, 
                                    separator = " ", 
+                                   valuetype = c("fixed", "glob", "regex"),
                                    tolower = TRUE, encoding = "auto") {
-    dictionary(as.list(x), separator = separator, tolower = tolower, 
+    dictionary(as.list(x), separator = separator, valuetype = valuetype,
+               tolower = tolower, 
                encoding = encoding)
 }
 
@@ -349,6 +370,7 @@ dictionary.dictionary2 <- function(x, file = NULL, format = NULL,
 #' @param x object to be coerced or checked; current legal values are a
 #'   data.frame with the fields \code{word} and \code{sentiment} (as per the 
 #'   \strong{tidytext} package)
+#' @inheritParams valuetype 
 #' @return \code{as.dictionary} returns a \link{dictionary} object.  This
 #'   conversion function differs from the \code{\link{dictionary}} constructor
 #'   function in that it converts an existing object rather than creates one
@@ -370,20 +392,20 @@ dictionary.dictionary2 <- function(x, file = NULL, format = NULL,
 #' as.dictionary(afinn)
 #' }
 #' 
-as.dictionary <- function(x) {
+as.dictionary <- function(x, valuetype = c("fixed", "glob", "regex")) {
     UseMethod("as.dictionary")
 }
 
 
 #' @export
-as.dictionary.default <- function(x) {
+as.dictionary.default <- function(x, valuetype = c("fixed", "glob", "regex")) {
     stop(friendly_class_undefined_message(class(x), "as.dictionary"))
 }
 
 #' @noRd
 #' @method as.dictionary data.frame
 #' @export
-as.dictionary.data.frame <- function(x) {
+as.dictionary.data.frame <- function(x, valuetype = c("fixed", "glob", "regex")) {
     if (!all(c("word", "sentiment") %in% names(x)))
         stop("data.frame must contain word and sentiment columns")
     if ("lexicon" %in% names(x) && length(unique(x[["lexicon"]])) > 1)

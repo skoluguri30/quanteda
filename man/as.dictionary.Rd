@@ -5,7 +5,7 @@
 \alias{is.dictionary}
 \title{Coercion and checking functions for dictionary objects}
 \usage{
-as.dictionary(x)
+as.dictionary(x, valuetype = c("fixed", "glob", "regex"))
 
 is.dictionary(x)
 }
@@ -13,6 +13,10 @@ is.dictionary(x)
 \item{x}{object to be coerced or checked; current legal values are a
 data.frame with the fields \code{word} and \code{sentiment} (as per the 
 \strong{tidytext} package)}
+
+\item{valuetype}{the type of pattern matching: \code{"glob"} for 
+"glob"-style wildcard expressions; \code{"regex"} for regular expressions;
+or \code{"fixed"} for exact matching. See \link{valuetype} for details.}
 }
 \value{
 \code{as.dictionary} returns a \link{dictionary} object.  This
