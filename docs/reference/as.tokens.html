@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>coercion, checking, and combining functions for tokens objects — as.tokens • quanteda</title>
+<title>Coercion, checking, and combining functions for tokens objects — as.tokens • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,12 +34,24 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-144616-24', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -46,23 +59,88 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">quanteda</a>
+      <a class="navbar-brand" href="../index.html">Quanteda</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Quick Start
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_cn.html">快速入门指南</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_ja.html">クイック・スタートガイド</a>
+    </li>
+  </ul>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="../articles/pkgdown/comparison.html">Features</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/examples/phrase.html">Multi-word expressions</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/plotting.html">Textual data visualization</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/lsa.html">Latent Semantic Analysis (LSA)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/chinese.html">Chinese text analysis</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/twitter.html">Social media analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Replications
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/replication/digital-humanities.html">Text Analysis with R for Students of Literature</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/text2vec.html">Word embedding (word2vec)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/qss.html">Quantitative Social Science Ch. 5.1</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../articles/design.html">Design</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/quanteda/quanteda">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -74,19 +152,23 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>coercion, checking, and combining functions for tokens objects</h1>
+    <h1>Coercion, checking, and combining functions for tokens objects</h1>
     </div>
 
     
-    <p>Coercion functions to and from <a href='tokens.html'>tokens</a> objects, checks for whether an
-object is a <a href='tokens.html'>tokens</a> object, and functions to combine <a href='tokens.html'>tokens</a>
+    <p>Coercion functions to and from <a href='tokens.html'>tokens</a> objects, checks for whether an 
+object is a <a href='tokens.html'>tokens</a> object, and functions to combine <a href='tokens.html'>tokens</a> 
 objects.</p>
     
 
-    <pre class="usage">as.tokens(x, concatenator = "_")
+    <pre class="usage">as.tokens(x, concatenator = "_", ...)
 
 # S3 method for list
-as.tokens(x, concatenator = "_")
+as.tokens(x, concatenator = "_", ...)
+
+# S3 method for spacyr_parsed
+as.tokens(x, concatenator = "/",
+  include_pos = c("none", "pos", "tag"), use_lemma = FALSE, ...)
 
 # S3 method for tokens
 as.list(x, ...)
@@ -114,11 +196,25 @@ c(...)</pre>
     </tr>
     <tr>
       <th>concatenator</th>
-      <td><p>character between multi-word expressions, default is _ (underscore) character</p></td>
+      <td><p>character between multi-word expressions, default is the
+underscore character.  See Details.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>for c.tokens only, <a href='tokens.html'>tokens</a> objects to be concatenated</p></td>
+      <td><p>additional arguments used by specific methods.  For
+c.tokens, these are the <a href='tokens.html'>tokens</a> objects to be concatenated.</p></td>
+    </tr>
+    <tr>
+      <th>include_pos</th>
+      <td><p>character; whether and which part-of-speech tag to use:
+<code>"none"</code> do not use any part of speech indicator, <code>"pos"</code> use the
+<code>pos</code> variable, <code>"tag"</code> use the <code>tag</code> variable.  The POS
+will be added to the token after <code>"concatenator"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>use_lemma</th>
+      <td><p>logical; if <code>TRUE</code>, use the lemma rather than the raw
+token</p></td>
     </tr>
     <tr>
       <th>recursive</th>
@@ -142,16 +238,16 @@ c(...)</pre>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>as.tokens</code> returns a quanteda <a href='tokens.html'>tokens</a> object
+    <p><code>as.tokens</code> returns a quanteda <a href='tokens.html'>tokens</a> object.
 
 <code>as.list</code> returns a simple list of characters from a
-  <a href='tokens.html'>tokens</a> object
+  <a href='tokens.html'>tokens</a> object.
 
 <code>unlist</code> returns a simple vector of characters from a 
-  <a href='tokens.html'>tokens</a> object
+  <a href='tokens.html'>tokens</a> object.
 
 <code>as.character</code> returns a character vector from a 
-  <a href='tokens.html'>tokens</a> object
+  <a href='tokens.html'>tokens</a> object.
 
 <code>is.tokens</code> returns <code>TRUE</code> if the object is of class
   tokens, <code>FALSE</code> otherwise.
@@ -159,28 +255,51 @@ c(...)</pre>
 <code>c(...)</code> and <code>+</code> return a tokens object whose documents
   have been added as a single sequence of documents.</p>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The <code>concatenator</code> is used to automatically generate dictionary
+  values for multi-word expressions in <code><a href='tokens_lookup.html'>tokens_lookup</a></code> and
+  <code><a href='dfm_lookup.html'>dfm_lookup</a></code>. The underscore character is commonly used to join
+  elements of multi-word expressions (e.g. "piece_of_cake", "New_York"), but
+  other characters (e.g. whitespace " " or a hyphen "-") can also be used. 
+  In those cases, users have to tell the system what is the concatenator in 
+  your tokens so that the conversion knows to treat this character as the
+  inter-word delimiter, when reading in the elements that will become the
+  tokens.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># combining tokens</span>
-<span class='no'>toks1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='fu'>c</span>(<span class='st'>"a b c d e"</span>, <span class='st'>"f g h"</span>))
-<span class='no'>toks2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='fu'>c</span>(<span class='st'>"1 2 3"</span>))
+    <pre class="examples"><div class='input'>
+<span class='co'># create tokens object from list of characters with custom concatenator</span>
+<span class='no'>dict</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='fu'>list</span>(<span class='kw'>country</span> <span class='kw'>=</span> <span class='st'>"United States"</span>,
+                   <span class='kw'>sea</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Atlantic Ocean"</span>, <span class='st'>"Pacific Ocean"</span>)))
+<span class='no'>lis</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='fu'>c</span>(<span class='st'>"The"</span>, <span class='st'>"United-States"</span>, <span class='st'>"has"</span>, <span class='st'>"the"</span>, <span class='st'>"Atlantic-Ocean"</span>,
+              <span class='st'>"and"</span>, <span class='st'>"the"</span>, <span class='st'>"Pacific-Ocean"</span>, <span class='st'>"."</span>))
+<span class='no'>toks</span> <span class='kw'>&lt;-</span> <span class='fu'>as.tokens</span>(<span class='no'>lis</span>, <span class='kw'>concatenator</span> <span class='kw'>=</span> <span class='st'>"-"</span>)
+<span class='fu'><a href='tokens_lookup.html'>tokens_lookup</a></span>(<span class='no'>toks</span>, <span class='no'>dict</span>)</div><div class='output co'>#&gt; tokens from 1 document.
+#&gt; text1 :
+#&gt; [1] "country" "sea"     "sea"    
+#&gt; </div><div class='input'>
+<span class='co'># combining tokens</span>
+<span class='no'>toks1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='fu'>c</span>(<span class='kw'>doc1</span> <span class='kw'>=</span> <span class='st'>"a b c d e"</span>, <span class='kw'>doc2</span> <span class='kw'>=</span> <span class='st'>"f g h"</span>))
+<span class='no'>toks2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='fu'>c</span>(<span class='kw'>doc3</span> <span class='kw'>=</span> <span class='st'>"1 2 3"</span>))
 <span class='no'>toks1</span> + <span class='no'>toks2</span></div><div class='output co'>#&gt; tokens from 3 documents.
-#&gt; Component 1 :
+#&gt; doc1 :
 #&gt; [1] "a" "b" "c" "d" "e"
 #&gt; 
-#&gt; Component 2 :
+#&gt; doc2 :
 #&gt; [1] "f" "g" "h"
 #&gt; 
-#&gt; Component 3 :
+#&gt; doc3 :
 #&gt; [1] "1" "2" "3"
 #&gt; </div><div class='input'><span class='fu'>c</span>(<span class='no'>toks1</span>, <span class='no'>toks2</span>)</div><div class='output co'>#&gt; tokens from 3 documents.
-#&gt; Component 1 :
+#&gt; doc1 :
 #&gt; [1] "a" "b" "c" "d" "e"
 #&gt; 
-#&gt; Component 2 :
+#&gt; doc2 :
 #&gt; [1] "f" "g" "h"
 #&gt; 
-#&gt; Component 3 :
+#&gt; doc3 :
 #&gt; [1] "1" "2" "3"
 #&gt; </div><div class='input'>
 </div></pre>
@@ -191,6 +310,8 @@ c(...)</pre>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

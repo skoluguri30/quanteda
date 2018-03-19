@@ -1,30 +1,4 @@
-test_that("Test quanteda:::mktemp function for test dirs",{
-    filename <- quanteda:::mktemp()
-    expect_true(file.exists(filename))
-    filename2 <- quanteda:::mktemp()
-    expect_true(file.exists(filename2))
-    expect_false(filename == filename2)
-    
-    # test directory parameter
-    dirname <- quanteda:::mktemp(directory=T)
-    expect_true(dir.exists(dirname))
-    
-    # test prefix parameter
-    filename <- quanteda:::mktemp(prefix='testprefix')
-    expect_equal(
-        substr(basename(filename), 1, 10),
-        'testprefix'
-    )
-    
-    # test that a new filename will be given if the original already exists
-    set.seed(0)
-    original_filename <- quanteda:::mktemp()
-    set.seed(0)
-    new_filename <- quanteda:::mktemp()
-    expect_false(original_filename == new_filename)
-    expect_true(file.exists(original_filename))
-    expect_true(file.exists(new_filename))
-})
+context("test utils")
 
 test_that("message_select works as expected", {
     expect_message(
@@ -79,66 +53,62 @@ test_that("message_select works as expected", {
     )
 })
 
+test_that("pipes work", {
+    expect_true(!"package:magrittr" %in% search())
+    expect_equal(
+        tokens(char_tolower("A B C")),
+        tokens("A B C") %>% tokens_tolower()
+    )
+})
 
-# test_that("features2list works as expected", {
-#     
-#     target <- list(c("United", "States"), "Congress", c("feder*", "gov*"))
-#     # character
-#     expect_equal(quanteda:::features2list(c("United States", "Congress", "feder* gov*")),
-#                  as.list(c("United States", "Congress", "feder* gov*")))
-#     expect_equivalent(phrase(c("United States", "Congress", "feder* gov*")),
-#                       target)
-#     # list
-#     expect_equal(quanteda:::features2list(list(c("United", "States"), c("Congress"), c("feder*", "gov*"))),
-#                  list(c("United", "States"), c("Congress"), c("feder*", "gov*")))
-#     expect_equivalent(phrase(list(c("United", "States"), c("Congress"), c("feder*", "gov*"))),
-#                  list(c("United", "States"), c("Congress"), c("feder*", "gov*")))
-#     
-#     # tokens
-#     expect_equal(quanteda:::features2list(tokens(c("United States", "Congress", "feder* gov*"), what = "fasterword")),
-#                  target)
-#     expect_equivalent(phrase(tokens(c("United States", "Congress", "feder* gov*"), what = "fasterword")),
-#                       target)
-#     # dictionary
-#     dict <- dictionary(list(country = c("United States"), 
-#                             institution = c("Congress", "feder* gov*")), 
-#                        tolower = FALSE)
-#     expect_equal(quanteda:::features2list(dict),
-#                  list(c("United States"), "Congress", c("feder* gov*")))
-#     expect_equivalent(phrase(dict), target)
-# 
-#     # collocations
-#     colls <- textstat_collocations(tokens(c("United States", "Congress", "federal government")), min_count = 1, method = "lr")
-#     expect_equal(quanteda:::features2list(colls),
-#                  list(c("federal government"), c("United States")))
-#     expect_equivalent(phrase(colls),
-#                       list(c("federal", "government"), c("United", "States")))
-# })
-# 
-# test_that("features2vector works as expected", {
-#     
-#     # character
-#     expect_silent(quanteda:::features2vector(c("United States", "Congress", "feder* gov*")))
-#     expect_silent(quanteda:::features2vector(c("America", "Congress", "gov*")))
-#                    
-#     # list
-#     # expect_warning(quanteda:::features2vector(list(c("United", "States"), c("Congress"), c("feder*", "gov*"))))
-#     expect_silent(quanteda:::features2vector(list("America", "Congress", "gov*")))
-#                    
-#     # tokens
-#     #expect_warning(quanteda:::features2vector(tokens(c("United States", "Congress", "feder* gov*"), what = "fasterword")))
-#     expect_silent(quanteda:::features2vector(tokens(c("America", "Congress", "gov*"), what = "fasterword")))
-#     
-#     # dictionary
-#     expect_silent(quanteda:::features2vector(dictionary(list(country = c("United States"), 
-#                                                              institution = c("Congress", "feder* gov*")), tolower = FALSE)))
-#     expect_silent(quanteda:::features2vector(dictionary(list(country = c("America"), 
-#                                                               institution = c("Congress", "gov*")), tolower = FALSE)))
-#     
-#     # collocations
-#     colls <- textstat_collocations(tokens(c("United States", "Congress", "federal government")), min_count = 1)
-#     # expect_warning(quanteda:::features2vector(colls))
-# })
+test_that("friendly_class_undefined_message", {
+    expect_error(
+        as.tokens(data_dfm_lbgexample),
+        "as.tokens\\(\\) only works on.*list.*spacyr_parsed.*objects"
+    )
+})
 
 
+test_that("pattern2id is working with collocations", {
+    
+    txt <- c(". . . . a b c . . a b c . . . c d e",
+             "a b . . a b . . a b . . a b . a b",
+             "b c d . . b c . b c . . . b c")
+    toks <- tokens(txt)
+    type <- types(toks)
+    col <- textstat_collocations(toks, size = 2:3)
+    ids <- quanteda:::pattern2id(col, type, 'fixed', TRUE)
+    expect_equal(col$collocation, vapply(ids, function(x, y) paste0(y[x], collapse = ' '), character(1), type))
+    
+})
+
+test_that("pattern2id is working with a list", {
+    
+    type <- letters
+    pat <- c('a b', 'c d', 'e f g')
+    ids <- quanteda:::pattern2id(phrase(pat), type, 'fixed', TRUE)
+    expect_equal(pat, vapply(ids, function(x, y) paste0(y[x], collapse = ' '), character(1), type))
+    
+})
+
+test_that("pattern2id is working with empty patterns", {
+    
+    col <- data.frame()
+    class(col) <- c('collocations', 'data.frame')
+    pat <- list()
+    expect_silent(quanteda:::pattern2id(col, types(toks), 'fixed', TRUE))
+    expect_silent(quanteda:::pattern2id(pat, types(toks), 'fixed', TRUE))
+    
+})
+
+test_that("check_font is working", {
+    # skip_on_os('windows')
+    # skip_on_os('mac')
+    skip_on_cran()
+    expect_error(quanteda:::check_font('XXXXX'), 'XXXXX is not found on your system') 
+    # expect_equal(quanteda:::check_font('Ubuntu'), 'Ubuntu')
+    expect_equal(quanteda:::check_font('sans'), 'sans')
+    expect_equal(quanteda:::check_font('serif'), 'serif')
+    expect_equal(quanteda:::check_font('mono'), 'mono')
+})
 

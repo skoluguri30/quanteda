@@ -2,7 +2,7 @@
 % Please edit documentation in R/tokens_compound.R
 \name{tokens_compound}
 \alias{tokens_compound}
-\title{convert token sequences into compound tokens}
+\title{Convert token sequences into compound tokens}
 \usage{
 tokens_compound(x, pattern, concatenator = "_", valuetype = c("glob",
   "regex", "fixed"), case_insensitive = TRUE, join = TRUE)
@@ -19,7 +19,7 @@ recommended since it will not be removed during normal cleaning and
 tokenization (while nearly all other punctuation characters, at least those
 in the Unicode punctuation class [P] will be removed).}
 
-\item{valuetype}{how to interpret keyword expressions: \code{"glob"} for 
+\item{valuetype}{the type of pattern matching: \code{"glob"} for 
 "glob"-style wildcard expressions; \code{"regex"} for regular expressions;
 or \code{"fixed"} for exact matching. See \link{valuetype} for details.}
 
@@ -49,18 +49,18 @@ myseqs <- list(c("tax"), c("income", "tax"), c("capital", "gains", "tax"), c("in
 dfm(cw)
 
 # when used as a dictionary for dfm creation
-mydict <- dictionary(list(tax=c("tax", "income tax", "capital gains tax", "inheritance tax*")))
-(cw2 <- tokens_compound(mytoks, mydict))
+mydict1 <- dictionary(list(tax=c("tax", "income tax", "capital gains tax", "inheritance tax*")))
+(cw2 <- tokens_compound(mytoks, mydict1))
 
 # to pick up "taxes" in the second text, set valuetype = "regex"
-(cw3 <- tokens_compound(mytoks, mydict, valuetype = "regex"))
+(cw3 <- tokens_compound(mytoks, mydict1, valuetype = "regex"))
 
 # dictionaries w/glob matches
-myDict <- dictionary(list(negative = c("bad* word*", "negative", "awful text"),
+mydict2 <- dictionary(list(negative = c("bad* word*", "negative", "awful text"),
                           positive = c("good stuff", "like? th??")))
 toks <- tokens(c(txt1 = "I liked this, when we can use bad words, in awful text.",
                  txt2 = "Some damn good stuff, like the text, she likes that too."))
-tokens_compound(toks, myDict)
+tokens_compound(toks, mydict2)
 
 # with collocations
 cols <- 
@@ -70,5 +70,5 @@ toks <- tokens("The new law included capital gains taxes and inheritance taxes."
 tokens_compound(toks, cols)
 }
 \author{
-Kenneth Benoit (R) and Kohei Watanabe (C++)
+Kenneth Benoit and Kohei Watanabe
 }

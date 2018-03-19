@@ -51,40 +51,14 @@ test_that("test that ngrams produces the results from Guthrie 2006", {
       )
 
       expect_equivalent(setdiff(
-          as.list(suppressWarnings(ngrams(toks, n = 2:3)))[[1]],
+          as.list(suppressWarnings(tokens_ngrams(toks, n = 2:3)))[[1]],
           c(bi_grams, tri_grams)
       ), character(0)
       )
 })
 
-test_that("test `tokens_ngrams` on tokenized texts", {
-      toks <- tokenize(c('insurgents killed in ongoing fighting', 'insurgents killed in ongoing fighting'))
-      ngms <- tokens_ngrams(toks, 2, 0)
-      suppressWarnings(ngms_old <- ngrams(toks, 2, 0))
-      ngms_true <- list(
-          c('insurgents_killed', 'killed_in', 'in_ongoing', 'ongoing_fighting'),
-          c('insurgents_killed', 'killed_in', 'in_ongoing', 'ongoing_fighting')
-      )
-        
-      expect_that(
-          ngms,
-          is_a('tokenizedTexts')
-      )
-      
-      expect_equivalent(
-          as.list(ngms),
-          ngms_true
-      )
-      
-      expect_equivalent(
-          as.list(ngms_old),
-          ngms_true
-      )
-
-})
-
 test_that("test `tokens_ngrams` on characters", {
-    ngms <- tokens_ngrams(c('insurgents','killed', 'in', 'ongoing', 'fighting'))
+    ngms <- quanteda:::tokens_ngrams.character(c('insurgents', 'killed', 'in', 'ongoing', 'fighting'))
     charNgms <- char_ngrams(c('insurgents','killed', 'in', 'ongoing', 'fighting'))
     expect_equivalent(
         ngms,
@@ -96,10 +70,10 @@ test_that("test `tokens_ngrams` on characters", {
         c('insurgents_killed', 'killed_in', 'in_ongoing', 'ongoing_fighting')
     )
     
-    expect_warning(tokens_ngrams(c('insurgents killed', 'in', 'ongoing', 'fighting')), 
-                   "whitespace detected: you may need to run tokens\\(\\) first")
+    expect_warning(quanteda:::tokens_ngrams.character('insurgents killed', 'in', 'ongoing', 'fighting'), 
+                 "whitespace detected: you may need to run tokens\\(\\) first")
     
-    expect_warning(tokens_ngrams(c('insurgents killed', 'in', 'ongoing', 'fighting'), n = 1, skip = 1), 
+    expect_warning(quanteda:::tokens_ngrams.character(c('insurgents killed in ongoing fighting'), n = 1, skip = 1), 
                    "skip argument ignored for n = 1")
 })
 

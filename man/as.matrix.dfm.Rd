@@ -3,34 +3,41 @@
 \name{as.matrix.dfm}
 \alias{as.matrix.dfm}
 \alias{as.data.frame.dfm}
-\title{coerce a dfm to a matrix or data.frame}
+\title{Coerce a dfm to a matrix or data.frame}
 \usage{
 \method{as.matrix}{dfm}(x, ...)
 
-\method{as.data.frame}{dfm}(x, row.names = NULL, optional = FALSE, ...)
+\method{as.data.frame}{dfm}(x, row.names = NULL, ...,
+  document = docnames(x), check.names = FALSE)
 }
 \arguments{
 \item{x}{dfm to be coerced}
 
-\item{...}{not used}
+\item{...}{unused}
 
-\item{row.names}{if \code{FALSE}, do not set the row names of the data.frame
-to the docnames of the dfm (default); or a vector of values to which the
-row names will be set.}
+\item{row.names}{\code{NULL} or a character vector giving the row
+    names for the data frame.  Missing values are not allowed.}
 
-\item{optional}{not applicable to this method}
+\item{document}{optional first column of mode \code{character} in the
+data.frame, defaults \code{docnames(x)}.  Set to \code{NULL} to exclude.}
+
+\item{check.names}{logical.  If \code{TRUE} then the names of the
+    variables in the data frame are checked to ensure that they are
+    syntactically valid variable names and are not duplicated.
+    If necessary they are adjusted (by \code{\link{make.names}})
+    so that they are.}
 }
 \description{
 Methods for coercing a \link{dfm} object to a matrix or data.frame object.
 }
 \examples{
 # coercion to matrix
-mydfm <- dfm(data_corpus_inaugural)
-str(as.matrix(mydfm))
+as.matrix(data_dfm_lbgexample[, 1:10])
 
 # coercion to a data.frame
-inaugDfm <- dfm(data_corpus_inaugural[1:5])
-as.data.frame(inaugDfm[, 1:10])
-as.data.frame(inaugDfm[, 1:10], row.names = FALSE)
+as.data.frame(data_dfm_lbgexample[, 1:15])
+as.data.frame(data_dfm_lbgexample[, 1:15], document = NULL)
+as.data.frame(data_dfm_lbgexample[, 1:15], document = NULL, 
+              row.names = docnames(data_dfm_lbgexample))
 }
 \keyword{dfm}

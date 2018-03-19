@@ -2,7 +2,7 @@
 % Please edit documentation in R/tokens_group.R
 \name{tokens_group}
 \alias{tokens_group}
-\title{recombine documents tokens by groups}
+\title{Recombine documents tokens by groups}
 \usage{
 tokens_group(x, groups = NULL)
 }
@@ -15,7 +15,7 @@ coerced into a factor equal in length or rows to the number of documents.
 See \link{groups} for details.}
 }
 \description{
-recombine documents tokens by groups
+Recombine documents tokens by groups
 }
 \examples{
 # dfm_group examples
@@ -24,5 +24,7 @@ corp <- corpus(c("a a b", "a b c c", "a c d d", "a c c d"),
 toks <- tokens(corp)
 quanteda:::tokens_group(toks, groups = "grp")
 quanteda:::tokens_group(toks, groups = c(1, 1, 2, 2))
+quanteda:::tokens_group(toks, groups = factor(c(1, 1, 2, 2), levels = 1:3))
 }
 \keyword{internal}
+\keyword{tokens}

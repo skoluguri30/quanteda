@@ -3,22 +3,27 @@
 \name{dfm_select}
 \alias{dfm_select}
 \alias{dfm_remove}
+\alias{dfm_keep}
 \alias{fcm_select}
 \alias{fcm_remove}
-\title{select features from a dfm or fcm}
+\alias{fcm_keep}
+\title{Select features from a dfm or fcm}
 \usage{
 dfm_select(x, pattern = NULL, selection = c("keep", "remove"),
   valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
-  min_nchar = 1, max_nchar = 63, verbose = quanteda_options("verbose"),
-  ...)
+  min_nchar = 1L, max_nchar = 79L, verbose = quanteda_options("verbose"))
 
-dfm_remove(x, pattern = NULL, ...)
+dfm_remove(x, ...)
+
+dfm_keep(x, ...)
 
 fcm_select(x, pattern = NULL, selection = c("keep", "remove"),
   valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
-  verbose = TRUE, ...)
+  verbose = quanteda_options("verbose"), ...)
 
-fcm_remove(x, pattern, ...)
+fcm_remove(x, pattern = NULL, ...)
+
+fcm_keep(x, pattern = NULL, ...)
 }
 \arguments{
 \item{x}{the \link{dfm} or \link{fcm} object whose features will be selected}
@@ -28,29 +33,33 @@ fcm_remove(x, pattern, ...)
 
 \item{selection}{whether to \code{keep} or \code{remove} the features}
 
-\item{valuetype}{how to interpret keyword expressions: \code{"glob"} for 
-"glob"-style wildcard expressions; \code{"regex"} for regular expressions;
-or \code{"fixed"} for exact matching. See \link{valuetype} for details.}
+\item{valuetype}{the type of pattern matching: \code{"glob"} for "glob"-style
+  wildcard expressions; \code{"regex"} for regular expressions; or
+  \code{"fixed"} for exact matching. See \link{valuetype} for details.
+
+  For \code{dfm_select}, \code{pattern} may also be a \link{dfm}; see Value
+  below.}
 
 \item{case_insensitive}{ignore the case of dictionary values if \code{TRUE}}
 
 \item{min_nchar, max_nchar}{numerics specifying the minimum and maximum length
-in characters for features to be removed or kept; defaults are 1 and 
+in characters for features to be removed or kept; defaults are 1 and
 \href{https://en.wikipedia.org/wiki/Donaudampfschiffahrtselektrizitätenhauptbetriebswerkbauunterbeamtengesellschaft}{79}.
- (Set \code{max_nchar} to \code{NULL} for no upper limit.) These are 
-applied after (and hence, in addition to) any selection based on pattern 
+ (Set \code{max_nchar} to \code{NULL} for no upper limit.) These are
+applied after (and hence, in addition to) any selection based on pattern
 matches.}
 
-\item{verbose}{if \code{TRUE} print message about how many pattern were 
+\item{verbose}{if \code{TRUE} print message about how many pattern were
 removed}
 
-\item{...}{supplementary arguments passed to the underlying functions in 
-\code{\link[stringi]{stri_detect_regex}}}
+\item{...}{used only for passing arguments from \code{dfm_remove} or
+\code{dfm_keep} to \code{dfm_select}. Cannot include
+\code{selection}.}
 }
 \value{
-A \link{dfm} or \link{fcm} object, after the feature selection has 
+A \link{dfm} or \link{fcm} object, after the feature selection has
   been applied.
-  
+
   When \code{pattern} is a \link{dfm} object, then the returned object will
   be identical in its feature set to the dfm supplied as the \code{pattern}
   argument. This means that any features in \code{x} not in the dfm provided
@@ -58,45 +67,49 @@ A \link{dfm} or \link{fcm} object, after the feature selection has
   dfm supplied as \code{pattern} but not found in \code{x} will be added with
   all zero counts.  Because selecting on a dfm is designed to produce a
   selected dfm with an exact feature match, when \code{pattern} is a
-  \link{dfm} object, then the following settings are always used: 
+  \link{dfm} object, then the following settings are always used:
   \code{case_insensitive = FALSE}, and \code{valuetype = "fixed"}.
-  
-  Selecting on a \link{dfm} is useful when you have trained a model on one 
-  dfm, and need to project this onto a test set whose features must be 
+
+  Selecting on a \link{dfm} is useful when you have trained a model on one
+  dfm, and need to project this onto a test set whose features must be
   identical.  It is also used in \code{\link{bootstrap_dfm}}.  See examples.
 }
 \description{
-This function selects or discards features from a \link{dfm} or \link{fcm}, 
-based on feature name matches with \code{pattern}.  The most common usages 
-are to eliminate features from a dfm already constructed, such as stopwords, 
+This function selects or removes features from a \link{dfm} or \link{fcm},
+based on feature name matches with \code{pattern}.  The most common usages
+are to eliminate features from a dfm already constructed, such as stopwords,
 or to select only terms of interest from a dictionary.
 }
 \details{
-\code{dfm_remove} and \code{fcm_remove} are simply a convenience 
-  wrappers to calling \code{dfm_select} and \code{fcm_select} with 
+\code{dfm_remove} and \code{fcm_remove} are simply a convenience
+  wrappers to calling \code{dfm_select} and \code{fcm_select} with
   \code{selection = "remove"}.
+
+  \code{dfm_keep} and \code{fcm_keep} are simply a convenience wrappers to
+  calling \code{dfm_select} and \code{fcm_select} with \code{selection =
+  "keep"}.
 }
 \note{
-This function selects features based on their labels.  To select 
-  features based on the values of the document-feature matrix, use 
+This function selects features based on their labels.  To select
+  features based on the values of the document-feature matrix, use
   \code{\link{dfm_trim}}.
 }
 \examples{
-myDfm <- dfm(c("My Christmas was ruined by your opposition tax plan.", 
+my_dfm <- dfm(c("My Christmas was ruined by your opposition tax plan.",
                "Does the United_States or Sweden have more progressive taxation?"),
              tolower = FALSE, verbose = FALSE)
-mydict <- dictionary(list(countries = c("United_States", "Sweden", "France"),
+my_dict <- dictionary(list(countries = c("United_States", "Sweden", "France"),
                           wordsEndingInY = c("by", "my"),
                           notintext = "blahblah"))
-dfm_select(myDfm, mydict)
-dfm_select(myDfm, mydict, case_insensitive = FALSE)
-dfm_select(myDfm, c("s$", ".y"), selection = "keep", valuetype = "regex")
-dfm_select(myDfm, c("s$", ".y"), selection = "remove", valuetype = "regex")
-dfm_select(myDfm, stopwords("english"), selection = "keep", valuetype = "fixed")
-dfm_select(myDfm, stopwords("english"), selection = "remove", valuetype = "fixed")
+dfm_select(my_dfm, my_dict)
+dfm_select(my_dfm, my_dict, case_insensitive = FALSE)
+dfm_select(my_dfm, c("s$", ".y"), selection = "keep", valuetype = "regex")
+dfm_select(my_dfm, c("s$", ".y"), selection = "remove", valuetype = "regex")
+dfm_select(my_dfm, stopwords("english"), selection = "keep", valuetype = "fixed")
+dfm_select(my_dfm, stopwords("english"), selection = "remove", valuetype = "fixed")
 
 # select based on character length
-dfm_select(myDfm, min_nchar = 5)
+dfm_select(my_dfm, min_nchar = 5)
 
 # selecting on a dfm
 txts <- c("This is text one", "The second text", "This is text three")

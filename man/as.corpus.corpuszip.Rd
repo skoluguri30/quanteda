@@ -2,7 +2,7 @@
 % Please edit documentation in R/corpuszip.R
 \name{as.corpus.corpuszip}
 \alias{as.corpus.corpuszip}
-\title{coerce a compressed corpus to a standard corpus}
+\title{Coerce a compressed corpus to a standard corpus}
 \usage{
 \method{as.corpus}{corpuszip}(x)
 }
@@ -10,5 +10,6 @@
 \item{x}{a compressed \link{corpus} object}
 }
 \description{
-Recast a compressed corpus object into a standard (uncompressed) corpus object.
+Recast a compressed corpus object into a standard (uncompressed) corpus
+object.
 }

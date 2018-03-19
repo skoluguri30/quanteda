@@ -3,36 +3,37 @@
 \name{head.dfm}
 \alias{head.dfm}
 \alias{tail.dfm}
-\title{return the first or last part of a dfm}
+\title{Return the first or last part of a dfm}
 \usage{
-\method{head}{dfm}(x, n = 6L, nfeature = 6L, ...)
+\method{head}{dfm}(x, n = 6L, nf = nfeat(x), ...)
 
-\method{tail}{dfm}(x, n = 6L, nfeature = 6L, ...)
+\method{tail}{dfm}(x, n = 6L, nf = nfeat(x), ...)
 }
 \arguments{
 \item{x}{a dfm object}
 
-\item{n}{a single integer.  If positive, size for the resulting object: 
-number of first/last documents for the dfm. If negative, all but the n 
-last/first number of documents of x.}
+\item{n}{a single, positive integer.  If positive, size for the resulting
+object: number of first/last documents for the dfm. If negative, all but
+the n last/first number of documents of x.}
 
-\item{nfeature}{the number of features to return, where the resulting object 
-will contain the first \code{ncol} features}
+\item{nf}{the number of features to return, where the resulting object 
+will contain the first \code{ncol} features; default is all features}
 
 \item{...}{additional arguments passed to other functions}
 }
 \value{
 A \link{dfm} class object corresponding to the subset defined 
-  by \code{n} and \code{nfeature}.
+  by \code{n} and \code{nfeat}.
 }
 \description{
 For a \link{dfm} object, returns the first or last \code{n} documents 
-and first \code{ncol} features for inspection.
+and first \code{nfeat} features.
 }
 \examples{
-myDfm <- dfm(data_corpus_inaugural, ngrams = 2, verbose = FALSE)
-head(myDfm)
-tail(myDfm)
-tail(myDfm, nfeature = 4)
+head(data_dfm_lbgexample, 3, nf = 5)
+head(data_dfm_lbgexample, -4)
+
+tail(data_dfm_lbgexample)
+tail(data_dfm_lbgexample, n = 3, nf = 4)
 }
 \keyword{dfm}

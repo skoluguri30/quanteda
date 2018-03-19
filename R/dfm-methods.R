@@ -1,15 +1,11 @@
-####################################################################
-## methods for dfm objects
-##
-## Ken Benoit
-####################################################################
+# featnames -----------
 
-#' get the feature labels from a dfm
+#' Get the feature labels from a dfm
 #' 
 #' Get the features from a document-feature matrix, which are stored as the
 #' column names of the \link{dfm} object.
 #' @param x the dfm whose features will be extracted
-#' @return character vector of the features
+#' @return character vector of the feature labels
 #' @examples
 #' inaugDfm <- dfm(data_corpus_inaugural, verbose = FALSE)
 #' 
@@ -35,6 +31,7 @@ featnames.NULL <- function(x) {
 #' @export
 #' @noRd
 featnames.dfm <- function(x) {
+    x <- as.dfm(x)
     if (is.null(colnames(x))) {
         character()
     } else {
@@ -42,23 +39,14 @@ featnames.dfm <- function(x) {
     }
 }
 
-#' deprecated function for featnames
-#' 
-#' Deprecated function equivalent to \code{\link{featnames}}.  Soon to be eliminated.
-#' @param x a \link{dfm}
-#' @keywords internal deprecated
-#' @seealso \code{\link{featnames}}
-#' @export
-features <- function(x) {
-    .Deprecated("featnames")
-    featnames(x)
-}
+# docnames -----------
 
 #' @noRd
 #' @export
 docnames.dfm <- function(x) {
+    x <- as.dfm(x)
     if (is.null(rownames(x))) {
-        character()
+        paste0('text', seq_len(ndoc(x)))
     } else {
         rownames(x)
     }
@@ -70,25 +58,36 @@ docnames.NULL <- function(x) {
     NULL
 }
 
-#' coercion and checking functions for dfm objects
-#' 
-#' Check for a dfm, or convert
-#' a matrix into a dfm.
-#' @param x a \link{dfm} object
-#' @return 
-#' \code{is.dfm} returns \code{TRUE} if and only if its argument is a \link{dfm}.
-#' @seealso \code{\link{as.data.frame.dfm}}, \code{\link{as.matrix.dfm}}
-#' @export
-is.dfm <- function(x) {
-    is(x, "dfm")
-    # "dfm" %in% class(x)
-}
+# as.dfm -----------
 
-#' @rdname is.dfm
-#' @return \code{as.dfm} coerces a matrix or data.frame to a dfm
+#' Coercion and checking functions for dfm objects
+#' 
+#' Convert an eligible input object into a dfm, or check whether an object is a
+#' dfm.  Current eligible inputs for coercion to a dfm are: \link{matrix},
+#' (sparse) \link[Matrix]{Matrix}, \link[tm]{TermDocumentMatrix},
+#' \link[tm]{DocumentTermMatrix}, \link{data.frame}, and other \link{dfm}
+#' objects.
+#' @param x a candidate object for checking or coercion to \link{dfm} 
+#' @return \code{as.dfm} converts an input object into a \link{dfm}.  Row names
+#'   are used for docnames, and column names for featnames, of the resulting
+#'   dfm.
+#' @seealso \code{\link{as.data.frame.dfm}}, \code{\link{as.matrix.dfm}},
+#'   \code{\link{convert}}
 #' @export
 as.dfm <- function(x) {
     UseMethod("as.dfm")
+}
+
+#' @export
+as.dfm.default <- function(x) {
+    stop(friendly_class_undefined_message(class(x), "as.dfm"))
+}
+
+#' @noRd
+#' @method as.dfm dfm
+#' @export
+as.dfm.dfm <- function(x) {
+    x
 }
 
 #' @noRd
@@ -99,25 +98,70 @@ as.dfm.matrix <- function(x) {
 }
 
 #' @noRd
-#' @method as.dfm data.frame
+#' @method as.dfm Matrix
 #' @export
-as.dfm.data.frame <- function(x) {
+as.dfm.Matrix <- function(x) {
     as_dfm_constructor(x)
 }
 
-as_dfm_constructor <- function(x) {
-    new("dfmSparse", Matrix(as.matrix(x), 
-                            sparse = TRUE,
-                            dimnames = list(docs = if (is.null(rownames(x))) paste0("doc", seq_len(nrow(x))) else rownames(x),
-                                            features = if (is.null(colnames(x))) paste0("feat", seq_len(ncol(x))) else colnames(x)) 
-                            ) 
-        )
+#' @noRd
+#' @method as.dfm data.frame
+#' @export
+as.dfm.data.frame <- function(x) {
+    as_dfm_constructor(as.matrix(x, rownames.force = TRUE))
 }
 
+#' @noRd
+#' @method as.dfm dfmSparse
+#' @export
+as.dfm.dfmSparse <- function(x) {
+    as.dfm(as(x, 'dgCMatrix'))
+}
 
-#' identify the most frequent features in a dfm
+#' @noRd
+#' @method as.dfm DocumentTermMatrix
+#' @export
+as.dfm.DocumentTermMatrix <- function(x){
+    as.dfm(
+        sparseMatrix(i = x$i, j = x$j, x = x$v, 
+                     dimnames = list(rownames(x), colnames(x)))
+    )
+}
+
+#' @noRd
+#' @method as.dfm TermDocumentMatrix
+#' @export
+as.dfm.TermDocumentMatrix <- function(x){
+    as.dfm(
+        sparseMatrix(i = x$j, j = x$i, x = x$v, 
+                     dimnames = list(colnames(x), rownames(x)))
+    )
+}
+
+as_dfm_constructor <- function(x) {
+    x <- Matrix(x, sparse = TRUE) # dimnames argument is not working
+    names(dimnames(x)) <- c("docs", "features")
+    if (nrow(x) > 0 && is.null(rownames(x))) 
+        rownames(x) <- paste0(quanteda_options("base_docname"), seq_len(nrow(x)))
+    if (ncol(x) > 0 && is.null(colnames(x)))
+        colnames(x) <- paste0(quanteda_options("base_featname"), seq_len(ncol(x)))
+    new("dfm", x, docvars = data.frame(row.names = rownames(x)))
+}
+
+#' @rdname as.dfm
+#' @return 
+#' \code{is.dfm} returns \code{TRUE} if and only if its argument is a \link{dfm}.
+#' @export
+is.dfm <- function(x) {
+    is(x, "dfm")
+    # "dfm" %in% class(x)
+}
+
+# topfeatures -----------
+
+#' Identify the most frequent features in a dfm
 #' 
-#' List the most (or least) frequently occuring features in a \link{dfm}, either
+#' List the most (or least) frequently occurring features in a \link{dfm}, either
 #' as a whole or separated by document.
 #' @name topfeatures
 #' @param x the object whose features will be returned
@@ -131,7 +175,8 @@ as_dfm_constructor <- function(x) {
 #' @return A named numeric vector of feature counts, where the names are the 
 #'   feature labels, or a list of these if \code{groups} is given.
 #' @examples
-#' mydfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove_punct = TRUE)
+#' mydfm <- corpus_subset(data_corpus_inaugural, Year > 1980) %>%
+#'     dfm(remove_punct = TRUE)
 #' mydfm_nostopw <- dfm_remove(mydfm, stopwords("english"))
 #' 
 #' # most frequent features
@@ -150,14 +195,25 @@ as_dfm_constructor <- function(x) {
 #' # features by document frequencies
 #' tail(topfeatures(mydfm, scheme = "docfreq", n = 200))
 #' @export
-topfeatures <- function(x, n = 10, decreasing = TRUE, scheme = c("count", "docfreq"), groups = NULL) {
+topfeatures <- function(x, n = 10, decreasing = TRUE, 
+                        scheme = c("count", "docfreq"), groups = NULL) {
     UseMethod("topfeatures")
+}
+
+#' @export
+topfeatures.default <- function(x, n = 10, decreasing = TRUE, 
+                                scheme = c("count", "docfreq"), groups = NULL) {
+    stop(friendly_class_undefined_message(class(x), "topfeatures"))
 }
 
 #' @export
 #' @noRd
 #' @importFrom stats quantile
-topfeatures.dfm <- function(x, n = 10, decreasing = TRUE,  scheme = c("count", "docfreq"), groups = NULL) {
+topfeatures.dfm <- function(x, n = 10, decreasing = TRUE,  
+                            scheme = c("count", "docfreq"), groups = NULL) {
+    
+    x <- as.dfm(x)
+    if (!nfeat(x) || !ndoc(x)) return(numeric())
     scheme <- match.arg(scheme)
     
     if (!is.null(groups)) {
@@ -171,7 +227,7 @@ topfeatures.dfm <- function(x, n = 10, decreasing = TRUE,  scheme = c("count", "
         return(result)
     }
     
-    if (n > nfeature(x)) n <- nfeature(x)
+    if (n > nfeat(x)) n <- nfeat(x)
     
     if (scheme == "count") {
         wght <- colSums(x)
@@ -196,8 +252,9 @@ topfeatures.dfm <- function(x, n = 10, decreasing = TRUE,  scheme = c("count", "
     #}
 }
 
+# sparsity -----------
 
-#' compute the sparsity of a document-feature matrix
+#' Compute the sparsity of a document-feature matrix
 #'
 #' Return the proportion of sparseness of a document-feature matrix, equal
 #' to the proportion of cells that have zero counts.
@@ -205,15 +262,26 @@ topfeatures.dfm <- function(x, n = 10, decreasing = TRUE,  scheme = c("count", "
 #' @examples 
 #' inaug_dfm <- dfm(data_corpus_inaugural, verbose = FALSE)
 #' sparsity(inaug_dfm)
-#' sparsity(dfm_trim(inaug_dfm, min_count = 5))
+#' sparsity(dfm_trim(inaug_dfm, min_termfreq = 5))
 #' @export
 sparsity <- function(x) {
-    if (!is.dfm(x))
-        stop("sparsity is only defined for dfm objects")
+    UseMethod("sparsity")
+}
+
+#' @export
+sparsity.default <- function(x) {
+    stop(friendly_class_undefined_message(class(x), "sparsity"))
+}
+
+#' @export
+sparsity.dfm <- function(x) {
     (1 - length(x@x) / prod(dim(x)))
 }
 
-#' internal functions for dfm objects
+
+#  Internal --------
+
+#' Internal functions for dfm objects
 #' 
 #' Internal function documentation for \link{dfm} objects.
 #' @name dfm-internal
@@ -228,6 +296,6 @@ NULL
 #' @param e2 a numeric value to compare with values in a dfm
 #' @export
 #' @seealso \link{Comparison} operators
-setMethod("Compare", c("dfmSparse", "numeric"), function(e1, e2) {
+setMethod("Compare", c("dfm", "numeric"), function(e1, e2) {
     as(callGeneric(as(e1, "dgCMatrix"), e2), "lgCMatrix")
 })

@@ -1,9 +1,9 @@
 #' fcm performance test
 #' 
-#' @param x tokenizedTexts
+#' @param x tokens
 #' @export
 #' @examples 
-#' devtools::install_github("kbenoit/quantedaData")
+#' devtools::install_github("quanteda/quanteda.corpora")
 #' txt <- subset(inaugCorpus, Year > 1900)
 #' data(SOTUCorpus, package = "quantedaData")
 #' txt<-SOTUCorpus

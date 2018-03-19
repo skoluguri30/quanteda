@@ -2,7 +2,7 @@
 % Please edit documentation in R/textstat_keyness.R
 \name{textstat_keyness}
 \alias{textstat_keyness}
-\title{calculate keyness statistics}
+\title{Calculate keyness statistics}
 \usage{
 textstat_keyness(x, target = 1L, measure = c("chi2", "exact", "lr", "pmi"),
   sort = TRUE, correction = c("default", "yates", "williams", "none"))
@@ -15,7 +15,7 @@ the document forming the "target" for computing keyness; all other
 documents' feature frequencies will be combined for use as a reference}
 
 \item{measure}{(signed) association measure to be used for computing keyness.
-Currenly available: \code{"chi2"}; \code{"exact"} (Fisher's exact test); 
+Currently available: \code{"chi2"}; \code{"exact"} (Fisher's exact test); 
 \code{"lr"} for the likelihood ratio; \code{"pmi"} for pointwise mutual 
 information.}
 
@@ -27,7 +27,7 @@ of the measure, otherwise leave in original feature order}
 correction is applied for the \code{"exact"} and \code{"pmi"} measures. 
 Specifying a value other than the default can be used to override the 
 defaults, for instance to apply the Williams correction to the chi2 
-measure.  Specying a correction for the \code{"exact"} and \code{"pmi"}
+measure.  Specifying a correction for the \code{"exact"} and \code{"pmi"} 
 measures has no effect and produces a warning.}
 }
 \value{
@@ -39,9 +39,15 @@ a data.frame of computed statistics and associated p-values, where
   estimate of the odds ratio; for \code{measure = "lr"} this is the 
   likelihood ratio \eqn{G2} statistic; for \code{"pmi"} this is the pointwise
   mutual information statistics.
+
+\code{textstat_keyness} returns a data.frame of features and
+  their keyness scores and frequency counts.
 }
 \description{
-calculate keyness statistics
+Calculate "keyness", a score for features that occur differentially across 
+different categories.  Here, the categories are defined by reference to a
+"target" document index in the \link{dfm}, with the reference group
+consisting of all other documents.
 }
 \examples{
 # compare pre- v. post-war terms using grouping

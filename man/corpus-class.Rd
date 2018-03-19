@@ -5,19 +5,22 @@
 \alias{print.corpus}
 \alias{is.corpus}
 \alias{is.corpuszip}
+\alias{print.summary.corpus}
 \alias{+.corpus}
 \alias{c.corpus}
 \alias{[.corpus}
 \alias{[[.corpus}
 \alias{[[<-.corpus}
 \alias{str.corpus}
-\title{base method extensions for corpus objects}
+\title{Base method extensions for corpus objects}
 \usage{
 \method{print}{corpus}(x, ...)
 
 is.corpus(x)
 
 is.corpuszip(x)
+
+\method{print}{summary.corpus}(x, ...)
 
 \method{+}{corpus}(c1, c2)
 

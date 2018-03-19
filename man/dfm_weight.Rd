@@ -3,89 +3,93 @@
 \name{dfm_weight}
 \alias{dfm_weight}
 \alias{dfm_smooth}
-\title{weight the feature frequencies in a dfm}
+\title{Weight the feature frequencies in a dfm}
 \usage{
-dfm_weight(x, type = c("frequency", "relfreq", "relmaxfreq", "logfreq",
-  "tfidf"), weights = NULL)
+dfm_weight(x, scheme = c("count", "prop", "propmax", "logcount", "boolean",
+  "augmented", "logave"), weights = NULL, base = 10, K = 0.5)
 
 dfm_smooth(x, smoothing = 1)
 }
 \arguments{
 \item{x}{document-feature matrix created by \link{dfm}}
 
-\item{type}{a label of the weight type:
+\item{scheme}{a label of the weight type:
 \describe{
- \item{\code{"frequency"}}{integer feature count (default when a dfm is created)}
- \item{\code{"relfreq"}}{the proportion of the feature counts of total feature counts (aka relative frequency)}
- \item{\code{"relmaxfreq"}}{the proportion of the feature counts of the highest feature count in a document}
- \item{\code{"logfreq"}}{take the logarithm of 1 + the feature count, for base 10}
- \item{\code{"tfidf"}}{Term-frequency * inverse document frequency. For a
-  full explanation, see, for example, 
-  \url{http://nlp.stanford.edu/IR-book/html/htmledition/term-frequency-and-weighting-1.html}.
-   This implementation will not return negative values.  For finer-grained
-  control, call \code{\link{tfidf}} directly.}
-  }}
+  \item{\code{count}}{\eqn{tf_{ij}}, an integer feature count (default when a dfm is created)}
+  \item{\code{prop}}{the proportion of the feature counts of total feature
+  counts (aka relative frequency), calculated as \eqn{tf_{ij} / \sum_j tf_{ij}}}
+  \item{\code{propmax}}{the proportion of the feature counts of the highest
+  feature count in a document, \eqn{tf_{ij} / \textrm{max}_j tf_{ij}}}
+  \item{\code{logcount}}{take the logarithm of 1 + each count, for the given
+  base: \eqn{\textrm{log}_{base}(1 + tf_{ij})}}
+  \item{\code{boolean}}{recode all non-zero counts as 1}
+  \item{\code{augmented}}{equivalent to \eqn{K + (1 - K) *} \code{dfm_weight(x,
+  "propmax")}}
+  \item{\code{logave}}{1 + the log of the counts) / (1 + log of the counts / the average count within document), or
+  \deqn{\frac{1 + \textrm{log}_{base} tf_{ij}}{1 + \textrm{log}_{base}(\sum_j tf_{ij} / N_i)}}}
+}}
 
-\item{weights}{if \code{type} is unused, then \code{weights} can be 
-a named numeric vector of weights to be applied to the dfm, 
-where the names of the vector correspond to feature labels of the dfm, and 
-the weights will be applied as multipliers to the existing feature counts 
-for the corresponding named fatures.  Any features not named will be 
-assigned a weight of 1.0 (meaning they will be unchanged).}
+\item{weights}{if \code{scheme} is unused, then \code{weights} can be a named
+numeric vector of weights to be applied to the dfm, where the names of the
+vector correspond to feature labels of the dfm, and the weights will be
+applied as multipliers to the existing feature counts for the corresponding
+named features.  Any features not named will be assigned a weight of 1.0
+(meaning they will be unchanged).}
+
+\item{base}{base for the logarithm when \code{scheme} is \code{"logcount"} or 
+\code{logave}}
+
+\item{K}{the K for the augmentation when \code{scheme = "augmented"}}
 
 \item{smoothing}{constant added to the dfm cells for smoothing, default is 1}
 }
 \value{
-The dfm with weighted values.
+\code{dfm_weight} returns the dfm with weighted values.  Note the
+  because the default weighting scheme is \code{"count"}, simply calling this
+  function on an unweighted dfm will return the same object.  Many users will
+  want the normalized dfm consisting of the proportions of the feature counts
+  within each document, which requires setting \code{scheme = "prop"}.
+
+\code{dfm_smooth} returns a dfm whose values have been smoothed by
+  adding the \code{smoothing} amount. Note that this effectively converts a
+  matrix from sparse to dense format, so may exceed memory requirements
+  depending on the size of your input matrix.
 }
 \description{
-Returns a document by feature matrix with the feature frequencies weighted 
-according to one of several common methods.  Some shortcut functions that offer finer-grained control are:
-\itemize{
-\item{\code{\link{tf}}}{  compute term frequency weights}
-\item{\code{\link{tfidf}}}{  compute term frequency-inverse document frequency weights}
-\item{\code{\link{docfreq}}}{  compute document frequencies of features}
-}
-}
-\details{
-This converts a matrix from sparse to dense format, so may exceed memory
-requirements depending on the size of your input matrix.
-}
-\note{
-For finer grained control, consider calling the convenience functions directly.
+Weight the feature frequencies in a dfm
 }
 \examples{
-dtm <- dfm(data_corpus_inaugural)
+my_dfm <- dfm(data_corpus_inaugural)
 
-x <- apply(dtm, 1, function(tf) tf/max(tf))
-topfeatures(dtm)
-normDtm <- dfm_weight(dtm, "relfreq")
-topfeatures(normDtm)
-maxTfDtm <- dfm_weight(dtm, type = "relmaxfreq")
-topfeatures(maxTfDtm)
-logTfDtm <- dfm_weight(dtm, type = "logfreq")
-topfeatures(logTfDtm)
-tfidfDtm <- dfm_weight(dtm, type = "tfidf")
-topfeatures(tfidfDtm)
+x <- apply(my_dfm, 1, function(tf) tf/max(tf))
+topfeatures(my_dfm)
+norm_dfm <- dfm_weight(my_dfm, "prop")
+topfeatures(norm_dfm)
+max_tf_dfm <- dfm_weight(my_dfm)
+topfeatures(max_tf_dfm)
+log_tf_dfm <- dfm_weight(my_dfm, scheme = "logcount")
+topfeatures(log_tf_dfm)
+log_ave_dfm <- dfm_weight(my_dfm, scheme = "logave")
+topfeatures(log_ave_dfm)
 
 # combine these methods for more complex dfm_weightings, e.g. as in Section 6.4
 # of Introduction to Information Retrieval
-head(tfidf(dtm, scheme_tf = "log"))
+head(dfm_tfidf(my_dfm, scheme_tf = "logcount"))
 
-#' # apply numeric weights
+# apply numeric weights
 str <- c("apple is better than banana", "banana banana apple much better")
-(mydfm <- dfm(str, remove = stopwords("english")))
-dfm_weight(mydfm, weights = c(apple = 5, banana = 3, much = 0.5))
+(my_dfm <- dfm(str, remove = stopwords("english")))
+dfm_weight(my_dfm, weights = c(apple = 5, banana = 3, much = 0.5))
 
 \dontshow{
 testdfm <- dfm(data_corpus_inaugural[1:5])
-for (w in c("frequency", "relfreq", "relmaxfreq", "logfreq", "tfidf")) {
+for (w in  c("count", "prop", "propmax", "logcount", "boolean", "augmented", "logave")) {
     testw <- dfm_weight(testdfm, w)
     cat("\\n\\n=== weight() TEST for:", w, "; class:", class(testw), "\\n")
     head(testw)
 }}
 # smooth the dfm
-dfm_smooth(mydfm, 0.5)
+dfm_smooth(my_dfm, 0.5)
 }
 \references{
 Manning, Christopher D., Prabhakar Raghavan, and Hinrich Schutze.
@@ -93,9 +97,6 @@ Manning, Christopher D., Prabhakar Raghavan, and Hinrich Schutze.
   University Press, 2008.
 }
 \seealso{
-\code{\link{tf}},  \code{\link{tfidf}}, \code{\link{docfreq}}
-}
-\author{
-Paul Nulty and Kenneth Benoit
+\code{\link{dfm_tfidf}}, \code{\link{docfreq}}
 }
 \keyword{dfm}

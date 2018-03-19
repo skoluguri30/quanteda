@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>declare a compound character to be a sequence of separate pattern matches — phrase • quanteda</title>
+<title>Declare a compound character to be a sequence of separate pattern matches — phrase • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,12 +34,24 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-144616-24', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -46,23 +59,88 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">quanteda</a>
+      <a class="navbar-brand" href="../index.html">Quanteda</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Quick Start
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_cn.html">快速入门指南</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_ja.html">クイック・スタートガイド</a>
+    </li>
+  </ul>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="../articles/pkgdown/comparison.html">Features</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/examples/phrase.html">Multi-word expressions</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/plotting.html">Textual data visualization</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/lsa.html">Latent Semantic Analysis (LSA)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/chinese.html">Chinese text analysis</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/twitter.html">Social media analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Replications
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/replication/digital-humanities.html">Text Analysis with R for Students of Literature</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/text2vec.html">Word embedding (word2vec)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/qss.html">Quantitative Social Science Ch. 5.1</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../articles/design.html">Design</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/quanteda/quanteda">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -74,12 +152,15 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>declare a compound character to be a sequence of separate pattern matches</h1>
+    <h1>Declare a compound character to be a sequence of separate pattern matches</h1>
     </div>
 
     
-    <p>Declares that a whitespace-separated expression consists of multiple
-patterns, separated by whitespace.</p>
+    <p>Declares that a whitespace-separated expression consists of multiple 
+patterns, separated by whitespace.  This is typically used as a wrapper 
+around <code><a href='pattern.html'>pattern</a></code> to make it explicit that the pattern elements 
+are to be used for matches to multi-word sequences, rather than individual,
+unordered matches to single words.</p>
     
 
     <pre class="usage"><span class='fu'>phrase</span>(<span class='no'>x</span>)
@@ -91,14 +172,14 @@ patterns, separated by whitespace.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>the sequence, as a <code>character</code> object containing whitespace
+      <td><p>the sequence, as a <code>character</code> object containing whitespace 
 separating the patterns</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>phrase</code> returns a specially classed list whose white-spaced
+    <p><code>phrase</code> returns a specially classed list whose white-spaced 
   elements have been parsed into separate <code>character</code> elements.
 
 <code>is.phrase</code> returns <code>TRUE</code> if the object was created by 
@@ -117,7 +198,7 @@ separating the patterns</p></td>
 #&gt; [1] "f"
 #&gt; </div><div class='input'>
 <span class='co'># from a dictionary</span>
-<span class='fu'>phrase</span>(<span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='kw'>catone</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"a b"</span>), <span class='kw'>cattwo</span> <span class='kw'>=</span> <span class='st'>"c d e"</span>, <span class='kw'>catthree</span> <span class='kw'>=</span> <span class='st'>"f"</span>))</div><div class='output co'>#&gt; [[1]]
+<span class='fu'>phrase</span>(<span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='fu'>list</span>(<span class='kw'>catone</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"a b"</span>), <span class='kw'>cattwo</span> <span class='kw'>=</span> <span class='st'>"c d e"</span>, <span class='kw'>catthree</span> <span class='kw'>=</span> <span class='st'>"f"</span>)))</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "a" "b"
 #&gt; 
 #&gt; [[2]]
@@ -127,12 +208,9 @@ separating the patterns</p></td>
 #&gt; [1] "f"
 #&gt; </div><div class='input'>
 <span class='co'># from a collocations object</span>
-(<span class='no'>coll</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='textstat_collocations.html'>textstat_collocations</a></span>(<span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='st'>"a b c a b d e b d a b"</span>)))</div><div class='output co'>#&gt;   collocation count length   lambda    sigma      dice       pmi       G2
-#&gt; 1         a b     3      2 3.412247 1.762449 0.7777778 0.7419373 5.565236
-#&gt; 2         b d     2      2 3.218876 1.788854 0.7142857 0.9162907 4.462871
-#&gt;       chi2        z          p
-#&gt; 1 5.185714 1.936083 0.02642879
-#&gt; 2 4.500000 1.799406 0.03597722</div><div class='input'><span class='fu'>phrase</span>(<span class='no'>coll</span>)</div><div class='output co'>#&gt; [[1]]
+(<span class='no'>coll</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='textstat_collocations.html'>textstat_collocations</a></span>(<span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='st'>"a b c a b d e b d a b"</span>)))</div><div class='output co'>#&gt;   collocation count count_nested length   lambda        z
+#&gt; 1         a b     3            0      2 3.412247 1.936083
+#&gt; 2         b d     2            0      2 3.218876 1.799406</div><div class='input'><span class='fu'>phrase</span>(<span class='no'>coll</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt; [1] "a" "b"
 #&gt; 
 #&gt; [[2]]

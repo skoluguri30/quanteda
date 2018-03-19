@@ -149,6 +149,17 @@ struct compound_mt : public Worker{
     }
 };
 
+/* 
+ * This function substitutes features in tokens object with new IDs. 
+ * The number of threads is set by RcppParallel::setThreadOptions()
+ * @used tokens_compound()
+ * @creator Kohei Watanabe
+ * @param texts_ tokens ojbect
+ * @param comps_ list of features to substitute
+ * @param ids_ IDs to be placed after substitution
+ * @param join join overlapped features if true
+ * 
+ */
 
 void tokens_compound(Texts &texts,
                      Types &types,

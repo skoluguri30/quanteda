@@ -217,7 +217,7 @@ test_that("object always have docvars in the same rows as documents", {
     expect_true(nrow(docvars(corp1)) == ndoc(corp1))
     expect_true(all(rownames(docvars(corp1)) == docnames(corp1)))
     
-    corp2 <- corpus_segment(corp1, what = "sentences")
+    corp2 <- corpus_segment(corp1, "\\p{P}", valuetype = "regex")
     expect_true(nrow(docvars(corp2)) == ndoc(corp2))
     expect_true(all(rownames(docvars(corp2)) == docnames(corp2)))
     
@@ -244,10 +244,6 @@ test_that("object always have docvars in the same rows as documents", {
     toks4 <- tokens_select(toks1, stopwords())
     expect_true(nrow(docvars(toks4)) == ndoc(toks4))
     expect_true(all(rownames(docvars(toks4)) == docnames(toks4)))
-  
-    toks5 <- as.tokens(kwic(txts, 'immigra*'))
-    expect_true(nrow(docvars(toks5)) == ndoc(toks5))
-    expect_true(all(rownames(docvars(toks5)) == docnames(toks5)))
     
     dfm1 <- dfm(txts)
     expect_true(nrow(docvars(dfm1)) == ndoc(dfm1))
@@ -274,5 +270,3 @@ test_that("object always have docvars in the same rows as documents", {
     expect_true(all(rownames(docvars(dfm6)) == docnames(dfm6)))
 
 })
-
-

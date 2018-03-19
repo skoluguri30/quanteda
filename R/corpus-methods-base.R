@@ -1,4 +1,4 @@
-#' base method extensions for corpus objects
+#' Base method extensions for corpus objects
 #' 
 #' Extensions of base R functions for corpus objects.
 #' @name corpus-class
@@ -46,7 +46,7 @@ is.corpuszip <- function(x) {
 }
 
 
-#' summarize a corpus
+#' Summarize a corpus
 #' 
 #' Displays information about a corpus, including
 #' includes attributes and metadata such as date of number of texts, creation 
@@ -54,53 +54,123 @@ is.corpuszip <- function(x) {
 #' 
 #' @param object corpus to be summarized
 #' @param n maximum number of texts to describe, default=100
-#' @param verbose set to \code{FALSE} to turn off printed output, for instance
-#'   if you simply want to assign the output to a \code{data.frame}
 #' @param showmeta set to \code{TRUE} to include document-level
 #'   meta-data
 #' @param tolower convert texts to lower case before counting types
-#' @param ... additional arguments passed through to \code{\link{tokenize}}
+#' @param ... additional arguments passed through to \code{\link{tokens}}
 #' @export
 #' @method summary corpus
 #' @keywords internal corpus
 #' @examples
 #' summary(data_corpus_inaugural)
-#' summary(data_corpus_inaugural, n=10)
+#' summary(data_corpus_inaugural, n = 10)
 #' mycorpus <- corpus(data_char_ukimmig2010, 
 #'                    docvars = data.frame(party=names(data_char_ukimmig2010))) 
-#' summary(mycorpus, showmeta=TRUE)  # show the meta-data
-#' mysummary <- summary(mycorpus, verbose=FALSE)  # (quietly) assign the results
-#' mysummary$Types / mysummary$Tokens             # crude type-token ratio
-summary.corpus <- function(object, n = 100, verbose = TRUE, showmeta = FALSE, tolower = FALSE, ...) {
-    #     if (!(addedArgs <- names(list(...)) %in% )
-    #         warning("Argument", ifelse(length(addedArgs)>1, "s ", " "), names(addedArgs), " not used.", sep = "")
+#' summary(mycorpus, showmeta=TRUE) # show the meta-data
+#' mysummary <- summary(mycorpus) # (quietly) assign the results
+#' mysummary$Types / mysummary$Tokens # crude type-token ratio
+summary.corpus <- function(object, n = 100, showmeta = FALSE, tolower = FALSE, ...) {
     
-    if (verbose) {
-        cat("Corpus consisting of ", ndoc(object), " document",
-            ifelse(ndoc(object)>1, "s", ""), 
-            ifelse(is.corpuszip(object), paste0(" (compressed ", 100 - round(object$compression_rate, 1), "%)"), ""),
-            ifelse(ndoc(object) <= n, "", 
-                   paste(", showing ", n, " document", ifelse(n>1, "s", ""), sep="")),
-            ".\n", sep="")
+    n_all <- ndoc(object)
+    object <- head(object, n)
+    result <- data.frame(summary(texts(object), n = n, tolower = tolower, ...))
+    dvars <- docvars_internal(object)
+    if (!is.null(dvars)) { 
+        if (showmeta) {
+            result <- cbind(result, select_fields(dvars, c('system', 'user')))
+        } else {
+            result <- cbind(result, select_fields(dvars, 'user'))
+        }
     }
+    class(result) <- c("summary.corpus", "data.frame")
     
-    if (verbose) cat("\n")
-    outputdf <- data.frame(summary(texts(object), n, verbose = FALSE, tolower = tolower, ...))
-    if (!is.null(docvars(object)))
-        outputdf <- cbind(outputdf, docvars(object)[1:min(c(n, ndoc(object))),, drop=FALSE])
-    # if (detail) outputdf <- cbind(outputdf, metadoc(object))
-    if (showmeta)
-        outputdf[names(metadoc(object))] <- metadoc(object)[1:min(c(n, ndoc(object))),,drop=FALSE]
-    if (verbose) {
-        print(head(outputdf, n), row.names=FALSE)
-        cat("\nSource:  ", unlist(metacorpus(object, "source")), "\n", sep="")
-        cat("Created: ",   unlist(metacorpus(object, "created")), "\n", sep="")
-        cat("Notes:   ",   unlist(metacorpus(object, "notes")), "\n\n", sep="")
-    }
-    # invisibly pass the summary of the texts
-    return(invisible(outputdf))
+    if (is.corpuszip(object)) 
+        attr(result, "compression_rate") <- object$compression_rate
+    if (ndoc(object) >= n)
+        attr(result, "ndoc_show") <- n
+    attr(result, "meta") <- list(
+        source = unlist(metacorpus(object, "source")),
+        created = unlist(metacorpus(object, "created")),
+        notes = unlist(metacorpus(object, "notes"))
+    )
+    attr(result, "ndoc_all") <- n_all
+    rownames(result) <- NULL
+    result
 }
 
+#' @export
+#' @rdname corpus-class
+#' @method print summary.corpus
+print.summary.corpus <- function(x, ...) {
+    
+    ndoc_all <- attr(x, "ndoc_all")
+    ndoc_show <- attr(x, "ndoc_show")
+    compression <- attr(x, "compression_rate")
+    
+    cat("Corpus consisting of ", ndoc_all, " document", if (ndoc_all > 1) "s" else "", sep = "")
+    if (!is.null(compression))
+        cat(" (compressed ", 100 - round(compression, 1), "%)", sep = "")
+    if (!is.null(ndoc_show)) 
+        cat(", showing ", ndoc_show, " document", if (ndoc_show > 1) "s" else "", sep = "")
+    cat(":\n\n")
+    
+    rownames(x) <- x[["Text"]]
+    print.data.frame(x, row.names = FALSE)
+    cat("\n")
+    
+    meta <- attr(x, "meta")
+    if (!is.null(meta)) {
+        cat('Source: ', meta$source, "\n", sep = "")
+        cat('Created: ', meta$created, "\n", sep = "")
+        cat('Notes: ', meta$notes, "\n", sep = "")
+    }
+}
+
+#' @noRd
+#' @export
+#' @method [ summary.corpus
+`[.summary.corpus` <- function(x, i, j, ...) {
+    class(x) <- "data.frame"
+    row.names(x) <- NULL
+    NextMethod("[")
+}
+
+#' Return the first or last part of a corpus
+#' 
+#' For a \link{corpus} object, returns the first or last \code{n} documents.
+#' @param x a dfm object
+#' @param n a single integer.  If positive, the number of documents for the
+#'   resulting object: number of first/last documents for the dfm.  If negative,
+#'   all but the n last/first number of documents of x.
+#' @param ... additional arguments passed to other functions
+#' @return A \link{corpus} class object corresponding to the subset defined 
+#'   by \code{n}.
+#' @export
+#' @name head.corpus
+#' @method head corpus
+#' @keywords corpus
+#' @examples
+#' head(data_corpus_irishbudget2010, 3) %>% summary()
+#' 
+head.corpus <- function(x, n = 6L, ...) {
+    stopifnot(length(n) == 1L)
+    n <- if (n < 0L) max(ndoc(x) + n, 0L) else min(n, ndoc(x))
+    corpus_subset(x, seq_len(ndoc(x)) %in% seq_len(n))
+}
+
+#' @rdname head.corpus
+#' @method tail corpus
+#' @export
+#' @examples
+#' tail(data_corpus_irishbudget2010, 3) %>% summary()
+tail.corpus <- function(x, n = 6L, ...) {
+    stopifnot(length(n) == 1L)
+    nrx <- ndoc(x)
+    n <- if (n < 0L) max(nrx + n, 0L) else min(n, nrx)
+    sel <- as.integer(seq.int(to = nrx, length.out = n))
+    corpus_subset(x, seq_len(ndoc(x)) %in% sel)
+}
+    
 
 #' @rdname corpus-class
 #' @param c1 corpus one to be added
@@ -126,22 +196,23 @@ summary.corpus <- function(object, n = 100, verbose = TRUE, showmeta = FALSE, to
 `+.corpus` <- function(c1, c2) {
     ## deal with metadata first
     # note the source and date/time-stamp the creation
-    metacorpus(c1, "source") <- paste("Combination of corpuses", deparse(substitute(c1)),
+    metacorpus(c1, "source") <- paste("Combination of corpuses", 
+                                      deparse(substitute(c1)),
                                       "and", deparse(substitute(c2)))
     metacorpus(c1, "created") <- date()
     # concatenate the other fields if not identical already
     for (field in names(metacorpus(c2))) {
         if (field %in% c("source", "created")) next
         if (!identical(metacorpus(c1, field), metacorpus(c2, field)))
-            metacorpus(c1, field) <- paste(metacorpus(c1, field), metacorpus(c2, field))
+            metacorpus(c1, field) <- 
+                paste(metacorpus(c1, field), metacorpus(c2, field))
     }
     
-    row.names <- c(rownames(c1$documents), rownames(c2$documents))
-    c1$documents <- data.frame(
-        data.table::rbindlist(list(c1$documents, c2$documents), use.names = TRUE, fill = TRUE)
-    )
+    #rowname <- c(rownames(c1$documents), rownames(c2$documents))
+    c1$documents <- rbind(c1$documents, c2$documents)
+
     #  Put rownames back in because the hadleyverse discards them
-    rownames(c1$documents) <- make.unique(row.names, sep='')
+    #rownames(c1$documents) <- make.unique(rowname, sep='')
     
     # settings
     ### currently just use the c1 settings
@@ -149,7 +220,8 @@ summary.corpus <- function(object, n = 100, verbose = TRUE, showmeta = FALSE, to
     # special handling for docnames if item is corpuszip
     if (is.corpuszip(c1)) {
         x <- c(texts(c1), texts(c2))
-        x[1 : (length(x)-1)] <- paste0(x[1 : (length(x)-1)], quanteda_document_delimiter)
+        x[1 : (length(x)-1)] <- 
+            paste0(x[1 : (length(x)-1)], quanteda_document_delimiter)
         c1$texts <- memCompress(x, 'gzip')
         c1$docnames <- rownames(c1$documents)
     }
@@ -175,19 +247,20 @@ c.corpus <- function(..., recursive = FALSE) {
     if (length(x) == 2) return(result)
     for (i in 3:length(x))
         result <- result + x[[i]]
-    metacorpus(result, "source") <- paste0("Concatenation by c.corpus(", names(x), ")")
+    metacorpus(result, "source") <- 
+        paste0("Concatenation by c.corpus(", names(x), ")")
     return(result)
 }
 
 
+#' @rdname corpus-class
+#' @method [ corpus
 #' @export
 #' @param i index for documents or rows of document variables
 #' @param j index for column of document variables
 #' @param drop if \code{TRUE}, return a vector if extracting a single document
 #'   variable; if \code{FALSE}, return it as a single-column data.frame.  See
 #'   \code{\link{drop}} for further details.
-#' @method [ corpus
-#' @rdname corpus-class
 #' @examples 
 #' 
 #' # ways to index corpus elements
@@ -238,7 +311,7 @@ c.corpus <- function(..., recursive = FALSE) {
 #' @importFrom utils str
 #' @rdname corpus-class
 str.corpus <- function(object, ...) {
-    # message("OK, but note: accessing corpus internals directly voids your warranty.")
+  # message("Warning: accessing corpus internals directly voids your warranty.")
     str(unclass(object))
 }
 

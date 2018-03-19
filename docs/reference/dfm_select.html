@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>select features from a dfm or fcm — dfm_select • quanteda</title>
+<title>Select features from a dfm or fcm — dfm_select • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,12 +34,24 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-144616-24', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -46,23 +59,88 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">quanteda</a>
+      <a class="navbar-brand" href="../index.html">Quanteda</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Quick Start
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_cn.html">快速入门指南</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_ja.html">クイック・スタートガイド</a>
+    </li>
+  </ul>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="../articles/pkgdown/comparison.html">Features</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/examples/phrase.html">Multi-word expressions</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/plotting.html">Textual data visualization</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/lsa.html">Latent Semantic Analysis (LSA)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/chinese.html">Chinese text analysis</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/twitter.html">Social media analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Replications
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/replication/digital-humanities.html">Text Analysis with R for Students of Literature</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/text2vec.html">Word embedding (word2vec)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/qss.html">Quantitative Social Science Ch. 5.1</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../articles/design.html">Design</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/quanteda/quanteda">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -74,28 +152,31 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>select features from a dfm or fcm</h1>
+    <h1>Select features from a dfm or fcm</h1>
     </div>
 
     
-    <p>This function selects or discards features from a <a href='dfm.html'>dfm</a> or <a href='fcm.html'>fcm</a>, 
-based on feature name matches with <code>pattern</code>.  The most common usages 
-are to eliminate features from a dfm already constructed, such as stopwords, 
+    <p>This function selects or removes features from a <a href='dfm.html'>dfm</a> or <a href='fcm.html'>fcm</a>,
+based on feature name matches with <code>pattern</code>.  The most common usages
+are to eliminate features from a dfm already constructed, such as stopwords,
 or to select only terms of interest from a dictionary.</p>
     
 
     <pre class="usage"><span class='fu'>dfm_select</span>(<span class='no'>x</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>selection</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"keep"</span>, <span class='st'>"remove"</span>),
   <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glob"</span>, <span class='st'>"regex"</span>, <span class='st'>"fixed"</span>), <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>min_nchar</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>max_nchar</span> <span class='kw'>=</span> <span class='fl'>63</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>),
-  <span class='no'>...</span>)
+  <span class='kw'>min_nchar</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>max_nchar</span> <span class='kw'>=</span> <span class='fl'>79L</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>))
 
-<span class='fu'>dfm_remove</span>(<span class='no'>x</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+<span class='fu'>dfm_remove</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='fu'>dfm_keep</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='fu'>fcm_select</span>(<span class='no'>x</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>selection</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"keep"</span>, <span class='st'>"remove"</span>),
   <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glob"</span>, <span class='st'>"regex"</span>, <span class='st'>"fixed"</span>), <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>), <span class='no'>...</span>)
 
-<span class='fu'>fcm_remove</span>(<span class='no'>x</span>, <span class='no'>pattern</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>fcm_remove</span>(<span class='no'>x</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+
+<span class='fu'>fcm_keep</span>(<span class='no'>x</span>, <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -107,7 +188,7 @@ or to select only terms of interest from a dictionary.</p>
     <tr>
       <th>pattern</th>
       <td><p>a character vector, list of character vectors, <a href='dictionary.html'>dictionary</a>,
-<a href='collocations.html'>collocations</a>, or <a href='dfm.html'>dfm</a>. See <a href='pattern.html'>pattern</a> for details.</p></td>
+<a href='textstat_collocations.html'>collocations</a>, or <a href='dfm.html'>dfm</a>. See <a href='pattern.html'>pattern</a> for details.</p></td>
     </tr>
     <tr>
       <th>selection</th>
@@ -115,9 +196,11 @@ or to select only terms of interest from a dictionary.</p>
     </tr>
     <tr>
       <th>valuetype</th>
-      <td><p>how to interpret keyword expressions: <code>"glob"</code> for 
-"glob"-style wildcard expressions; <code>"regex"</code> for regular expressions;
-or <code>"fixed"</code> for exact matching. See <a href='valuetype.html'>valuetype</a> for details.</p></td>
+      <td><p>the type of pattern matching: <code>"glob"</code> for "glob"-style
+  wildcard expressions; <code>"regex"</code> for regular expressions; or
+  <code>"fixed"</code> for exact matching. See <a href='valuetype.html'>valuetype</a> for details.</p>
+<p>For <code>dfm_select</code>, <code>pattern</code> may also be a <a href='dfm.html'>dfm</a>; see Value
+  below.</p></td>
     </tr>
     <tr>
       <th>case_insensitive</th>
@@ -126,80 +209,82 @@ or <code>"fixed"</code> for exact matching. See <a href='valuetype.html'>valuety
     <tr>
       <th>min_nchar, max_nchar</th>
       <td><p>numerics specifying the minimum and maximum length
-in characters for features to be removed or kept; defaults are 1 and 
-<a href = 'https://en.wikipedia.org/wiki/Donaudampfschiffahrtselektrizitätenhauptbetriebswerkbauunterbeamtengesellschaft'>79</a>.
- (Set <code>max_nchar</code> to <code>NULL</code> for no upper limit.) These are 
-applied after (and hence, in addition to) any selection based on pattern 
+in characters for features to be removed or kept; defaults are 1 and
+<a href='https://en.wikipedia.org/wiki/Donaudampfschiffahrtselektrizitätenhauptbetriebswerkbauunterbeamtengesellschaft'>79</a>.
+ (Set <code>max_nchar</code> to <code>NULL</code> for no upper limit.) These are
+applied after (and hence, in addition to) any selection based on pattern
 matches.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>if <code>TRUE</code> print message about how many pattern were 
+      <td><p>if <code>TRUE</code> print message about how many pattern were
 removed</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>supplementary arguments passed to the underlying functions in 
-<code><a href='http://www.rdocumentation.org/packages/stringi/topics/stri_detect'>stri_detect_regex</a></code></p></td>
+      <td><p>used only for passing arguments from <code>dfm_remove</code> or
+<code>dfm_keep</code> to <code>dfm_select</code>. Cannot include
+<code>selection</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <a href='dfm.html'>dfm</a> or <a href='fcm.html'>fcm</a> object, after the feature selection has 
-  been applied.
-  
-  When <code>pattern</code> is a <a href='dfm.html'>dfm</a> object, then the returned object will
+    <p>A <a href='dfm.html'>dfm</a> or <a href='fcm.html'>fcm</a> object, after the feature selection has
+  been applied.</p>
+<p>When <code>pattern</code> is a <a href='dfm.html'>dfm</a> object, then the returned object will
   be identical in its feature set to the dfm supplied as the <code>pattern</code>
   argument. This means that any features in <code>x</code> not in the dfm provided
   as <code>pattern</code> will be discarded, and that any features in found in the
   dfm supplied as <code>pattern</code> but not found in <code>x</code> will be added with
   all zero counts.  Because selecting on a dfm is designed to produce a
   selected dfm with an exact feature match, when <code>pattern</code> is a
-  <a href='dfm.html'>dfm</a> object, then the following settings are always used: 
-  <code>case_insensitive = FALSE</code>, and <code>valuetype = "fixed"</code>.
-  
-  Selecting on a <a href='dfm.html'>dfm</a> is useful when you have trained a model on one 
-  dfm, and need to project this onto a test set whose features must be 
+  <a href='dfm.html'>dfm</a> object, then the following settings are always used:
+  <code>case_insensitive = FALSE</code>, and <code>valuetype = "fixed"</code>.</p>
+<p>Selecting on a <a href='dfm.html'>dfm</a> is useful when you have trained a model on one
+  dfm, and need to project this onto a test set whose features must be
   identical.  It is also used in <code><a href='bootstrap_dfm.html'>bootstrap_dfm</a></code>.  See examples.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>dfm_remove</code> and <code>fcm_remove</code> are simply a convenience 
-  wrappers to calling <code>dfm_select</code> and <code>fcm_select</code> with 
+    <p><code>dfm_remove</code> and <code>fcm_remove</code> are simply a convenience
+  wrappers to calling <code>dfm_select</code> and <code>fcm_select</code> with
   <code>selection = "remove"</code>.</p>
+<p><code>dfm_keep</code> and <code>fcm_keep</code> are simply a convenience wrappers to
+  calling <code>dfm_select</code> and <code>fcm_select</code> with <code>selection =
+  "keep"</code>.</p>
     
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>This function selects features based on their labels.  To select 
-  features based on the values of the document-feature matrix, use 
+    <p>This function selects features based on their labels.  To select
+  features based on the values of the document-feature matrix, use
   <code><a href='dfm_trim.html'>dfm_trim</a></code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>myDfm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='fu'>c</span>(<span class='st'>"My Christmas was ruined by your opposition tax plan."</span>,
+    <pre class="examples"><div class='input'><span class='no'>my_dfm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='fu'>c</span>(<span class='st'>"My Christmas was ruined by your opposition tax plan."</span>,
                <span class='st'>"Does the United_States or Sweden have more progressive taxation?"</span>),
              <span class='kw'>tolower</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-<span class='no'>mydict</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='fu'>list</span>(<span class='kw'>countries</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"United_States"</span>, <span class='st'>"Sweden"</span>, <span class='st'>"France"</span>),
+<span class='no'>my_dict</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='fu'>list</span>(<span class='kw'>countries</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"United_States"</span>, <span class='st'>"Sweden"</span>, <span class='st'>"France"</span>),
                           <span class='kw'>wordsEndingInY</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"by"</span>, <span class='st'>"my"</span>),
                           <span class='kw'>notintext</span> <span class='kw'>=</span> <span class='st'>"blahblah"</span>))
-<span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='no'>mydict</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 4 features (50% sparse).
-#&gt; 2 x 4 sparse Matrix of class "dfmSparse"
+<span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='no'>my_dict</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 4 features (50% sparse).
+#&gt; 2 x 4 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    My by United_States Sweden
 #&gt;   text1  1  1             0      0
-#&gt;   text2  0  0             1      1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='no'>mydict</span>, <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 1 feature (50% sparse).
-#&gt; 2 x 1 sparse Matrix of class "dfmSparse"
+#&gt;   text2  0  0             1      1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='no'>my_dict</span>, <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 1 feature (50% sparse).
+#&gt; 2 x 1 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    by
 #&gt;   text1  1
-#&gt;   text2  0</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='fu'>c</span>(<span class='st'>"s$"</span>, <span class='st'>".y"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"regex"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (50% sparse).
-#&gt; 2 x 6 sparse Matrix of class "dfmSparse"
+#&gt;   text2  0</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='fu'>c</span>(<span class='st'>"s$"</span>, <span class='st'>".y"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"regex"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (50% sparse).
+#&gt; 2 x 6 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    My Christmas was by Does United_States
 #&gt;   text1  1         1   1  1    0             0
-#&gt;   text2  0         0   0  0    1             1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='fu'>c</span>(<span class='st'>"s$"</span>, <span class='st'>".y"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"regex"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 14 features (50% sparse).
-#&gt; 2 x 14 sparse Matrix of class "dfmSparse"
+#&gt;   text2  0         0   0  0    1             1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='fu'>c</span>(<span class='st'>"s$"</span>, <span class='st'>".y"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"regex"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 14 features (50% sparse).
+#&gt; 2 x 14 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    ruined your opposition tax plan . the or Sweden have more progressive
 #&gt;   text1      1    1          1   1    1 1   0  0      0    0    0           0
@@ -207,13 +292,13 @@ removed</p></td>
 #&gt;        features
 #&gt; docs    taxation ?
 #&gt;   text1        0 0
-#&gt;   text2        1 1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 9 features (50% sparse).
-#&gt; 2 x 9 sparse Matrix of class "dfmSparse"
+#&gt;   text2        1 1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/stopwords/topics/stopwords'>stopwords</a></span>(<span class='st'>"english"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 9 features (50% sparse).
+#&gt; 2 x 9 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    My was by your Does the or have more
 #&gt;   text1  1   1  1    1    0   0  0    0    0
-#&gt;   text2  0   0  0    0    1   1  1    1    1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 11 features (50% sparse).
-#&gt; 2 x 11 sparse Matrix of class "dfmSparse"
+#&gt;   text2  0   0  0    0    1   1  1    1    1</div><div class='input'><span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/stopwords/topics/stopwords'>stopwords</a></span>(<span class='st'>"english"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 11 features (50% sparse).
+#&gt; 2 x 11 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    Christmas ruined opposition tax plan . United_States Sweden progressive
 #&gt;   text1         1      1          1   1    1 1             0      0           0
@@ -223,8 +308,8 @@ removed</p></td>
 #&gt;   text1        0 0
 #&gt;   text2        1 1</div><div class='input'>
 <span class='co'># select based on character length</span>
-<span class='fu'>dfm_select</span>(<span class='no'>myDfm</span>, <span class='kw'>min_nchar</span> <span class='kw'>=</span> <span class='fl'>5</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 7 features (50% sparse).
-#&gt; 2 x 7 sparse Matrix of class "dfmSparse"
+<span class='fu'>dfm_select</span>(<span class='no'>my_dfm</span>, <span class='kw'>min_nchar</span> <span class='kw'>=</span> <span class='fl'>5</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 7 features (50% sparse).
+#&gt; 2 x 7 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    Christmas ruined opposition United_States Sweden progressive taxation
 #&gt;   text1         1      1          1             0      0           0        0
@@ -232,17 +317,17 @@ removed</p></td>
 <span class='co'># selecting on a dfm</span>
 <span class='no'>txts</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"This is text one"</span>, <span class='st'>"The second text"</span>, <span class='st'>"This is text three"</span>)
 (<span class='no'>dfm1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>txts</span>[<span class='fl'>1</span>:<span class='fl'>2</span>]))</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (41.7% sparse).
-#&gt; 2 x 6 sparse Matrix of class "dfmSparse"
+#&gt; 2 x 6 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    this is text one the second
 #&gt;   text1    1  1    1   1   0      0
 #&gt;   text2    0  0    1   0   1      1</div><div class='input'>(<span class='no'>dfm2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>txts</span>[<span class='fl'>2</span>:<span class='fl'>3</span>]))</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (41.7% sparse).
-#&gt; 2 x 6 sparse Matrix of class "dfmSparse"
+#&gt; 2 x 6 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    the second text this is three
 #&gt;   text1   1      1    1    0  0     0
-#&gt;   text2   0      0    1    1  1     1</div><div class='input'>(<span class='no'>dfm3</span> <span class='kw'>&lt;-</span> <span class='fu'>dfm_select</span>(<span class='no'>dfm1</span>, <span class='no'>dfm2</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; <span class='message'>kept 5 features</span></div><div class='output co'>#&gt; <span class='message'>, padded </span></div><div class='output co'>#&gt; <span class='message'>1 feature</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (50% sparse).
-#&gt; 2 x 6 sparse Matrix of class "dfmSparse"
+#&gt;   text2   0      0    1    1  1     1</div><div class='input'>(<span class='no'>dfm3</span> <span class='kw'>&lt;-</span> <span class='fu'>dfm_select</span>(<span class='no'>dfm1</span>, <span class='no'>dfm2</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; <span class='message'>kept 5 features</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (50% sparse).
+#&gt; 2 x 6 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    the second text this is three
 #&gt;   text1   0      0    1    1  1     0
@@ -251,7 +336,7 @@ removed</p></td>
                 <span class='st'>"No if, and, or but about it: lots of stopwords."</span>),
               <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 <span class='no'>tmpdfm</span></div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 18 features (38.9% sparse).
-#&gt; 2 x 18 sparse Matrix of class "dfmSparse"
+#&gt; 2 x 18 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    this is a document with lots of stopwords . no if , and or but about it
 #&gt;   text1    1  1 1        1    1    1  1         1 1  0  0 0   0  0   0     0  0
@@ -259,15 +344,37 @@ removed</p></td>
 #&gt;        features
 #&gt; docs    :
 #&gt;   text1 0
-#&gt;   text2 1</div><div class='input'><span class='fu'>dfm_remove</span>(<span class='no'>tmpdfm</span>, <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (25% sparse).
-#&gt; 2 x 6 sparse Matrix of class "dfmSparse"
+#&gt;   text2 1</div><div class='input'><span class='fu'>dfm_remove</span>(<span class='no'>tmpdfm</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/stopwords/topics/stopwords'>stopwords</a></span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; Document-feature matrix of: 2 documents, 6 features (25% sparse).
+#&gt; 2 x 6 sparse Matrix of class "dfm"
 #&gt;        features
 #&gt; docs    document lots stopwords . , :
 #&gt;   text1        1    1         1 1 0 0
 #&gt;   text2        0    1         1 1 2 1</div><div class='input'><span class='no'>toks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='fu'>c</span>(<span class='st'>"this contains lots of stopwords"</span>,
                  <span class='st'>"no if, and, or but about it: lots"</span>),
                <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>tmpfcm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fcm.html'>fcm</a></span>(<span class='no'>toks</span>)</div><div class='output co'>#&gt; <span class='error'>Error in get(".SigLength", envir = env): object '.SigLength' not found</span></div><div class='input'><span class='no'>tmpfcm</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'tmpfcm' not found</span></div><div class='input'><span class='fu'>fcm_remove</span>(<span class='no'>tmpfcm</span>, <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in fcm_remove(tmpfcm, stopwords("english")): object 'tmpfcm' not found</span></div></pre>
+<span class='no'>tmpfcm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fcm.html'>fcm</a></span>(<span class='no'>toks</span>)
+<span class='no'>tmpfcm</span></div><div class='output co'>#&gt; Feature co-occurrence matrix of: 12 by 12 features.
+#&gt; 12 x 12 sparse Matrix of class "fcm"
+#&gt;            features
+#&gt; features    this contains lots of stopwords no if and or but about it
+#&gt;   this         0        1    1  1         1  0  0   0  0   0     0  0
+#&gt;   contains     0        0    1  1         1  0  0   0  0   0     0  0
+#&gt;   lots         0        0    0  1         1  1  1   1  1   1     1  1
+#&gt;   of           0        0    0  0         1  0  0   0  0   0     0  0
+#&gt;   stopwords    0        0    0  0         0  0  0   0  0   0     0  0
+#&gt;   no           0        0    0  0         0  0  1   1  1   1     1  1
+#&gt;   if           0        0    0  0         0  0  0   1  1   1     1  1
+#&gt;   and          0        0    0  0         0  0  0   0  1   1     1  1
+#&gt;   or           0        0    0  0         0  0  0   0  0   1     1  1
+#&gt;   but          0        0    0  0         0  0  0   0  0   0     1  1
+#&gt;   about        0        0    0  0         0  0  0   0  0   0     0  1
+#&gt;   it           0        0    0  0         0  0  0   0  0   0     0  0</div><div class='input'><span class='fu'>fcm_remove</span>(<span class='no'>tmpfcm</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/stopwords/topics/stopwords'>stopwords</a></span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; Feature co-occurrence matrix of: 3 by 3 features.
+#&gt; 3 x 3 sparse Matrix of class "fcm"
+#&gt;            features
+#&gt; features    contains lots stopwords
+#&gt;   contains         0    1         1
+#&gt;   lots             0    0         1
+#&gt;   stopwords        0    0         0</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

@@ -9,9 +9,10 @@
 #' @slot window the size of the window, if \code{context = "window"}
 #' @slot count how co-occurrences are counted
 #' @slot weights context weighting for distance from target feature, equal in length to \code{window}
+#' @slot margin frequencies of features in the original \link{dfm} or \link{tokens}
 #' @slot tri whether the lower triangle of the symmetric \eqn{V \times V} matrix is recorded
 #' @slot ordered whether a term appears before or after the target feature 
-#'      are counted seperately
+#'      are counted separately
 #' @seealso \link{fcm}
 #' @export
 #' @import methods
@@ -19,41 +20,47 @@
 #' @name fcm-class
 #' @keywords internal
 setClass("fcm",
-         slots = c(context = "character", window = "integer", count = "character", weights = "numeric", ordered = "logical", tri = "logical"),
+         slots = c(context = "character", window = "integer", 
+                   count = "character", weights = "numeric", 
+                   ordered = "logical", tri = "logical",
+                   margin = "numeric"),
          # prototype = list(Dimnames = list(contexts = NULL, features = NULL)),
+         #contains = c("dfm", "dgCMatrix", "dtCMatrix"))
          contains = c("dfm", "dgCMatrix"))
 
-
-#' create a feature co-occurrence matrix
+#' Create a feature co-occurrence matrix
 #' 
 #' Create a sparse feature co-occurrence matrix, measuring co-occurrences of
 #' features within a user-defined context. The context can be defined as a
 #' document or a window within a collection of documents, with an optional
 #' vector of weights applied to the co-occurrence counts.
-#' @param x character, \link{corpus}, \link{tokens}, or \link{dfm} object from which to generate 
-#'   the feature co-occurrence matrix
-#' @param context the context in which to consider term co-occurrence: 
+#' @param x character, \link{corpus}, \link{tokens}, or \link{dfm} object from
+#'   which to generate the feature co-occurrence matrix
+#' @param context the context in which to consider term co-occurrence:
 #'   \code{"document"} for co-occurrence counts within document; \code{"window"}
-#'   for co-occurrence within a defined window of words, which requires a 
-#'   postive integer value for \code{window}.  Note: if \code{x} is a dfm object, then
-#'   \code{context} can only be \code{"document"}.
-#' @param window positive integer value for the size of a window on either side 
-#'   of the target feature, default is 5, meaning 5 words before and after the 
+#'   for co-occurrence within a defined window of words, which requires a
+#'   positive integer value for \code{window}.  Note: if \code{x} is a dfm
+#'   object, then \code{context} can only be \code{"document"}.
+#' @param window positive integer value for the size of a window on either side
+#'   of the target feature, default is 5, meaning 5 words before and after the
 #'   target feature
 #' @param count how to count co-occurrences:
 #'   \describe{
-#'   \item{\code{"frequency"}}{count the number of co-occurrences within the context}
-#'   \item{\code{"boolean"}}{count only the co-occurrence or not within the context, 
-#'    irrespective of how many times it occurs.}
-#'   \item{\code{"weighted"}}{count a weighted function of counts, typically as a 
-#'   function of distance from the target feature.  Only makes sense for \code{context = "window"}.}
+#'   \item{\code{"frequency"}}{count the number of co-occurrences within the
+#'   context}
+#'   \item{\code{"boolean"}}{count only the co-occurrence or not within the
+#'   context, irrespective of how many times it occurs.}
+#'   \item{\code{"weighted"}}{count a weighted function of counts, typically as
+#'   a function of distance from the target feature.  Only makes sense for
+#'   \code{context = "window"}.}
 #'   }
-#' @param weights a vector of weights applied to each distance from 
-#'   \code{1:window}, strictly decreasing by default; can be a customer defined vector of the same length as 
-#'   \code{length(weights)}
-#' @param ordered if \code{TRUE} the number of times that a term appears before or after the target feature 
-#'      are counted seperately. Only makes sense for context = "window".
-#' @param span_sentence if \code{FALSE}, then word windows will not span 
+#' @param weights a vector of weights applied to each distance from
+#'   \code{1:window}, strictly decreasing by default; can be a custom-defined
+#'   vector of the same length as \code{length(weights)}
+#' @param ordered if \code{TRUE} the number of times that a term appears before
+#'   or after the target feature are counted separately. Only makes sense for
+#'   context = "window".
+#' @param span_sentence if \code{FALSE}, then word windows will not span
 #'   sentences
 #' @param tri if \code{TRUE} return only upper triangle (including diagonal)
 #' @param ... not used here
@@ -65,7 +72,7 @@ setClass("fcm",
 #'   implementation of a "context-feature" matrix, consisting of a count of
 #'   feature co-occurrence within a defined context.  This context, following
 #'   Momtazi et. al. (2010), can be defined as the \emph{document},
-#'   \emph{sentences} within documents, \emph{syntactic relationships} beteeen
+#'   \emph{sentences} within documents, \emph{syntactic relationships} between
 #'   features (nouns within a sentence, for instance), or according to a
 #'   \emph{window}.  When the context is a window, a weighting function is
 #'   typically applied that is a function of distance from the target word (see
@@ -74,7 +81,7 @@ setClass("fcm",
 #'   
 #'   \link{fcm} provides all of this functionality, returning a \eqn{V * V}
 #'   matrix (where \eqn{V} is the vocabulary size, returned by
-#'   \code{\link{ntype}}). The \code{tri = TRUE} option will only return the
+#'   \code{\link{nfeat}}). The \code{tri = TRUE} option will only return the
 #'   upper part of the matrix.
 #'   
 #'   Unlike some implementations of co-occurrences, \link{fcm} counts feature
@@ -133,6 +140,11 @@ fcm <- function(x, context = c("document", "window"),
     UseMethod("fcm")
 }
 
+#' @export
+fcm.default <- function(x, ...) {
+    stop(friendly_class_undefined_message(class(x), "fcm"))
+}
+
 #' @noRd
 #' @export
 fcm.character <- function(x, ...) {
@@ -149,15 +161,25 @@ fcm.corpus <- function(x, ...) {
 #' @import Matrix
 #' @export
 fcm.dfm <- function(x, context = c("document", "window"), 
-                               count = c("frequency", "boolean", "weighted"),
-                               window = 5L,
-                               weights = 1L,
-                               ordered = FALSE,
-                               span_sentence = TRUE, tri = TRUE, ...) {
-
+                       count = c("frequency", "boolean", "weighted"),
+                       window = 5L,
+                       weights = 1L,
+                       ordered = FALSE,
+                       span_sentence = TRUE, tri = TRUE, ...) {
+    
     context <- match.arg(context)
     count <- match.arg(count)
     window <- as.integer(window)
+    x <- as.dfm(x)
+    margin <- colSums(x)
+    
+    if (!nfeat(x)) {
+        result <- new("fcm", as(make_null_dfm(), "dgCMatrix"), count = count,
+                      context = context, window = window, margin = numeric(),
+                      weights = weights, tri = tri)
+        return(result)
+    }
+    
     if (!span_sentence) 
         warning("spanSentence = FALSE not yet implemented")
     if (context != "document") 
@@ -165,7 +187,7 @@ fcm.dfm <- function(x, context = c("document", "window"),
 
     if (count == "boolean") {
         temp <- x > 1
-        x <- tf(x, "boolean") 
+        x <- dfm_weight(x, "boolean") 
     } else if (count == "frequency") {
         temp <- x
         temp@x <- choose(temp@x, 2)
@@ -189,12 +211,12 @@ fcm.dfm <- function(x, context = c("document", "window"),
     result <- result[rownames(result), colnames(result)]
     
     # discard the lower diagonal if tri == TRUE
-    if (tri) 
-        result <- Matrix::triu(result)
-    
+    if (tri) result <- Matrix::triu(result)
+
     # create a new feature context matrix
     result <- new("fcm", as(result, "dgCMatrix"), count = count,
-                  context = context, window = window, weights = weights, tri = tri)
+                  context = context, window = window, margin = margin,
+                  weights = weights, tri = tri)
     # set the names 
     names(result@Dimnames) <- c("features", "features")
     result
@@ -205,7 +227,7 @@ fcm.dfm <- function(x, context = c("document", "window"),
 #' @import data.table
 #' @import Matrix
 #' @export
-fcm.tokenizedTexts <- function(x, context = c("document", "window"), 
+fcm.tokens <- function(x, context = c("document", "window"), 
                        count = c("frequency", "boolean", "weighted"),
                        window = 5L,
                        weights = 1L,
@@ -213,23 +235,19 @@ fcm.tokenizedTexts <- function(x, context = c("document", "window"),
                        span_sentence = TRUE, tri = TRUE, ...) {
     context <- match.arg(context)
     count <- match.arg(count)
-    feature <- V1 <- NULL  # to avoid no visible binding errors in CHECK
-    # could add a warning if not roundly coerced to integer
-    window <- as.integer(window)
+    window <- as.integer(window) 
+    # TODO could add a warning if not roundly coerced to integer
     
     if (!span_sentence) 
         warning("spanSentence = FALSE not yet implemented")
     
-    if (context == "document") {
-        result <- fcm(dfm(x, tolower = FALSE, verbose = FALSE),
-                      count = count, tri = tri)
-    }
+    if (context == "document")
+        result <- fcm(dfm(x, tolower = FALSE, verbose = FALSE), count = count, tri = tri)
         
     if (context == "window") { 
         try (if (window < 2) stop("The window size is too small.")) 
-            
         if (count == "weighted") {
-            if (!missing(weights) & length(weights) != window) {
+            if (!missing(weights) && length(weights) != window) {
                 warning ("weights length is not equal to the window size, weights are assigned by default!")
                 weights <- 1
             }
@@ -237,51 +255,58 @@ fcm.tokenizedTexts <- function(x, context = c("document", "window"),
         if (!is.tokens(x)) x <- as.tokens(x)
         types <- types(x)
         n <- sum(lengths(x)) * window * 2
-        result <- qatd_cpp_fcm(x, length(types), count, window, weights, ordered, tri, n)
-        # set the dimnames of result
+        result <- as(qatd_cpp_fcm(x, length(types), count, window, 
+                                  weights, ordered, tri, n), "dgCMatrix")
         dimnames(result) <- list(features = types, features = types)
     }
 
     # discard the lower diagonal if tri == TRUE
-    if (tri) # & !is.tokens(x))
-        result <- Matrix::triu(result)
-
+    if (tri) result <- Matrix::triu(result)
+    
     # create a new feature context matrix
     result <- new("fcm", as(result, "dgCMatrix"), count = count,
-                  context = context, window = window, weights = weights, tri = tri)
+                  context = context, window = window, margin = colSums(dfm(x)),
+                  weights = weights, tri = tri)
     # set the names 
     names(result@Dimnames) <- c("features", "features")
     result
 }     
 
-
 #' @rdname print.dfm
 #' @export
 setMethod("print", signature(x = "fcm"), 
-          function(x, show.values = FALSE, show.settings = FALSE, show.summary = TRUE, nfeature = 20L, ...) {
-              ndoc <- nfeature
+          function(x, show.values = NULL, show.settings = FALSE, 
+                   show.summary = TRUE, 
+                   ndoc = quanteda_options("print_dfm_max_ndoc"), 
+                   nfeature = quanteda_options("print_dfm_max_nfeat"), ...) {
               if (show.summary) {
                   cat("Feature co-occurrence matrix of: ",
                       format(ndoc(x), big.mark = ","), " by ",
-                      # ifelse(ndoc(x) > 1 | ndoc(x) == 0, "s, ", ", "),
-                      format(nfeature(x), big.mark = ","), " feature",
-                      if (nfeature(x) != 1L) "s" else "",
+                      format(nfeat(x), big.mark = ","), " feature",
+                      if (nfeat(x) != 1L) "s" else "",
                       if (is.resampled(x)) paste(", ", nresample(x), " resamples", sep = "") else "",
                       ".\n", sep = "")
               }
-              if (show.settings) {
-                  cat("Settings: TO BE IMPLEMENTED.")
-              }
-              if (show.values | (nrow(x) <= ndoc & ncol(x) <= nfeature)) {
-                  Matrix::printSpMatrix2(x[1:min(ndoc, ndoc(x)), 1:min(nfeature, nfeature(x))], 
-                                         col.names = TRUE, 
-                                         zero.print = if (x@tri) "." else 0, ...)
-              }
+              print_dfm(x, ndoc, nfeature, show.values, show.settings, ...)
           })
 
 #' @rdname print.dfm
 #' @export
 setMethod("show", signature(object = "fcm"), function(object) print(object))
+
+#' @rdname print.dfm
+#' @method head fcm
+#' @export
+head.fcm <- function(x, n = 6L, nfeature = 6L, ...) {
+    head.dfm(x, n, nfeature, ...)
+}
+
+#' @rdname print.dfm
+#' @method tail fcm
+#' @export
+tail.fcm <- function(x, n = 6L, nfeature = 6L, ...) {
+    head.dfm(x, n, nfeature, ...)
+}
 
 #' @noRd
 #' @rdname fcm-class
@@ -289,7 +314,3 @@ setMethod("show", signature(object = "fcm"), function(object) print(object))
 is.fcm <- function(x) {
     is(x, "fcm")
 }
-
-
-
-

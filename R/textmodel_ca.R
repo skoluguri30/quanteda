@@ -1,19 +1,7 @@
-#' @rdname textmodel-internal
-#' @keywords internal textmodel
-#' @export
-setClass("textmodel_ca_fitted",
-         slots = c(smooth = "numeric", 
-                   nd = "numeric",
-                   sparse = "logical",
-                   threads = "numeric",
-                   residual_floor = "numeric"),
-         contains = "textmodel_fitted")
-
-#' correspondence analysis of a document-feature matrix
+#' Correspondence analysis of a document-feature matrix
 #' 
 #' \code{textmodel_ca} implements correspondence analysis scaling on a 
-#' \link{dfm}.  The method is a fast/sparse version of function \link[ca]{ca}, and
-#' returns a special class of \pkg{ca} object.
+#' \link{dfm}.  The method is a fast/sparse version of function \link[ca]{ca}. 
 #' @param x the dfm on which the model will be fit
 #' @param smooth a smoothing parameter for word counts; defaults to zero.
 #' @param nd  Number of dimensions to be included in output; if \code{NA} (the 
@@ -21,43 +9,49 @@ setClass("textmodel_ca_fitted",
 #' @param sparse retains the sparsity if set to \code{TRUE}; set it to 
 #'   \code{TRUE} if \code{x} (the \link{dfm}) is too big to be allocated after
 #'   converting to dense
-#' @param threads the number of threads to be used; set to 1 to use a 
-#'   serial version of the function; only applicable when \code{sparse = TRUE}
 #' @param residual_floor specifies the threshold for the residual matrix for 
 #'   calculating the truncated svd.Larger value will reduce memory and time cost
-#'   but might sacrify the accuracy; only applicable when \code{sparse = TRUE}
+#'   but might reduce accuracy; only applicable when \code{sparse = TRUE}
 
 #' @author Kenneth Benoit and Haiyan Wang
 #' @references Nenadic, O. and Greenacre, M. (2007). Correspondence analysis in 
 #'   R, with two- and three-dimensional graphics: The ca package. \emph{Journal 
-#'   of Statistical Software}, 20 (3), \url{http://www.jstatsoft.org/v20/i03/}
+#'   of Statistical Software}, 20 (3), \url{http://www.jstatsoft.org/v20/i03/}.
 #'   
 #' @details \link[RSpectra]{svds} in the \pkg{RSpectra} package is applied to 
 #'   enable the fast computation of the SVD.
-#' @note Setting threads larger than 1 (when \code{sparse = TRUE}) will trigger 
-#'   parallel computation, which retains sparsity of all involved matrices. You
-#'   may need to increase the value of \code{residual_floor} to ignore less
-#'   important information and hence to reduce the memory cost when you have a
-#'   very big \link{dfm}.
+#' @note You may need to set \code{sparse = TRUE}) and
+#'   increase the value of \code{residual_floor} to ignore less important
+#'   information and hence to reduce the memory cost when you have a very big
+#'   \link{dfm}.
+#'   If your attempt to fit the model fails due to the matrix being too large, 
+#'   this is probably because of the memory demands of computing the \eqn{V
+#'   \times V} residual matrix.  To avoid this, consider increasing the value of
+#'   \code{residual_floor} by 0.1, until the model can be fit.
+#' @return \code{textmodel_ca()} returns a fitted CA textmodel that is a special
+#' class of \pkg{ca} object.
 #' @examples 
 #' ieDfm <- dfm(data_corpus_irishbudget2010)
 #' wca <- textmodel_ca(ieDfm)
-#' summary(wca) 
+#' summary(wca)
+#' @seealso \code{\link{coef.textmodel_lsa}}, \link[ca]{ca}
 #' @export
-textmodel_ca <- function(x, smooth = 0, nd = NA,
-                         sparse = FALSE,
-                         threads = 1,
+textmodel_ca <- function(x, smooth = 0, nd = NA, sparse = FALSE, 
                          residual_floor = 0.1) {
     UseMethod("textmodel_ca")
 }
 
-#' @noRd
 #' @export
-textmodel_ca.dfm <- function(x, smooth = 0, nd = NA,
-                             sparse = FALSE,
-                             threads = 1,
+textmodel_ca.default <- function(x, smooth = 0, nd = NA, sparse = FALSE, 
+                                 residual_floor = 0.1) {
+    stop(friendly_class_undefined_message(class(x), "textmodel_ca"))
+}
+    
+#' @export
+textmodel_ca.dfm <- function(x, smooth = 0, nd = NA, sparse = FALSE, 
                              residual_floor = 0.1) {
     
+    x <- as.dfm(x)
     x <- x + smooth  # smooth by the specified amount
     
     I <- dim(x)[1] 
@@ -68,48 +62,40 @@ textmodel_ca.dfm <- function(x, smooth = 0, nd = NA,
     # default value of rank k
     if (is.na(nd)){
         #nd <- max(floor(min(I, J)/4), 1)  
-        nd <- max(floor(3*log(min(I, J))), 1) 
+        nd <- max(floor(3 * log(min(I, J))), 1) 
     } else {
         nd.max <- min(dim(x)) - 1
         if (nd > nd.max ) nd <- nd.max
     }
     nd0 <- nd
     
-    # Init:
     n <- sum(x) 
-    P <- x/n
+    P <- x / n
     rm <- rowSums(P) 
     cm <- colSums(P)
-    
-    # SVD:
+
     if (sparse == FALSE){
         # generally fast for a not-so-large dfm
-        if (threads > 1){
-            threads <- 1
-            warning("threads reset to 1 when sparse = FALSE", call. = FALSE)
-        }
         eP <- Matrix::tcrossprod(rm, cm)
         S  <- (P - eP) / sqrt(eP)
     } else {
-        # c++ function to keep the residual matrix sparse
-        S <- cacpp(P, threads, residual_floor/sqrt(n))
+        # keep the residual matrix sparse
+        S <- as(qatd_cpp_ca(P, residual_floor / sqrt(n)), 'dgCMatrix')
     }
     
-    #dec <- rsvd::rsvd(S, nd)   #rsvd is not as stable as RSpectra
-    #dec <- irlba::irlba(S, nd)
     dec <- RSpectra::svds(S, nd)   
     
-    chimat <- S^2 * n
-    sv     <- dec$d[1:nd]
+    chimat <- S ^ 2 * n
+    sv     <- dec$d[seq_len(nd)]
     u      <- dec$u
     v      <- dec$v
-    ev     <- sv^2
+    ev     <- sv ^ 2
     cumev  <- cumsum(ev)
     
     # Inertia:
     totin <- sum(ev)
-    rin <- rowSums(S^2)
-    cin <- colSums(S^2)
+    rin <- rowSums(S ^ 2)
+    cin <- colSums(S ^ 2)
     
     # chidist
     rachidist <- sqrt(rin / rm)
@@ -118,13 +104,13 @@ textmodel_ca.dfm <- function(x, smooth = 0, nd = NA,
     cchidist <- cachidist
     
     # Standard coordinates:
-    phi <- as.matrix(u[,1:nd]) / sqrt(rm)
+    phi <- as.matrix(u[,seq_len(nd)]) / sqrt(rm)
     rownames(phi) <- rn
-    colnames(phi) <- paste("Dim",1:ncol(phi), sep="")
+    colnames(phi) <- paste("Dim", seq_len(ncol(phi)), sep="")
     
     gam <- as.matrix(v[,1:nd]) / sqrt(cm)
     rownames(gam) <- cn
-    colnames(gam) <- paste("Dim",1:ncol(gam), sep="")
+    colnames(gam) <- paste("Dim", seq_len(ncol(gam)), sep="")
     # remove attributes
     attr(rm, "names") <- NULL
     attr(cm, "names") <- NULL
@@ -150,23 +136,29 @@ textmodel_ca.dfm <- function(x, smooth = 0, nd = NA,
              colcoord   = gam, 
              colsup     = logical(0),
              call       = match.call())
-    class(ca_model) <- c("textmodel_ca_fitted", "ca", "list")
+    class(ca_model) <- c("textmodel_ca", "ca", "list")
     return(ca_model)  
 }
 
-#' @rdname textmodel-internal
-#' @param doc_dim,feat_dim the document and feature dimension scores to be 
-#'   extracted as coefficients
+#' Extract model coefficients from a fitted textmodel_ca object
+#' 
+#' \code{coef()} extract model coefficients from a fitted \code{textmodel_ca}
+#' object.  \code{coefficients()} is an alias.
+#' @param object a fitted \link{textmodel_ca} object
+#' @param doc_dim,feat_dim the document and feature dimension scores to be
+#'   extracted
+#' @param ... unused
+#' @keywords textmodel internal
 #' @export
-setMethod("coef", signature(object = "textmodel_ca_fitted"),
-          function(object, doc_dim = 1, feat_dim = 1, ...) 
-              list(coef_feature = object$colcoord[, feat_dim],
-                   coef_feature_se = rep(NA, length(object$colnames)),
-                   coef_document = object$rowcoord[, doc_dim],
-                   coef_document_se = rep(NA, length(object$rownames)))
-)
+coef.textmodel_ca <- function(object, doc_dim = 1, feat_dim = 1, ...) {
+    list(coef_feature = object$colcoord[, feat_dim],
+         coef_feature_se = rep(NA, length(object$colnames)),
+         coef_document = object$rowcoord[, doc_dim],
+         coef_document_se = rep(NA, length(object$rownames)))
+}
 
-#' @rdname textmodel-internal
+#' @rdname coef.textmodel_ca
 #' @export
-setMethod("coefficients", signature(object = "textmodel_ca_fitted"),
-          function(object, ...) coef(object, ...))
+coefficients.textmodel_ca <- function(object, doc_dim = 1, feat_dim = 1, ...) {
+    UseMethod('coef')
+}

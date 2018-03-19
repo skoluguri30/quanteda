@@ -1,13 +1,17 @@
-#' a paragraph of text for testing various text-based functions
+#' A paragraph of text for testing various text-based functions
 #' 
-#' This is a long paragraph (2,914 characters) of text taken from an Irish budget speech by Joe Higgins.
+#' This is a long paragraph (2,914 characters) of text taken from a debate on
+#' Joe Higgins, delivered December 8, 2011.
 #' @format character vector with one element
 #' @keywords data
+#' @source Dáil Éireann Debate, 
+#' \href{http://oireachtasdebates.oireachtas.ie/debates\%20authoring/debateswebpack.nsf/takes/dail2011120700006?opendocument}{Financial Resolution No. 13: General (Resumed).}
+#' 7 December 2011.  vol. 749, no. 1.
 #' @examples
-#' tokenize(data_char_sampletext, remove_punct = TRUE)
+#' tokens(data_char_sampletext, remove_punct = TRUE)
 "data_char_sampletext"
 
-#' immigration-related sections of 2010 UK party manifestos
+#' Immigration-related sections of 2010 UK party manifestos
 #' 
 #' Extracts from the election manifestos of 9 UK political parties from 2010, related
 #' to immigration or asylum-seekers.
@@ -31,7 +35,7 @@
 #'   raw text score of approximately -0.45 when computed as per LBG (2003).
 #' @keywords data
 #' @aliases data_dfm_LBGexample
-#' @format A \link{dfm} object with 6 documents and 37 features
+#' @format A \link{dfm} object with 6 documents and 37 features.
 #' @references Laver, Michael, Kenneth Benoit, and John Garry.  2003. 
 #'   "\href{http://www.kenbenoit.net/pdfs/WORDSCORESAPSR.pdf}{Estimating policy 
 #'   positions from political text using words as data.}" \emph{American
@@ -45,10 +49,15 @@
 #' @format The corpus object for the 2010 budget speeches, with document-level 
 #'   variables for year, debate, serial number, first and last name of the 
 #'   speaker, and the speaker's party.
-#' @source Lowe, Will, and Kenneth R Benoit. 2013. "Validating Estimates of 
+#' @references Lowe, Will, and Kenneth R Benoit. 2013. "Validating Estimates of 
 #'   Latent Traits From Textual Data Using Human Judgment as a Benchmark." 
 #'   \emph{Political Analysis} 21: 298-313.
 #' @keywords data
+#' @source 
+#' Dáil Éireann Debate, 
+#' \href{http://oireachtasdebates.oireachtas.ie/debates\%20authoring/debateswebpack.nsf/takes/dail2009120900022?opendocument}{Budget Statement 2010.}
+#' 9 December 2009.  vol. 697, no. 3.
+#' 
 #' @examples
 #' summary(data_corpus_irishbudget2010)
 "data_corpus_irishbudget2010"
@@ -65,7 +74,7 @@
 # save(data_corpus_irishbudget2010, file="data/data_corpus_irishbudget2010.RData")
 
 
-#' internal data sets
+#' Internal data sets
 #' 
 #' Data sets used for mainly internal purposes by the \pkg{quanteda} package.
 #' @name data-internal
@@ -81,16 +90,116 @@ NULL
 #' @details \code{data_corpus_inaugural} is the \link{quanteda-package} corpus 
 #'   object of US presidents' inaugural addresses since 1789. Document variables
 #'   contain the year of the address and the last name of the president.
-#' @format a \link{corpus} object with docvars including year, and the last and
-#'   first names of the presidents delivering the inaugural address
+#' @format a \link{corpus} object with the following docvars:
+#' \itemize{
+#' \item \code{Year} a four-digit integer year
+#' \item \code{President} character; President's last name
+#' \item \code{FirstName} character; President's first name (and possibly middle initial)
+#' }
 #' @examples
 #' # some operations on the inaugural corpus
 #' summary(data_corpus_inaugural)
 #' head(docvars(data_corpus_inaugural), 10)
-#' @references 
+#' @source 
 #' \url{https://archive.org/details/Inaugural-Address-Corpus-1789-2009} and 
 #' \url{http://www.presidency.ucsb.edu/inaugurals.php}.
 #' @keywords data
 "data_corpus_inaugural"
+
+#' Lexicoder Sentiment Dictionary (2015)
+#' 
+#' The 2015 Lexicoder Sentiment Dictionary in \pkg{quanteda} \link{dictionary}
+#' format.  
+#' 
+#' @details
+#' The dictionary consists of 2,858 "negative" sentiment words and 1,709
+#' "positive" sentiment words. A further set of 2,860 and 1,721 negations of
+#' negative and positive words, respectively, is also included. While many users
+#' will find the non-negation sentiment forms of the LSD adequate for sentiment
+#' analysis, Young and Soroka (2012) did find a small, but non-negligible
+#' increase in performance when accounting for negations.  Users wishing to test
+#' this or include the negations are encouraged to subtract negated positive
+#' words from the count of positive words, and subtract the negated negative
+#' words from the negative count.  
+#' 
+#' Young and Soroka (2012) also suggest the use of a pre-processing script to
+#' remove specific cases of some words (i.e., "good bye", or "nobody better",
+#' which should not be counted as positive). Pre-processing scripts are
+#' available at \url{http://lexicoder.com}.
+#' @section License and Conditions: 
+#'   The LSD is available for non-commercial academic purposes only. By using
+#'   \code{data_dictionary_LSD2015}, you accept these terms.
+#'   
+#'   Please cite the references below when using the dictionary.
+#' @format 
+#' A \link{dictionary} of four keys containing glob-style \link[=valuetype]{pattern matches}.
+#' \describe{
+#' \item{\code{negative}}{2,858 word patterns indicating negative sentiment}
+#' \item{\code{positive}}{1,709 word patterns indicating positive sentiment}
+#' \item{\code{neg_positive}}{1,721 word patterns indicating a positive word preceded by a negation (used to convey negative sentiment)}
+#' \item{\code{negative}}{2,860 word patterns indicating a negative word preceded by a negation (used to convey positive sentiment)}
+#' }
+#' @references 
+#'   The objectives, development and reliability of the dictionary are discussed
+#'   in detail in Young and Soroka (2012). Please cite this article when using the
+#'   Lexicoder Sentiment Dictionary and related resources.
+#
+#'   Young, Lori and Stuart Soroka. 2012. \emph{Lexicoder Sentiment
+#'   Dictionary}. Available at \url{http://lexicoder.com}.
+#'   
+#'   Young, Lori and Stuart Soroka.  2012.  "Affective News: The Automated
+#'   Coding of Sentiment in Political Texts." \emph{Political Communication} 29(2):
+#'   205-231.
+#' @keywords data
+#' @examples 
+#' # simple example
+#' txt <- "This aggressive policy will not win friends."
+#' tokens_lookup(tokens(txt), dictionary = data_dictionary_LSD2015, exclusive = FALSE)
+#' ## tokens from 1 document.
+#' ## text1 :
+#' ## [1] "This"   "NEGATIVE"   "policy"   "will"   "NEG_POSITIVE" "POSITIVE" "."
+#' 
+#' # on larger examples - notice that few negations are used
+#' dfm(data_char_ukimmig2010, dictionary = data_dictionary_LSD2015)
+#' kwic(data_char_ukimmig2010, "not")
+"data_dictionary_LSD2015"
+
+#' Confidence debate from 1991 Irish Parliament
+#' 
+#' Texts of speeches from a no-confidence motion debated in the Irish Dáil in
+#' October 1991 over the future of the Fianna Fail-Progressive Democrat
+#' coalition.  (See Laver and Benoit 2002 for details.)
+#' @format \code{data_corpus_dailnoconf1991} is a corpus with 58 texts, 
+#'   including docvars for \code{name}, \code{party}, and \code{position}.
+#' @references Laver, Michael, and Kenneth Benoit. 2002. 
+#'   "\href{http://www.kenbenoit.net/pdfs/Laver_Benoit_IPS_2002.pdf}{Locating 
+#'   TDs in Policy Spaces: Wordscoring Dáil Speeches}." \emph{Irish Political 
+#'   Studies} 17 (Summer): 59-73.
+#'   
+#'   Laver, Michael, Kenneth Benoit, and John Garry. 2003. 
+#'   "\href{http://www.kenbenoit.net/pdfs/WORDSCORESAPSR.pdf}{Estimating policy 
+#'   positions from political text using words as data.}" \emph{American 
+#'   Political Science Review} 97(2): 311-331.
+#' @keywords data
+#' @examples
+#' \dontrun{
+#' data_dfm_dailnoconf1991 <- dfm(data_corpus_dailnoconf1991, removePunct = TRUE)
+#' fitted <- textmodel_mixfit(data_dfm_dailnoconf1991, 
+#'                            c("Govt", "Opp", "Opp", rep(NA, 55)))
+#' (pred <- predict(fitted))
+#' tmpdf <- 
+#'     data.frame(party = as.character(docvars(data_corpus_dailnoconf1991, "party")),
+#'                govt = coef(pred)[,"Govt"],
+#'                position = as.character(docvars(data_corpus_dailnoconf1991, "position")),
+#'                stringsAsFactors = FALSE)
+#' bymedian <- with(tmpdf, reorder(paste(party, position), govt, median))
+#' par(mar = c(5, 6, 4, 2)+.1)
+#' boxplot(govt ~ bymedian, data = tmpdf,
+#'         horizontal = TRUE, las = 1,
+#'         xlab = "Degree of support for government")
+#' abline(h = 7.5, col = "red", lty = "dashed")
+#' text(c(0.9, 0.9), c(8.5, 6.5), c("Goverment", "Opposition"))
+#' }
+"data_corpus_dailnoconf1991"
 
 

@@ -2,19 +2,19 @@
 % Please edit documentation in R/dfm_subset.R
 \name{dfm_subset}
 \alias{dfm_subset}
-\title{extract a subset of a dfm}
+\title{Extract a subset of a dfm}
 \usage{
 dfm_subset(x, subset, select, ...)
 }
 \arguments{
 \item{x}{\link{dfm} object to be subsetted}
 
-\item{subset}{logical expression indicating the documents to keep: missing 
+\item{subset}{logical expression indicating the documents to keep: missing
 values are taken as false}
 
 \item{select}{expression, indicating the docvars to select from the dfm; or a
-dfm, in which case the returned dfm will contain the same documents as the
-original dfm, even if these are empty.  See Details.}
+\link{dfm} object, in which case the returned dfm will contain the same
+documents as the original dfm, even if these are empty.  See Details.}
 
 \item{...}{not used}
 }
@@ -23,7 +23,7 @@ original dfm, even if these are empty.  See Details.}
   according to arguments
 }
 \description{
-Returns \emph{document} subsets of a dfm that meet certain conditions,
+Returns document subsets of a dfm that meet certain conditions,
 including direct logical operations on docvars (document-level variables). 
 \code{dfm_subset} functions identically to \code{\link{subset.data.frame}},
 using non-standard evaluation to evaluate conditions based on the
@@ -33,7 +33,7 @@ using non-standard evaluation to evaluate conditions based on the
 To select or subset \emph{features}, see \code{\link{dfm_select}} instead.
 
 When \code{select} is a dfm, then the returned dfm will be equal in
-  row dimensions and order to the dfm used for selection.  This is the
+  document dimension and order to the dfm used for selection.  This is the
   document-level version of using \code{\link{dfm_select}} where
   \code{pattern} is a dfm: that function matches features, while
   \code{dfm_subset} will match documents.
@@ -57,4 +57,4 @@ dfm_subset(dfm1, subset = dfm2[c(3,1,2), ])
 \seealso{
 \code{\link{subset.data.frame}}
 }
-\keyword{corpus}
+\keyword{dfm}

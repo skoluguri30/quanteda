@@ -1,6 +1,6 @@
-#' extract a subset of a dfm
+#' Extract a subset of a dfm
 #' 
-#' Returns \emph{document} subsets of a dfm that meet certain conditions,
+#' Returns document subsets of a dfm that meet certain conditions,
 #' including direct logical operations on docvars (document-level variables). 
 #' \code{dfm_subset} functions identically to \code{\link{subset.data.frame}},
 #' using non-standard evaluation to evaluate conditions based on the
@@ -8,22 +8,20 @@
 #' 
 #' To select or subset \emph{features}, see \code{\link{dfm_select}} instead.
 #' @param x \link{dfm} object to be subsetted
-#' @param subset logical expression indicating the documents to keep: missing 
-#'   values are taken as false
+#' @inheritParams corpus_subset
 #' @param select expression, indicating the docvars to select from the dfm; or a
-#'   dfm, in which case the returned dfm will contain the same documents as the
-#'   original dfm, even if these are empty.  See Details.
-#' @param ... not used
+#'   \link{dfm} object, in which case the returned dfm will contain the same
+#'   documents as the original dfm, even if these are empty.  See Details.
 #' @return \link{dfm} object, with a subset of documents (and docvars) selected
 #'   according to arguments
 #' @details When \code{select} is a dfm, then the returned dfm will be equal in
-#'   row dimensions and order to the dfm used for selection.  This is the
+#'   document dimension and order to the dfm used for selection.  This is the
 #'   document-level version of using \code{\link{dfm_select}} where
 #'   \code{pattern} is a dfm: that function matches features, while
 #'   \code{dfm_subset} will match documents.
 #' @export
 #' @seealso \code{\link{subset.data.frame}}
-#' @keywords corpus
+#' @keywords dfm
 #' @examples
 #' testcorp <- corpus(c(d1 = "a b c d", d2 = "a a b e",
 #'                      d3 = "b b c e", d4 = "e e f a b"),
@@ -43,13 +41,18 @@ dfm_subset <- function(x, subset, select, ...) {
     UseMethod("dfm_subset")
 }
     
-#' @rdname dfm_subset
-#' @noRd    
+#' @export
+dfm_subset.default <- function(x, subset, select, ...) {
+    stop(friendly_class_undefined_message(class(x), "dfm_subset"))
+}
+    
 #' @export
 dfm_subset.dfm <- function(x, subset, select, ...) {
-
-    if (length(addedArgs <- list(...)))
-        warning("Argument", if (length(addedArgs) > 1L) "s " else " ", names(addedArgs), " not used.", sep = "")
+    
+    x <- as.dfm(x)
+    if (length(args_added <- list(...)))
+        warning("Argument", if (length(args_added) > 1L) "s " else " ",
+                names(args_added), " not used.", sep = "")
     
     r <- if (missing(subset)) {
         rep_len(TRUE, nrow(docvars(x)))
@@ -59,14 +62,15 @@ dfm_subset.dfm <- function(x, subset, select, ...) {
         if (is.dfm(r)) {
             if (!missing(select)) stop("cannot select docvars if subset is a dfm")
             x <- x[which(docnames(x) %in% docnames(r)), ]
-            return(dfm_group(dfm_trim(x, min_count = 1, min_docfreq = 1, verbose = FALSE), 
+            return(dfm_group(dfm_trim(x, min_termfreq = 1, min_docfreq = 1, 
+                                      verbose = FALSE), 
                              groups = factor(docnames(x), levels = docnames(r)),
                              fill = TRUE))
         } else {
             r & !is.na(r)
         }
     }
-
+    
     vars <- if (missing(select)) {
         TRUE
     } else {
@@ -79,4 +83,3 @@ dfm_subset.dfm <- function(x, subset, select, ...) {
     
     x[which(r), ]
 }
-

@@ -76,7 +76,7 @@ test_that("test textstat_dist method = \"Kullback-Leibler\" against proxy dist()
     expect_equivalent(kullQuanteda, kullProxy)
     
     rownames(m) <- c("a", "b", "c", "d", "e")
-    mydfm <- new("dfmSparse", Matrix::Matrix(as.matrix(m), sparse=TRUE, dimnames = list(docs = rownames(m), features=colnames(m))))
+    mydfm <- new("dfm", Matrix::Matrix(as.matrix(m), sparse=TRUE, dimnames = list(docs = rownames(m), features=colnames(m))))
     kullQuanteda <- round(textstat_dist(mydfm, "a", method = "kullback", margin = "documents")[, "a"], 2)
     kullProxy <- round(drop(proxy::dist(as.matrix(mydfm), as.matrix(mydfm[1, ]), "kullback", diag = FALSE, upper = FALSE)), 2)
     kullProxy <- kullProxy[order(names(kullProxy))]
@@ -184,17 +184,17 @@ test_that("test textstat_dist method = \"Canberra\" against proxy dist() : featu
 
 # Hamming distance
 test_that("test textstat_dist method = \"hamming\" against e1071::hamming.distance: documents", {
-    presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove = stopwords("english"),
+    presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980 & Year < 2018), remove = stopwords("english"),
                    stem = TRUE, verbose = FALSE)
     
     hammingQuanteda <- sort(as.matrix(textstat_dist(presDfm, "1981-Reagan", method = "hamming", margin = "documents", upper = TRUE))[,"1981-Reagan"], decreasing = FALSE)
     hammingQuanteda <- hammingQuanteda[-which(names(hammingQuanteda) == "1981-Reagan")]
     
-    if (requireNamespace("e1071", quietly = TRUE)){
-        hammingE1071 <- sort(e1071::hamming.distance(as.matrix(tf(presDfm, "boolean")))[, "1981-Reagan"], decreasing = FALSE)
+    if (requireNamespace("e1071", quietly = TRUE)) {
+        hammingE1071 <- sort(e1071::hamming.distance(as.matrix(dfm_weight(presDfm, "boolean")))[, "1981-Reagan"], decreasing = FALSE)
         if("1981-Reagan" %in% names(hammingE1071)) hammingE1071 <- hammingE1071[-which(names(hammingE1071) == "1981-Reagan")]
     } else {
-        hammingE1071 <- c(711, 724, 745, 766, 767, 779, 785, 804, 852)
+        hammingE1071 <- c(712, 723, 746, 769, 774, 781, 784, 812, 857)
     }
     expect_equivalent(hammingQuanteda, hammingE1071)
 })
@@ -208,7 +208,7 @@ test_that("test textstat_dist method = \"hamming\" against e1071::hamming.distan
     hammingQuanteda <- hammingQuanteda[order(names(hammingQuanteda))]
     hammingQuanteda <- hammingQuanteda[-which(names(hammingQuanteda) == "soviet")]
     
-    presM <- t(as.matrix(tf(presDfm, "boolean")))
+    presM <- t(as.matrix(dfm_weight(presDfm, "boolean")))
     hammingE1071 <- e1071::hamming.distance(presM)[, "soviet"]
     hammingE1071 <- hammingE1071[order(names(hammingE1071))]
     if("soviet" %in% names(hammingE1071)) hammingE1071 <- hammingE1071[-which(names(hammingE1071) == "soviet")]
@@ -235,16 +235,19 @@ test_that("as.list.dist works as expected",{
     presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove = stopwords("english"),
                    stem = TRUE, verbose = FALSE)
     ddist <- textstat_dist(presDfm, method = "hamming")
-    ddist_list <- as.list(ddist)
-    expect_equal(names(ddist_list$`1981-Reagan`)[1:3], c("2009-Obama", "2013-Obama", "1997-Clinton"))
-    expect_equivalent(ddist_list$`1981-Reagan`[1:3], c(852, 804, 785))
+    expect_equal(
+        as.list(ddist)$`1981-Reagan`[1:3], 
+        c("2009-Obama" = 857, "2013-Obama" = 812, "1997-Clinton" = 784)
+    )
 })
 
-test_that("as.list.dist.selection works as expected",{
+test_that("as.list.dist_selection works as expected", {
     presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove = stopwords("english"),
                    stem = TRUE, verbose = FALSE)
-    ddist_list <- as.list(textstat_dist(presDfm, c("2017-Trump", "2013-Obama"), margin = "documents"))
-    expect_null(ddist_list$'1985-Reagan')
+    ddist <- textstat_dist(presDfm, c("2017-Trump", "2013-Obama"), margin = "documents")
+    ddist_list <- as.list(ddist)
+    expect_equal(names(ddist_list), c("2017-Trump", "2013-Obama"))
+    expect_null(ddist_list$"1985-Reagan")
     expect_equal(names(ddist_list$`2017-Trump`)[1:3], c("1985-Reagan", "1981-Reagan", "1989-Bush"))
 })
 
@@ -252,21 +255,25 @@ test_that("textstat_dist stops as expected for methods not supported",{
     presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove = stopwords("english"),
                    stem = TRUE, verbose = FALSE)
     expect_error(textstat_dist(presDfm, method = "Yule"), 
-                 "Yule is not implemented; consider trying proxy::dist\\(\\)")
+                 "yule is not implemented; consider trying proxy::dist\\(\\)")
 })
 
-test_that("textstat_dist stops as expected for wrong selections",{
-    presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove = stopwords("english"),
-                   stem = TRUE, verbose = FALSE)
-    expect_error(textstat_dist(presDfm, 5), 
-                 "'selection' should be character or character vector of document names or feature labels.")
-    
-    expect_error(textstat_dist(presDfm, margin = "documents", "2009-Obamaa"), 
-                 "The documents specified by 'selection' do not exist.")
-    expect_error(textstat_dist(presDfm, margin = "features", "Obamaa"), 
-                 "The features specified by 'selection' do not exist.")
-    
-})
+# test_that("textstat_dist stops as expected for wrong selections",{
+#     presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), remove = stopwords("english"),
+#                    stem = TRUE, verbose = FALSE)
+#     expect_error(textstat_dist(presDfm, 5), 
+#                  "The vector/matrix specified by 'selection' must be conform to the object x in columns")
+#     expect_error(textstat_dist(presDfm, 5, margin = "features"), 
+#                  "The vector/matrix specified by 'selection' must be conform to the object x in rows")
+#     
+#     
+#     
+#     expect_error(textstat_dist(presDfm, margin = "documents", "2009-Obamaa"), 
+#                  "The documents specified by 'selection' do not exist.")
+#     expect_error(textstat_dist(presDfm, margin = "features", "Obamaa"), 
+#                  "The features specified by 'selection' do not exist.")
+#     
+# })
 
 test_that("as.dist on a dist returns a dist", {
     presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1990), remove = stopwords("english"),
@@ -277,4 +284,24 @@ test_that("as.dist on a dist returns a dist", {
                       as.dist(distmat, upper = TRUE)) 
     expect_equivalent(textstat_dist(presDfm, upper = TRUE, diag = TRUE), 
                       as.dist(distmat, upper = TRUE, diag = TRUE)) 
+})
+
+test_that("selection offers option to enable an alien vector/matrix", {
+    presDfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1990), remove = stopwords("english"),
+                   stem = TRUE, verbose = FALSE)
+    
+    expect_error(textstat_dist(presDfm, c(1,2,3,4,5,6,7), margin = "features"), NA)
+    
+})
+
+
+test_that("selection works with dfm with padding", {
+    
+    toks <- tokens(c(doc1 = "a b c d e", doc2 = "b c f e"), remove_punct = TRUE)
+    toks <- tokens_remove(toks, "b", padding = TRUE)
+    mt <- dfm(toks)
+    expect_silent(textstat_dist(mt, selection = c("c"), margin = "features"))
+    expect_silent(textstat_dist(mt, selection = c(""), margin = "features"))
+    expect_silent(textstat_dist(mt, selection = c("doc2"), margin = "documents"))
+    
 })

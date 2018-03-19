@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootstrap_dfm.R
 \name{bootstrap_dfm}
 \alias{bootstrap_dfm}
-\title{bootstrap a dfm}
+\title{Bootstrap a dfm}
 \usage{
 bootstrap_dfm(x, n = 10, ..., verbose = quanteda_options("verbose"))
 }
@@ -25,7 +25,7 @@ Create an array of resampled dfms.
 }
 \details{
 Function produces multiple, resampled \link{dfm} objects, based on 
-  resampling sentences (wth replacement) from each document, recombining
+  resampling sentences (with replacement) from each document, recombining
   these into new "documents" and computing a dfm for each. Resampling of
   sentences is done strictly within document, so that every resampled
   document will contain at least some of its original tokens.

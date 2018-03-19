@@ -1,12 +1,12 @@
-#' get or set corpus metadata
+# metacorpus functions ---------------------
+
+#' Get or set corpus metadata
 #' 
 #' Get or set the corpus-level metadata in a \link{corpus} object.
 #' @param x a \link{corpus} object
-#' @param field metadata field name(s);  if \code{NULL} (default), return all
+#' @param field metadata field name(s);  if \code{NULL} (default), return all 
 #'   metadata names
-#' @return For \code{metacorpus}, a list of the metadata fields in the corpus. 
-#'   If a list is not what you wanted, you can wrap the results in \link{unlist}, 
-#'   but this will remove any metadata field that is set to \code{NULL}.
+#' @return For \code{metacorpus}, a named list of the metadata fields in the corpus. 
 #'   
 #'   For \code{metacorpus <-}, the corpus with the updated metadata.
 #' @export
@@ -18,6 +18,11 @@
 #' metacorpus(data_corpus_inaugural, "citation")
 metacorpus <- function(x, field = NULL)
     UseMethod("metacorpus")
+
+#' @export
+metacorpus.default <- function(x, field = NULL) {
+    stop(friendly_class_undefined_message(class(x), "metacorpus"))
+}
 
 #' @noRd
 #' @export
@@ -31,11 +36,21 @@ metacorpus.corpus <- function(x, field = NULL) {
     }
 }
 
-# replacement function for corpus-level data
+#' Replacement function for corpus-level data
 #' @param value new value of the corpus metadata field
 #' @export
 #' @rdname metacorpus
 "metacorpus<-" <- function(x, field, value) {
+    UseMethod("metacorpus<-")
+}
+
+#' @export
+"metacorpus<-.default" <- function(x, field, value) {
+    stop(friendly_class_undefined_message(class(x), "metacorpus<-"))
+}
+
+#' @export
+"metacorpus<-.corpus" <- function(x, field, value) {
     if (!is.null(field)) {
         stopifnot(TRUE)
         ## NEED TO CHECK HERE THAT FIELD LIST MATCHES METADATA FIELD NAMES
@@ -45,38 +60,9 @@ metacorpus.corpus <- function(x, field = NULL) {
 }
 
 
-# internal accessor for documents object
-# @export
-documents <- function(x) {
-    UseMethod("documents")
-}
+# texts() functions ----------------------------
 
-documents.corpus <- function(x) {
-    x$documents
-}
-
-documents.tokens <- function(x) {
-    docvars(x)
-}
-
-documents.dfm <- function(x) {
-    docvars(x)
-}
-
-
-# internal replacement function for documents
-# @export
-"documents<-" <- function(x, value) {
-    UseMethod("documents<-")
-}
-
-"documents<-.corpus" <- function(x, value) {
-    x$documents <- value
-    x
-}
-
-
-#' get or assign corpus texts
+#' Get or assign corpus texts
 #' 
 #' Get or replace the texts in a \link{corpus}, with grouping options. 
 #' Works for plain character vectors too, if \code{groups} is a factor.
@@ -147,9 +133,8 @@ texts.character <- function(x, groups = NULL, spacer = "  ") {
 #'   Rather, this sort of processing is better performed through downstream 
 #'   operations.  For instance, do not lowercase the texts in a corpus, or you 
 #'   will never be able to recover the original case.  Rather, apply 
-#'   \code{\link{tokens_tolower}} after applying 
-#'   \code{\link{tokens}} to a corpus, or use the option \code{tolower = TRUE} in 
-#'   \code{\link{dfm}}..
+#'   \code{\link{tokens_tolower}} after applying \code{\link{tokens}} to a
+#'   corpus, or use the option \code{tolower = TRUE} in \code{\link{dfm}}.
 #' @examples
 #' BritCorpus <- corpus(c("We must prioritise honour in our neighbourhood.", 
 #'                        "Aluminium is a valourous metal."))
@@ -183,55 +168,33 @@ as.character.corpus <- function(x, ...) {
     texts(x)
 }
 
-#' get or set document names
-#' 
-#' Get or set the document names of a \link{corpus}, \link{tokens}, or \link{dfm} object.
-#' @param x the object with docnames
-#' @export
-#' @return \code{docnames} returns a character vector of the document names
-#' @seealso \code{\link{featnames}}
-#' @examples
-#' # query the document names of a corpus
-#' docnames(data_corpus_irishbudget2010)
-#' 
-#' # query the document names of a tokens object
-#' docnames(tokens(data_char_ukimmig2010))
-#' 
-#' # query the document names of a dfm
-#' docnames(dfm(data_corpus_inaugural[1:5]))
-#' 
-#' @keywords corpus dfm
-docnames <- function(x) {
-    UseMethod("docnames")
+# internal: documents() functions ---------------------------------
+
+# internal accessor for documents object
+# @export
+documents <- function(x) {
+    UseMethod("documents")
 }
 
-#' @noRd
-#' @export
-docnames.corpus <- function(x) {
-    # didn't use accessor documents() because didn't want to pass
-    # that large object
-    rownames(x$documents)
+documents.corpus <- function(x) {
+    x$documents
 }
 
-#' @param value a character vector of the same length as \code{x}
-#' @return \code{docnames <-} assigns new values to the document names of a corpus. (Does not work
-#' for dfm objects, whose document names are fixed.)
-#' @export
-#' @examples 
-#' # reassign the document names of the inaugural speech corpus
-#' docnames(data_corpus_inaugural) <- paste("Speech", 1:ndoc(data_corpus_inaugural), sep="")
-#' 
-#' @rdname docnames
-"docnames<-" <- function(x, value) {
-    UseMethod("docnames<-")
+documents.tokens <- function(x) {
+    docvars(x)
 }
 
-#' @noRd
-#' @export
-"docnames<-.corpus" <- function(x, value) {
-    if (!is.corpus(x))
-        stop("docnames<-  only valid for corpus objects.")
-    rownames(x$documents) <- value
-    return(x)
+documents.dfm <- function(x) {
+    docvars(x)
+}
+
+# internal replacement function for documents
+"documents<-" <- function(x, value) {
+    UseMethod("documents<-")
+}
+
+"documents<-.corpus" <- function(x, value) {
+    x$documents <- value
+    x
 }
 

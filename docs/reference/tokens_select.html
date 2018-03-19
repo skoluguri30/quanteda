@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>select or remove tokens from a tokens object — tokens_select • quanteda</title>
+<title>Select or remove tokens from a tokens object — tokens_select • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,12 +34,24 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-144616-24', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -46,23 +59,88 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">quanteda</a>
+      <a class="navbar-brand" href="../index.html">Quanteda</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Quick Start
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_cn.html">快速入门指南</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_ja.html">クイック・スタートガイド</a>
+    </li>
+  </ul>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="../articles/pkgdown/comparison.html">Features</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/examples/phrase.html">Multi-word expressions</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/plotting.html">Textual data visualization</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/lsa.html">Latent Semantic Analysis (LSA)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/chinese.html">Chinese text analysis</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/twitter.html">Social media analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Replications
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/replication/digital-humanities.html">Text Analysis with R for Students of Literature</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/text2vec.html">Word embedding (word2vec)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/qss.html">Quantitative Social Science Ch. 5.1</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../articles/design.html">Design</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/quanteda/quanteda">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -74,13 +152,15 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>select or remove tokens from a tokens object</h1>
+    <h1>Select or remove tokens from a tokens object</h1>
     </div>
 
     
-    <p>This function selects or discards tokens from a <a href='tokens.html'>tokens</a> objects, with 
-the shortcut <code>tokens_remove(x, pattern)</code> defined as a shortcut for 
-<code>tokens_select(x, pattern, selection = "remove")</code>.  The most common 
+    <p>These function select or discard tokens from a <a href='tokens.html'>tokens</a> objects.  For 
+convenience, the functions <code>tokens_remove</code> and <code>tokens_keep</code> 
+are defined as shortcuts for 
+<code>tokens_select(x, pattern, selection = "remove")</code> and <code>tokens_select(x, pattern, selection = "keep")</code>, 
+respectively.  The most common 
 usage for <code>tokens_remove</code> will be to eliminate stop words from a text or
 text-based object, while the most common use of <code>tokens_select</code> will be 
 to select tokens with only positive pattern matches from a list of regular 
@@ -89,23 +169,24 @@ expressions, including a dictionary.</p>
 
     <pre class="usage"><span class='fu'>tokens_select</span>(<span class='no'>x</span>, <span class='no'>pattern</span>, <span class='kw'>selection</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"keep"</span>, <span class='st'>"remove"</span>),
   <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glob"</span>, <span class='st'>"regex"</span>, <span class='st'>"fixed"</span>), <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>))
+  <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>window</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>min_nchar</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>max_nchar</span> <span class='kw'>=</span> <span class='fl'>79L</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>))
 
-<span class='fu'>tokens_remove</span>(<span class='no'>x</span>, <span class='no'>pattern</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glob"</span>, <span class='st'>"regex"</span>, <span class='st'>"fixed"</span>),
-  <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>))</pre>
+<span class='fu'>tokens_remove</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='fu'>tokens_keep</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p><a href='tokens.html'>tokens</a> object whose token elements will be selected</p></td>
+      <td><p><a href='tokens.html'>tokens</a> object whose token elements will be removed or kept</p></td>
     </tr>
     <tr>
       <th>pattern</th>
       <td><p>a character vector, list of character vectors, <a href='dictionary.html'>dictionary</a>,
-<a href='collocations.html'>collocations</a>, or <a href='dfm.html'>dfm</a>. See <a href='pattern.html'>pattern</a> for details.</p></td>
+<a href='textstat_collocations.html'>collocations</a>, or <a href='dfm.html'>dfm</a>. See <a href='pattern.html'>pattern</a> for details.</p></td>
     </tr>
     <tr>
       <th>selection</th>
@@ -114,7 +195,7 @@ matching <code>pattern</code></p></td>
     </tr>
     <tr>
       <th>valuetype</th>
-      <td><p>how to interpret keyword expressions: <code>"glob"</code> for 
+      <td><p>the type of pattern matching: <code>"glob"</code> for 
 "glob"-style wildcard expressions; <code>"regex"</code> for regular expressions;
 or <code>"fixed"</code> for exact matching. See <a href='valuetype.html'>valuetype</a> for details.</p></td>
     </tr>
@@ -130,9 +211,37 @@ the pre- and post-selected tokens, for instance if a window of adjacency
 needs to be computed.</p></td>
     </tr>
     <tr>
+      <th>window</th>
+      <td><p>integer of length 1 or 2; the size of the window of tokens
+  adjacent to <code>pattern</code> that will be selected. The window is symmetric
+  unless a vector of two elements is supplied, in which case the first
+  element will be the token length of the window before <code>pattern</code>, and
+  the second will be the token length of the window after <code>pattern</code>.
+  The default is <code>0</code>, meaning that only the pattern matched token(s) are
+  selected, with no adjacent terms.</p>
+<p>Terms from overlapping windows are never double-counted, but simply
+  returned in the pattern match. This is because <code>tokens_select</code> never
+  redefines the document units; for this, see <code><a href='kwic.html'>kwic</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>min_nchar, max_nchar</th>
+      <td><p>numerics specifying the minimum and maximum length
+in characters for tokens to be removed or kept; defaults are 1 and 
+<a href='https://en.wikipedia.org/wiki/Donaudampfschiffahrtselektrizitätenhauptbetriebswerkbauunterbeamtengesellschaft'>79</a>.
+ (Set <code>max_nchar</code> to <code>NULL</code> for no upper limit.) These are 
+applied after (and hence, in addition to) any selection based on pattern 
+matches.</p></td>
+    </tr>
+    <tr>
       <th>verbose</th>
       <td><p>if <code>TRUE</code> print messages about how many tokens were 
 selected or removed</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments passed by <code>tokens_remove</code> and
+<code>tokens_keep</code> to <code>tokens_select</code>. Cannot include
+<code>selection</code>.</p></td>
     </tr>
     </table>
     
@@ -147,60 +256,87 @@ selected or removed</p></td>
 <span class='no'>toks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='fu'>c</span>(<span class='st'>"This is a sentence."</span>, <span class='st'>"This is a second sentence."</span>),
                  <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='fu'>c</span>(<span class='st'>"is"</span>, <span class='st'>"a"</span>, <span class='st'>"this"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+#&gt; text1 :
 #&gt; [1] "This" "is"   "a"   
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt; [1] "This" "is"   "a"   
 #&gt; </div><div class='input'><span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='fu'>c</span>(<span class='st'>"is"</span>, <span class='st'>"a"</span>, <span class='st'>"this"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+#&gt; text1 :
 #&gt; [1] "This" "is"   "a"    ""    
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt; [1] "This" "is"   "a"    ""     ""    
 #&gt; </div><div class='input'><span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='fu'>c</span>(<span class='st'>"is"</span>, <span class='st'>"a"</span>, <span class='st'>"this"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+#&gt; text1 :
 #&gt; [1] "sentence"
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt; [1] "second"   "sentence"
 #&gt; </div><div class='input'><span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='fu'>c</span>(<span class='st'>"is"</span>, <span class='st'>"a"</span>, <span class='st'>"this"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>padding</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+#&gt; text1 :
 #&gt; [1] ""         ""         ""         "sentence"
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt; [1] ""         ""         ""         "second"   "sentence"
 #&gt; </div><div class='input'>
 <span class='co'># how case_insensitive works</span>
 <span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='fu'>c</span>(<span class='st'>"is"</span>, <span class='st'>"a"</span>, <span class='st'>"this"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+#&gt; text1 :
 #&gt; [1] "sentence"
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt; [1] "second"   "sentence"
 #&gt; </div><div class='input'><span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='fu'>c</span>(<span class='st'>"is"</span>, <span class='st'>"a"</span>, <span class='st'>"this"</span>), <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+#&gt; text1 :
 #&gt; [1] "This"     "sentence"
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt; [1] "This"     "second"   "sentence"
 #&gt; </div><div class='input'>
-<span class='co'>## tokens_remove example</span>
-<span class='no'>txt</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='no'>wash1</span> <span class='kw'>&lt;-</span> <span class='st'>"Fellow citizens, I am again called upon by the voice of my country to 
+<span class='co'># use window</span>
+<span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='st'>"second"</span>, <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"keep"</span>, <span class='kw'>window</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
+#&gt; text1 :
+#&gt; character(0)
+#&gt; 
+#&gt; text2 :
+#&gt; [1] "a"        "second"   "sentence"
+#&gt; </div><div class='input'><span class='fu'>tokens_select</span>(<span class='no'>toks</span>, <span class='st'>"second"</span>, <span class='kw'>selection</span> <span class='kw'>=</span> <span class='st'>"remove"</span>, <span class='kw'>window</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
+#&gt; text1 :
+#&gt; [1] "This"     "is"       "a"        "sentence"
+#&gt; 
+#&gt; text2 :
+#&gt; [1] "This" "is"  
+#&gt; </div><div class='input'><span class='fu'>tokens_remove</span>(<span class='no'>toks</span>, <span class='st'>"is"</span>, <span class='kw'>window</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>))</div><div class='output co'>#&gt; tokens from 2 documents.
+#&gt; text1 :
+#&gt; [1] "This"     "sentence"
+#&gt; 
+#&gt; text2 :
+#&gt; [1] "This"     "second"   "sentence"
+#&gt; </div><div class='input'>
+<span class='co'># tokens_remove example: remove stopwords</span>
+<span class='no'>txt</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='no'>wash1</span> <span class='kw'>&lt;-</span> <span class='st'>"Fellow citizens, I am again called upon by the voice of my country to
                    execute the functions of its Chief Magistrate."</span>,
          <span class='no'>wash2</span> <span class='kw'>&lt;-</span> <span class='st'>"When the occasion proper for it shall arrive, I shall endeavor to express
                    the high sense I entertain of this distinguished honor."</span>)
-<span class='fu'>tokens_remove</span>(<span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='no'>txt</span>, <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>), <span class='fu'><a href='stopwords.html'>stopwords</a></span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; tokens from 2 documents.
-#&gt; Component 1 :
+<span class='fu'>tokens_remove</span>(<span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='no'>txt</span>, <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>), <span class='fu'><a href='http://www.rdocumentation.org/packages/stopwords/topics/stopwords'>stopwords</a></span>(<span class='st'>"english"</span>))</div><div class='output co'>#&gt; tokens from 2 documents.
+#&gt; text1 :
 #&gt;  [1] "Fellow"     "citizens"   "called"     "upon"       "voice"     
 #&gt;  [6] "country"    "execute"    "functions"  "Chief"      "Magistrate"
 #&gt; 
-#&gt; Component 2 :
+#&gt; text2 :
 #&gt;  [1] "occasion"      "proper"        "shall"         "arrive"       
 #&gt;  [5] "shall"         "endeavor"      "express"       "high"         
 #&gt;  [9] "sense"         "entertain"     "distinguished" "honor"        
 #&gt; </div><div class='input'>
-</div></pre>
+<span class='co'># token_keep example: keep two-letter words</span>
+<span class='fu'>tokens_keep</span>(<span class='fu'><a href='tokens.html'>tokens</a></span>(<span class='no'>txt</span>, <span class='kw'>remove_punct</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>), <span class='st'>"??"</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
+#&gt; text1 :
+#&gt; [1] "am" "by" "of" "my" "to" "of"
+#&gt; 
+#&gt; text2 :
+#&gt; [1] "it" "to" "of"
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

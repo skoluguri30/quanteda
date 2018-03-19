@@ -3,7 +3,7 @@
 \name{corpus_trim}
 \alias{corpus_trim}
 \alias{char_trim}
-\title{remove sentences based on their token lengths or a pattern match}
+\title{Remove sentences based on their token lengths or a pattern match}
 \usage{
 corpus_trim(x, what = c("sentences", "paragraphs", "documents"),
   min_ntoken = 1, max_ntoken = NULL, exclude_pattern = NULL)
@@ -14,7 +14,7 @@ char_trim(x, what = c("sentences", "paragraphs", "documents"),
 \arguments{
 \item{x}{\link{corpus} or character object whose sentences will be selected.}
 
-\item{what}{units of triming, \code{"sentences"} or \code{"paragraphs"}, or
+\item{what}{units of trimming, \code{"sentences"} or \code{"paragraphs"}, or
 \code{"documents"}}
 
 \item{min_ntoken, max_ntoken}{minimum and maximum lengths in word tokens 
@@ -24,10 +24,10 @@ char_trim(x, what = c("sentences", "paragraphs", "documents"),
 sentence level) will be used to exclude sentences}
 }
 \value{
-a \link{corpus} or character vector equal in length to the input, or
-  a tokenized set of sentences if .  If the input was a corpus, then the all
-  docvars and metadata are preserved.  For documents whose sentences have
-  been removed entirely, a null string (\code{""}) will be returned.
+a \link{corpus} or character vector equal in length to the input.  If
+  the input was a corpus, then the all docvars and metadata are preserved. 
+  For documents whose sentences have been removed entirely, a null string
+  (\code{""}) will be returned.
 }
 \description{
 Removes sentences from a corpus or a character vector shorter than a 
@@ -51,3 +51,4 @@ char_trim(txt, "sentences", exclude_pattern = "sentence\\\\.")
 }
 \keyword{character}
 \keyword{corpus}
+\keyword{internal}

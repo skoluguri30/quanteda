@@ -1,31 +1,37 @@
-#' apply a dictionary to a tokens object
+#' Apply a dictionary to a tokens object
 #' 
 #' Convert tokens into equivalence classes defined by values of a dictionary 
 #' object.
 #' @param x tokens object to which dictionary or thesaurus will be supplied
 #' @param dictionary the \link{dictionary}-class object that will be applied to 
 #'   \code{x}
-#' @param levels integers specifying the levels of entries in a hierarchical
+#' @param levels integers specifying the levels of entries in a hierarchical 
 #'   dictionary that will be applied.  The top level is 1, and subsequent levels
-#'   describe lower nesting levels.  Values may be combined, even if these
-#'   levels are not contiguous, e.g. `levels = c(1:3)` will collapse the second
-#'   level into the first, but record the third level (if present) collapsed below
-#'   the first.  (See examples.)
+#'   describe lower nesting levels.  Values may be combined, even if these 
+#'   levels are not contiguous, e.g. `levels = c(1:3)` will collapse the second 
+#'   level into the first, but record the third level (if present) collapsed
+#'   below the first (see examples).
 #' @inheritParams valuetype
 #' @param case_insensitive ignore the case of dictionary values if \code{TRUE} 
 #'   uppercase to distinguish them from other features
 #' @param capkeys if TRUE, convert dictionary keys to uppercase to distinguish 
 #'   them from other features
+#' @param nomatch an optional character naming a new key for tokens that do not
+#'   matched to a dictionary values  If \code{NULL} (default), do not record
+#'   unmatched tokens.
 #' @param exclusive if \code{TRUE}, remove all features not in dictionary, 
 #'   otherwise, replace values in dictionary with keys while leaving other 
 #'   features unaffected
 #' @param verbose print status messages if \code{TRUE}
+#' @keywords tokens
+#' @seealso tokens_replace
 #' @examples
 #' toks <- tokens(data_corpus_inaugural)
 #' dict <- dictionary(list(country = "united states", 
 #'                    law=c('law*', 'constitution'), 
 #'                    freedom=c('free*', 'libert*')))
 #' dfm(tokens_lookup(toks, dict, valuetype='glob', verbose = TRUE))
+#' dfm(tokens_lookup(toks, dict, valuetype='glob', verbose = TRUE, nomatch = 'NONE'))
 #' 
 #' dict_fix <- dictionary(list(country = "united states", 
 #'                        law = c('law', 'constitution'), 
@@ -48,6 +54,10 @@
 #' tokens_lookup(toks, dict, levels = 3)
 #' tokens_lookup(toks, dict, levels = c(1,3))
 #' tokens_lookup(toks, dict, levels = c(2,3))
+#' 
+#' # show unmatched tokens
+#' tokens_lookup(toks, dict, nomatch = "_UNMATCHED")
+#' 
 #' @importFrom RcppParallel RcppParallelLibs
 #' @export
 tokens_lookup <- function(x, dictionary, levels = 1:5,
@@ -55,19 +65,30 @@ tokens_lookup <- function(x, dictionary, levels = 1:5,
                           case_insensitive = TRUE,
                           capkeys = !exclusive,
                           exclusive = TRUE,
+                          nomatch = NULL,
                           verbose = quanteda_options("verbose")) {
     UseMethod("tokens_lookup")    
 }
 
-#' @noRd
+#' @export
+tokens_lookup.default <- function(x, dictionary, levels = 1:5,
+                                 valuetype = c("glob", "regex", "fixed"), 
+                                 case_insensitive = TRUE,
+                                 capkeys = !exclusive,
+                                 exclusive = TRUE,
+                                 nomatch = NULL,
+                                 verbose = quanteda_options("verbose")) {
+    stop(friendly_class_undefined_message(class(x), "tokens_lookup"))
+}
+
 #' @export
 tokens_lookup.tokens <- function(x, dictionary, levels = 1:5,
                           valuetype = c("glob", "regex", "fixed"), 
                           case_insensitive = TRUE,
                           capkeys = !exclusive,
                           exclusive = TRUE,
+                          nomatch = NULL,
                           verbose = quanteda_options("verbose")) {
-
     if (!is.tokens(x))
         stop("x must be a tokens object")
     
@@ -80,33 +101,41 @@ tokens_lookup.tokens <- function(x, dictionary, levels = 1:5,
     
     # Generate all combinations of type IDs
     values_id <- list()
-    keys_id <- c()
+    keys_id <- integer()
     types <- types(x)
     
-    index <- index_regex(types, valuetype, case_insensitive) # index types before the loop
     if (verbose) 
         catm("applying a dictionary consisting of ", length(dictionary), " key", 
              if (length(dictionary) > 1L) "s" else "", "\n", sep="")
     
+    index <- index_types(types, valuetype, case_insensitive) # index types before the loop
     for (h in seq_along(dictionary)) {
         values <- split_dictionary_values(dictionary[[h]], attr(x, 'concatenator'))
-        values_temp <- regex2id(values, types, valuetype, case_insensitive, index)
+        values_temp <- regex2id(values, index = index)
         values_id <- c(values_id, values_temp)
         keys_id <- c(keys_id, rep(h, length(values_temp)))
     }
+    
     if (capkeys) {
         keys <- char_toupper(names(dictionary))
     } else {
         keys <- names(dictionary)
     }
     if (exclusive) {
-        result <- qatd_cpp_tokens_lookup(x, keys, values_id, keys_id, FALSE)
+        if (!is.null(nomatch)) {
+            x <- qatd_cpp_tokens_lookup(x, c(keys, nomatch[1]), values_id, keys_id, FALSE, 1)
+        } else {
+            x <- qatd_cpp_tokens_lookup(x, keys, values_id, keys_id, FALSE, 0)
+        }
     } else {
-        result <- qatd_cpp_tokens_match(x, c(types, keys), values_id, keys_id + length(types), FALSE)
+        if (!is.null(nomatch))
+            warning("nomatch only applies if exclusive = TRUE")
+        keys_used <- unique(keys_id)
+        x <- qatd_cpp_tokens_lookup(x, c(keys[keys_used], types), values_id, match(keys_id, keys_used), FALSE, 2)
     }
-    attributes(result, FALSE) <- attrs
-    attr(result, "what") <- "dictionary"
-    attr(result, "dictionary") <- dictionary
-    attr(result, "padding") <- FALSE
-    return(result)
+    attr(x, "what") <- "dictionary"
+    attr(x, "dictionary") <- dictionary
+    attributes(x, FALSE) <- attrs
+    if (exclusive) attr(x, "padding") <- FALSE
+    return(x)
 }

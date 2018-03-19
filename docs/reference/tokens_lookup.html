@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>apply a dictionary to a tokens object — tokens_lookup • quanteda</title>
+<title>Apply a dictionary to a tokens object — tokens_lookup • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,12 +34,24 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-144616-24', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -46,23 +59,88 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">quanteda</a>
+      <a class="navbar-brand" href="../index.html">Quanteda</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Quick Start
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_cn.html">快速入门指南</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_ja.html">クイック・スタートガイド</a>
+    </li>
+  </ul>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="../articles/pkgdown/comparison.html">Features</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/examples/phrase.html">Multi-word expressions</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/plotting.html">Textual data visualization</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/lsa.html">Latent Semantic Analysis (LSA)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/chinese.html">Chinese text analysis</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/twitter.html">Social media analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Replications
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/replication/digital-humanities.html">Text Analysis with R for Students of Literature</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/text2vec.html">Word embedding (word2vec)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/qss.html">Quantitative Social Science Ch. 5.1</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../articles/design.html">Design</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/quanteda/quanteda">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -74,7 +152,7 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>apply a dictionary to a tokens object</h1>
+    <h1>Apply a dictionary to a tokens object</h1>
     </div>
 
     
@@ -84,7 +162,7 @@ object.</p>
 
     <pre class="usage"><span class='fu'>tokens_lookup</span>(<span class='no'>x</span>, <span class='no'>dictionary</span>, <span class='kw'>levels</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>5</span>, <span class='kw'>valuetype</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glob"</span>, <span class='st'>"regex"</span>,
   <span class='st'>"fixed"</span>), <span class='kw'>case_insensitive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>capkeys</span> <span class='kw'>=</span> !<span class='no'>exclusive</span>,
-  <span class='kw'>exclusive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>))</pre>
+  <span class='kw'>exclusive</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>nomatch</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='quanteda_options.html'>quanteda_options</a></span>(<span class='st'>"verbose"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -100,16 +178,16 @@ object.</p>
     </tr>
     <tr>
       <th>levels</th>
-      <td><p>integers specifying the levels of entries in a hierarchical
+      <td><p>integers specifying the levels of entries in a hierarchical 
 dictionary that will be applied.  The top level is 1, and subsequent levels
-describe lower nesting levels.  Values may be combined, even if these
-levels are not contiguous, e.g. `levels = c(1:3)` will collapse the second
-level into the first, but record the third level (if present) collapsed below
-the first.  (See examples.)</p></td>
+describe lower nesting levels.  Values may be combined, even if these 
+levels are not contiguous, e.g. `levels = c(1:3)` will collapse the second 
+level into the first, but record the third level (if present) collapsed
+below the first (see examples).</p></td>
     </tr>
     <tr>
       <th>valuetype</th>
-      <td><p>how to interpret keyword expressions: <code>"glob"</code> for 
+      <td><p>the type of pattern matching: <code>"glob"</code> for 
 "glob"-style wildcard expressions; <code>"regex"</code> for regular expressions;
 or <code>"fixed"</code> for exact matching. See <a href='valuetype.html'>valuetype</a> for details.</p></td>
     </tr>
@@ -130,10 +208,20 @@ otherwise, replace values in dictionary with keys while leaving other
 features unaffected</p></td>
     </tr>
     <tr>
+      <th>nomatch</th>
+      <td><p>an optional character naming a new key for tokens that do not
+matched to a dictionary values  If <code>NULL</code> (default), do not record
+unmatched tokens.</p></td>
+    </tr>
+    <tr>
       <th>verbose</th>
       <td><p>print status messages if <code>TRUE</code></p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p>tokens_replace</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -141,7 +229,7 @@ features unaffected</p></td>
 <span class='no'>dict</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='fu'>list</span>(<span class='kw'>country</span> <span class='kw'>=</span> <span class='st'>"united states"</span>,
                    <span class='kw'>law</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>'law*'</span>, <span class='st'>'constitution'</span>),
                    <span class='kw'>freedom</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>'free*'</span>, <span class='st'>'libert*'</span>)))
-<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='fu'>tokens_lookup</span>(<span class='no'>toks</span>, <span class='no'>dict</span>, <span class='kw'>valuetype</span><span class='kw'>=</span><span class='st'>'glob'</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; <span class='message'>applying a dictionary consisting of 3 keys</span></div><div class='output co'>#&gt; Document-feature matrix of: 58 documents, 3 features (14.9% sparse).</div><div class='input'>
+<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='fu'>tokens_lookup</span>(<span class='no'>toks</span>, <span class='no'>dict</span>, <span class='kw'>valuetype</span><span class='kw'>=</span><span class='st'>'glob'</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; <span class='message'>applying a dictionary consisting of 3 keys</span></div><div class='output co'>#&gt; Document-feature matrix of: 58 documents, 3 features (14.9% sparse).</div><div class='input'><span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='fu'>tokens_lookup</span>(<span class='no'>toks</span>, <span class='no'>dict</span>, <span class='kw'>valuetype</span><span class='kw'>=</span><span class='st'>'glob'</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>nomatch</span> <span class='kw'>=</span> <span class='st'>'NONE'</span>))</div><div class='output co'>#&gt; <span class='message'>applying a dictionary consisting of 3 keys</span></div><div class='output co'>#&gt; Document-feature matrix of: 58 documents, 4 features (11.2% sparse).</div><div class='input'>
 <span class='no'>dict_fix</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dictionary.html'>dictionary</a></span>(<span class='fu'>list</span>(<span class='kw'>country</span> <span class='kw'>=</span> <span class='st'>"united states"</span>,
                        <span class='kw'>law</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'law'</span>, <span class='st'>'constitution'</span>),
                        <span class='kw'>freedom</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'freedom'</span>, <span class='st'>'liberty'</span>)))
@@ -176,10 +264,10 @@ features unaffected</p></td>
 #&gt; [1] "Europe.Countries" "Europe.Countries" "Europe.oceans"    "Europe.oceans"   
 #&gt; </div><div class='input'><span class='fu'>tokens_lookup</span>(<span class='no'>toks</span>, <span class='no'>dict</span>, <span class='kw'>levels</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
 #&gt; d1 :
-#&gt; [1] "" "" ""
+#&gt; character(0)
 #&gt; 
 #&gt; d2 :
-#&gt; [1] ""     ""     "west" "east"
+#&gt; [1] "west" "east"
 #&gt; </div><div class='input'><span class='fu'>tokens_lookup</span>(<span class='no'>toks</span>, <span class='no'>dict</span>, <span class='kw'>levels</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>3</span>))</div><div class='output co'>#&gt; tokens from 2 documents.
 #&gt; d1 :
 #&gt; [1] "US" "US" "US"
@@ -192,13 +280,29 @@ features unaffected</p></td>
 #&gt; 
 #&gt; d2 :
 #&gt; [1] "Countries"   "Countries"   "oceans.west" "oceans.east"
-#&gt; </div></pre>
+#&gt; </div><div class='input'>
+<span class='co'># show unmatched tokens</span>
+<span class='fu'>tokens_lookup</span>(<span class='no'>toks</span>, <span class='no'>dict</span>, <span class='kw'>nomatch</span> <span class='kw'>=</span> <span class='st'>"_UNMATCHED"</span>)</div><div class='output co'>#&gt; tokens from 2 documents.
+#&gt; d1 :
+#&gt;  [1] "_UNMATCHED"   "_UNMATCHED"   "US.Countries" "_UNMATCHED"   "_UNMATCHED"  
+#&gt;  [6] "US.oceans"    "_UNMATCHED"   "_UNMATCHED"   "_UNMATCHED"   "US.oceans"   
+#&gt; [11] "_UNMATCHED"   "_UNMATCHED"  
+#&gt; 
+#&gt; d2 :
+#&gt;  [1] "Europe.Countries"   "_UNMATCHED"         "Europe.Countries"  
+#&gt;  [4] "_UNMATCHED"         "_UNMATCHED"         "Europe.oceans.west"
+#&gt;  [7] "_UNMATCHED"         "_UNMATCHED"         "Europe.oceans.east"
+#&gt; [10] "_UNMATCHED"        
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#see-also">See also</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

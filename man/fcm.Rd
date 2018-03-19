@@ -3,43 +3,46 @@
 \name{fcm}
 \alias{fcm}
 \alias{is.fcm}
-\title{create a feature co-occurrence matrix}
+\title{Create a feature co-occurrence matrix}
 \usage{
 fcm(x, context = c("document", "window"), count = c("frequency", "boolean",
   "weighted"), window = 5L, weights = 1L, ordered = FALSE,
   span_sentence = TRUE, tri = TRUE, ...)
 }
 \arguments{
-\item{x}{character, \link{corpus}, \link{tokens}, or \link{dfm} object from which to generate 
-the feature co-occurrence matrix}
+\item{x}{character, \link{corpus}, \link{tokens}, or \link{dfm} object from
+which to generate the feature co-occurrence matrix}
 
-\item{context}{the context in which to consider term co-occurrence: 
+\item{context}{the context in which to consider term co-occurrence:
 \code{"document"} for co-occurrence counts within document; \code{"window"}
-for co-occurrence within a defined window of words, which requires a 
-postive integer value for \code{window}.  Note: if \code{x} is a dfm object, then
-\code{context} can only be \code{"document"}.}
+for co-occurrence within a defined window of words, which requires a
+positive integer value for \code{window}.  Note: if \code{x} is a dfm
+object, then \code{context} can only be \code{"document"}.}
 
 \item{count}{how to count co-occurrences:
 \describe{
-\item{\code{"frequency"}}{count the number of co-occurrences within the context}
-\item{\code{"boolean"}}{count only the co-occurrence or not within the context, 
- irrespective of how many times it occurs.}
-\item{\code{"weighted"}}{count a weighted function of counts, typically as a 
-function of distance from the target feature.  Only makes sense for \code{context = "window"}.}
+\item{\code{"frequency"}}{count the number of co-occurrences within the
+context}
+\item{\code{"boolean"}}{count only the co-occurrence or not within the
+context, irrespective of how many times it occurs.}
+\item{\code{"weighted"}}{count a weighted function of counts, typically as
+a function of distance from the target feature.  Only makes sense for
+\code{context = "window"}.}
 }}
 
-\item{window}{positive integer value for the size of a window on either side 
-of the target feature, default is 5, meaning 5 words before and after the 
+\item{window}{positive integer value for the size of a window on either side
+of the target feature, default is 5, meaning 5 words before and after the
 target feature}
 
-\item{weights}{a vector of weights applied to each distance from 
-\code{1:window}, strictly decreasing by default; can be a customer defined vector of the same length as 
-\code{length(weights)}}
+\item{weights}{a vector of weights applied to each distance from
+\code{1:window}, strictly decreasing by default; can be a custom-defined
+vector of the same length as \code{length(weights)}}
 
-\item{ordered}{if \code{TRUE} the number of times that a term appears before or after the target feature 
-are counted seperately. Only makes sense for context = "window".}
+\item{ordered}{if \code{TRUE} the number of times that a term appears before
+or after the target feature are counted separately. Only makes sense for
+context = "window".}
 
-\item{span_sentence}{if \code{FALSE}, then word windows will not span 
+\item{span_sentence}{if \code{FALSE}, then word windows will not span
 sentences}
 
 \item{tri}{if \code{TRUE} return only upper triangle (including diagonal)}
@@ -57,7 +60,7 @@ The function \code{\link{fcm}} provides a very general
   implementation of a "context-feature" matrix, consisting of a count of
   feature co-occurrence within a defined context.  This context, following
   Momtazi et. al. (2010), can be defined as the \emph{document},
-  \emph{sentences} within documents, \emph{syntactic relationships} beteeen
+  \emph{sentences} within documents, \emph{syntactic relationships} between
   features (nouns within a sentence, for instance), or according to a
   \emph{window}.  When the context is a window, a weighting function is
   typically applied that is a function of distance from the target word (see
@@ -66,7 +69,7 @@ The function \code{\link{fcm}} provides a very general
   
   \link{fcm} provides all of this functionality, returning a \eqn{V * V}
   matrix (where \eqn{V} is the vocabulary size, returned by
-  \code{\link{ntype}}). The \code{tri = TRUE} option will only return the
+  \code{\link{nfeat}}). The \code{tri = TRUE} option will only return the
   upper part of the matrix.
   
   Unlike some implementations of co-occurrences, \link{fcm} counts feature

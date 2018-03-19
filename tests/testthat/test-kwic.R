@@ -11,17 +11,17 @@ test_that("test attr(kwic, 'ntoken') with un-named texts", {
     testntokens <- c(9, 4, 9, 1)
     names(testntokens) <- c('text1', 'text2', 'text3', 'text4')
     
-    expect_that(
+    expect_equal(
         attr(testkwic, 'ntoken'),
-        equals(testntokens)
+        testntokens
     )
 })
 
 test_that("test attr(kwic, 'ntoken') text names", {
     testkwic <- kwic(data_corpus_inaugural, 'american')
-    expect_that(
+    expect_equal(
         names(attr(testkwic, 'ntoken')),
-        equals(names(texts(data_corpus_inaugural)))
+        names(texts(data_corpus_inaugural))
     )
 })
     
@@ -40,12 +40,6 @@ test_that("test kwic general", {
     expect_equal(
         data.frame(testkwic),
         dtf)
-    
-    #tokenizedTexts
-    testkwic <- kwic(tokenize(paste(LETTERS, collapse=' ')), 'D')
-    expect_equal(
-        data.frame(testkwic),
-        dtf) 
 })
 
 
@@ -244,19 +238,6 @@ test_that("kwic works with padding", {
     )
 })
 
-test_that("as.tokens is working", {
-    testkwic <- kwic('what does the fox say fox', 'fox', window = 1)
-    testtoks <- as.tokens(testkwic)
-    expect_equivalent(as.list(testtoks),
-                      list(c("the", "fox", "say"), c("say", "fox")))
-    
-    testdfm <- dfm(testtoks)
-    expect_equivalent(as.vector(testdfm[1,]),
-                      c(1, 1, 1))
-    expect_equivalent(as.vector(testdfm[2,]),
-                      c(0, 1, 1))
-})
-
 test_that("kwic works as expected with and without phrases", {
    
     txt <- c(d1 = "a b c d e g h",  d2 = "a b e g h i j")
@@ -270,8 +251,8 @@ test_that("kwic works as expected with and without phrases", {
     list_bi <- list("a b", "g j")
     dict_uni <- dictionary(list(one = c("a", "b"), two = c("g", "j")))
     dict_bi <- dictionary(list(one = "a b", two = "g j"))
-    coll_bi <- textstat_collocations(toks_uni, method = "lr", size = 2)
-    coll_tri <- textstat_collocations(toks_uni, method = "lr", size = 3)[1, ]
+    coll_bi <- textstat_collocations(toks_uni, size = 2, min_count = 2)
+    coll_tri <- textstat_collocations(toks_uni, size = 3, min_count = 2)[1, ]
     
     expect_equal(
         kwic(txt, char_uni)$keyword,
@@ -377,51 +358,9 @@ test_that("kwic works as expected with and without phrases", {
 
 })
 
-# test_that("deprecated keywords argument still works", {
-#     txt <- "The quick brown fox jumped over the lazy dog."
-#     expect_warning(
-#         kwic(txt, keywords = "fox", window = 3),
-#         "keywords argument has been replaced by pattern"
-#     )
-#     expect_equal(
-#         suppressWarnings(kwic(txt, keywords = "fox", window = 3)$keyword),
-#         "fox"
-#     )
-#     expect_warning(
-#         kwic(tokens(txt), keywords = "fox", window = 3),
-#         "keywords argument has been replaced by pattern"
-#     )
-#     expect_equal(
-#         suppressWarnings(kwic(tokens(txt), keywords = "fox", window = 3)$keyword),
-#         "fox"
-#     )
-# })
 
-test_that("test docvar is passed through kwic()", {
-    
-    # kwic only copy original docvars
-    testkwic <- kwic(data_corpus_inaugural, 'american')
-    expect_equal(attr(testkwic, 'docvars'),
-                 docvars(data_corpus_inaugural))
-    
-    # docvars with values
-    testtoks1 <- as.tokens(testkwic)
-    expect_equal(
-        nrow(docvars(testtoks1)),
-        ndoc(testtoks1)
-    )
-    
-    expect_true(
-        all(stringi::stri_startswith_fixed(names(testtoks1), testkwic$docname))
-    )
-    
-    #  empty docvars
-    testcorp <- corpus(texts(data_corpus_inaugural))
-    testtoks2 <- as.tokens(kwic(testcorp, 'american'))
-    expect_equal(
-        nrow(docvars(testtoks2)),
-        ndoc(testtoks2)
-    )
-    
+test_that("kwic error when dfm is given, #1006", {
+    toks <- tokens('a b c')
+    expect_error(kwic(toks, dfm('b c d')))
 })
 

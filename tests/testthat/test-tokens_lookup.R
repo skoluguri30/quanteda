@@ -154,7 +154,7 @@ test_that("non-exclusive lookup is working",{
     
     expect_equal(as.list(tokens_lookup(toks, dict, exclusive = FALSE, capkeys = TRUE)),
                  list(d1=c("COUNTRY", "signed", "a", "new", "FREEDOM", "LAW WORDS", "with", "COUNTRY"),
-                      d2=c("Let", "FREEDOM", "ring", "in", "the", "COUNTRY")))
+                      d2=c("Let", "FREEDOM", "ring", "in", "the", "COUNTRY", "OVERLAP")))
 })
 
 test_that("tokens_lookup preserves case on keys", {
@@ -214,20 +214,38 @@ test_that("#459 extract the lower levels of a dictionary using tokens_lookup", {
     txt <- c(d1 = "The United States has the Atlantic Ocean and the Pacific Ocean.",
              d2 = "Britain and Ireland have the Irish Sea and the English Channel.")
     toks <- tokens(txt)
-    dict <- dictionary(list('US'=list(
-        Countries = c("States"),
-        oceans = c("Atlantic", "Pacific")),
-        'Europe'=list(
-            Countries = c("Britain", "Ireland"),
-            oceans = list(west = "Irish Sea", east = "English Channel"))))
-    tokens_lookup(toks, dict, levels = 1)
-    tokens_lookup(toks, dict, levels = 2)
-    tokens_lookup(toks, dict, levels = 1:2)
-    tokens_lookup(toks, dict, levels = 3)
-    tokens_lookup(toks, dict, levels = c(1,3))
-    tokens_lookup(toks, dict, levels = c(2,3))
-    tokens_lookup(toks, dict, levels = c(1,4))
-    tokens_lookup(toks, dict, levels = 4)
+    dict <- dictionary(list('US' = list(
+                                    Countries = c("States"),
+                                    oceans = c("Atlantic", "Pacific")),
+                            'Europe' = list(
+                                Countries = c("Britain", "Ireland"),
+                                oceans = list(west = "Irish Sea", 
+                                              east = "English Channel"))))
+
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = 1)),
+                 list(d1 = c('US', 'US', 'US'), 
+                      d2 = c('Europe', 'Europe', 'Europe', 'Europe')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = 2)),
+                 list(d1 = c('Countries', 'oceans', 'oceans'), 
+                      d2 = c('Countries', 'Countries', 'oceans', 'oceans')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = 1:2)),
+                 list(d1 = c('US.Countries', 'US.oceans', 'US.oceans'), 
+                      d2 = c('Europe.Countries', 'Europe.Countries', 'Europe.oceans', 'Europe.oceans')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = 3)),
+                 list(d1 = character(), 
+                      d2 = c('west', 'east')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = c(1,3))),
+                 list(d1 = c('US', 'US', 'US'), 
+                      d2 = c('Europe', 'Europe', 'Europe.west', 'Europe.east')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = c(2,3))),
+                 list(d1 = c('Countries', 'oceans', 'oceans'), 
+                      d2 = c('Countries', 'Countries', 'oceans.west', 'oceans.east')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = c(1, 4))),
+                 list(d1 = c('US', 'US', 'US'), 
+                      d2 = c('Europe', 'Europe', 'Europe', 'Europe')))
+    expect_equal(as.list(tokens_lookup(toks, dict, levels = 4)),
+                 list(d1 = character(), 
+                      d2 = character()))
 })
 
 test_that("#480 reset padding flag", {
@@ -305,3 +323,97 @@ test_that("#502 tokens_lookup count overlapped words", {
 })
 
 
+
+test_that("tokens_lookup with nomatch works", {
+    txts <- c(d1 = "a c d d", d2 = "a a b c c c e f")
+    toks <- tokens(txts)
+    dict <- dictionary(list(one = c("a", "b", "b c"), two = c("e", "f")))
+    
+    expect_equal(
+        as.matrix(dfm(tokens_lookup(toks, dict))),
+        as.matrix(dfm(tokens_lookup(toks, dict, nomatch = "_unmatched")))[, 1:2]
+    )
+    
+    expect_equivalent(
+        as.matrix(cbind("_unmatched" = ntoken(tokens_remove(toks, dict)))),
+        as.matrix(dfm(tokens_lookup(toks, dict, nomatch = "_unmatched")))[, "_unmatched", drop = FALSE]
+    )
+    
+    expect_equal(
+        as.matrix(dfm(tokens_lookup(toks, dict, nomatch = "_unmatched"))),
+        matrix(c(1,3,0,2,3,2), nrow = 2, dimnames = list(docs = c("d1", "d2"), features = c("one", "two", "_unmatched")))
+    )
+    expect_warning(
+        tokens_lookup(toks, dict, nomatch = "ANYTHING", exclusive = FALSE),
+        "nomatch only applies if exclusive = TRUE"
+    )
+})
+
+test_that("dfm_lookup works with exclusive = TRUE, #958", {
+    
+    txt <- c("word word2 document documents documenting",
+                 "use using word word2")
+    dict <- dictionary(list(
+        document = "document*",
+        use      = c("use", "using")
+    ))
+    
+    toks <- tokens(txt)
+    expect_equal(
+        as.list(tokens_lookup(toks, dict, exclusive = FALSE, capkeys = FALSE)),
+        list(text1 = c('word', 'word2', 'document', 'document', 'document'), 
+             text2 = c('use', 'use', 'word', 'word2'))
+    )
+    expect_equal(
+        as.list(tokens_lookup(toks, dict, exclusive = FALSE, capkeys = TRUE)),
+        list(text1 = c('word', 'word2', 'DOCUMENT', 'DOCUMENT', 'DOCUMENT'), 
+             text2 = c('USE', 'USE', 'word', 'word2'))
+    )
+})
+
+test_that("dfm_lookup match the same words in exclusive = TRUE and FALSE, #970", {
+    
+    toks <- tokens("say good bye to Hollywood")
+    dict <- dictionary(list(pos = "good", farewell = "good bye"))
+    
+    expect_equal(as.list(tokens_lookup(toks, dict, exclusive = TRUE)),
+                 list(text1 = c("pos", "farewell")))
+    
+    expect_equal(as.list(tokens_lookup(toks, dict, exclusive = FALSE)),
+                 list(text1 = c("say", "POS", "FAREWELL", "to", "Hollywood")))
+
+})
+
+test_that("tokens_lookup works when exclusive = FALSE, #970", {
+    
+    dict <- dictionary(list(sequence1 = "a b", sequence2 = "x y", notseq = c("d", "e")))
+    txt <- c(d1 = "a b c d e f g x y z",
+             d2 = "a c d x z",
+             d3 = "x y",
+             d4 = "f g")
+    toks <- tokens(txt)
+    expect_equal(as.list(tokens_lookup(toks, dict, exclusive = FALSE)),
+                 list(d1 = c("SEQUENCE1", "c", "NOTSEQ", "NOTSEQ", "f", "g", "SEQUENCE2", "z"), 
+                      d2 = c("a","c", "NOTSEQ", "x", "z"),
+                      d3 = c("SEQUENCE2"),
+                      d4 = c("f", "g"))
+                 )
+    
+})
+
+test_that("tokens_lookup works when there is a key with non-existent values and when exclusive = FALSE, #1011", {
+    
+    dict <- dictionary(list(sequence1 = "a b", sequence2 = "x y", notseq = c("d", "e"), notexist = c("zzz")))
+    txt <- c(d1 = "a b c d e f g x y z",
+             d2 = "a c d x z",
+             d3 = "x y",
+             d4 = "f g")
+    toks <- tokens(txt)
+    expect_equal(as.list(tokens_lookup(toks, dict, exclusive = FALSE)),
+                 list(d1 = c("SEQUENCE1", "c", "NOTSEQ", "NOTSEQ", "f", "g", "SEQUENCE2", "z"), 
+                      d2 = c("a","c", "NOTSEQ", "x", "z"),
+                      d3 = c("SEQUENCE2"),
+                      d4 = c("f", "g"))
+    )
+    
+})

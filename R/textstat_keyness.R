@@ -1,11 +1,15 @@
-#' calculate keyness statistics
+#' Calculate keyness statistics
 #' 
+#' Calculate "keyness", a score for features that occur differentially across 
+#' different categories.  Here, the categories are defined by reference to a
+#' "target" document index in the \link{dfm}, with the reference group
+#' consisting of all other documents.
 #' @param x a \link{dfm} containing the features to be examined for keyness
 #' @param target the document index (numeric, character or logical) identifying 
 #'   the document forming the "target" for computing keyness; all other 
 #'   documents' feature frequencies will be combined for use as a reference
 #' @param measure (signed) association measure to be used for computing keyness.
-#'   Currenly available: \code{"chi2"}; \code{"exact"} (Fisher's exact test); 
+#'   Currently available: \code{"chi2"}; \code{"exact"} (Fisher's exact test); 
 #'   \code{"lr"} for the likelihood ratio; \code{"pmi"} for pointwise mutual 
 #'   information.
 #' @param sort logical; if \code{TRUE} sort features scored in descending order 
@@ -15,7 +19,7 @@
 #'   correction is applied for the \code{"exact"} and \code{"pmi"} measures. 
 #'   Specifying a value other than the default can be used to override the 
 #'   defaults, for instance to apply the Williams correction to the chi2 
-#'   measure.  Specying a correction for the \code{"exact"} and \code{"pmi"}
+#'   measure.  Specifying a correction for the \code{"exact"} and \code{"pmi"} 
 #'   measures has no effect and produces a warning.
 #' @references Bondi, Marina, and Mike Scott, eds. 2010.  \emph{Keyness in 
 #'   Texts}. Amsterdam, Philadelphia: John Benjamins, 2010.
@@ -38,6 +42,8 @@
 #'   likelihood ratio \eqn{G2} statistic; for \code{"pmi"} this is the pointwise
 #'   mutual information statistics.
 #' @export
+#' @return \code{textstat_keyness} returns a data.frame of features and
+#'   their keyness scores and frequency counts.
 #' @keywords textstat
 #' @importFrom stats chisq.test
 #' @examples
@@ -57,19 +63,32 @@
 #' head(textstat_keyness(pwdfm, target = "2017-Trump"), 10)
 #' # using the likelihood ratio method
 #' head(textstat_keyness(dfm_smooth(pwdfm), measure = "lr", target = "2017-Trump"), 10)
-textstat_keyness <- function(x, target = 1L, measure = c("chi2", "exact", "lr", "pmi"), sort = TRUE, 
+textstat_keyness <- function(x, target = 1L, 
+                             measure = c("chi2", "exact", "lr", "pmi"), 
+                             sort = TRUE, 
                              correction = c("default", "yates", "williams", "none")) {
     UseMethod("textstat_keyness")
 }
 
-#' @noRd
 #' @export
-textstat_keyness.dfm <- function(x, target = 1L, measure = c("chi2", "exact", "lr", "pmi"), 
-                                 sort = TRUE, correction = c("default", "yates", "williams", "none")) {
+textstat_keyness.default <- function(x, target = 1L, 
+                                     measure = c("chi2", "exact", "lr", "pmi"), 
+                                     sort = TRUE, 
+                                     correction = c("default", "yates", "williams", "none")) {
+    stop(friendly_class_undefined_message(class(x), "textstat_keyness"))
+}
+
+#' @export
+textstat_keyness.dfm <- function(x, target = 1L, 
+                                 measure = c("chi2", "exact", "lr", "pmi"), 
+                                 sort = TRUE, 
+                                 correction = c("default", "yates", "williams", "none")) {
     
-    # error checking
+    
+    x <- as.dfm(x)
     measure <- match.arg(measure)
     correction <- match.arg(correction)
+    # error checking
     if (ndoc(x) < 2 )
         stop("x must have at least two documents")
     if (is.character(target) && !(target %in% docnames(x)))
@@ -88,37 +107,34 @@ textstat_keyness.dfm <- function(x, target = 1L, measure = c("chi2", "exact", "l
     rownames(x) <- grouping
     x <- dfm_compress(x, margin = 'documents')
     x <- x[order(docnames(x)), ]
-
+    
     if (measure == "chi2") {
-        keywords <- keyness_chi2_dt(x, correction)
+        result <- keyness_chi2_dt(x, correction)
     } else if (measure == "lr") {
-        keywords <- keyness_lr(x, correction)
+        result <- keyness_lr(x, correction)
     } else if (measure == "exact") {
         if (!correction %in% c("default", "none"))
             warning("correction is always none for measure exact")
-        keywords <- keyness_exact(x)
+        result <- keyness_exact(x)
     } else if (measure == "pmi") {
         if (!correction %in% c("default", "none"))
             warning("correction is always none for measure pmi")
-        keywords <- keyness_pmi(x)
+        result <- keyness_pmi(x)
     } else {
         stop(measure, " not yet implemented for textstat_keyness")
     }
-
-    if (sort)
-        keywords <- keywords[order(keywords[, 1], decreasing = TRUE), ]
     
-    names(keywords)[which(names(keywords) == "target")] <- "n_target"
-    names(keywords)[which(names(keywords) == "reference")] <- "n_reference"
-
-    doc_names <- grouping[order(grouping)]
-    attr(keywords, "documents") <- names(doc_names)
-
-    return(keywords)
+    if (sort)
+        result <- result[order(result[, 2], decreasing = TRUE), ]
+    
+    attr(result, "documents") <- names(grouping[order(grouping)])
+    class(result) <- c('keyness', 'textstat', 'data.frame')
+    rownames(result) <- as.character(seq_len(nrow(result)))
+    return(result)
 }
 
 
-#' compute keyness (internal functions)
+#' Compute keyness (internal functions)
 #' 
 #' Internal function used in textstat_keyness.  Computes \eqn{chi^2} with Yates'
 #' continuity correction for 2x2 tables.
@@ -171,14 +187,15 @@ keyness_chi2_dt <- function(x, correction = c("default", "yates", "williams", "n
     
     # compute p-values
     dt[, p := 1 - stats::pchisq(abs(chi2), 1)]
-
-    result <- as.data.frame(dt[, list(chi2, p)])
-    rownames(result) <- dt$feature
-    result$target = as.vector(x[1,])
-    result$reference = as.vector(x[2,])
-    return(result)
-}
     
+    data.frame(feature = dt$feature, 
+               chi2 = dt[, chi2],
+               p = dt[, p],
+               n_target = as.vector(x[1,]),
+               n_reference = as.vector(x[2,]),
+               stringsAsFactors = FALSE)
+}
+
 #' @rdname keyness
 #' @importFrom stats chisq.test
 #' @details 
@@ -187,28 +204,36 @@ keyness_chi2_dt <- function(x, correction = c("default", "yates", "williams", "n
 #' @examples 
 #' quanteda:::keyness_chi2_stats(mydfm)
 keyness_chi2_stats <- function(x) {
-    keyness <- function(t, f, sum_t, sum_f) {
-        # @param t (scalar) frequency of target 
-        # @param f (scalar) frequency of reference
-        # @param sum_t total of all target words
-        # @param sum_f total of all reference words
-        tb <- as.table(rbind(c(t, f), c(sum_t - t, sum_f - f)))
-        suppressWarnings(chi <- stats::chisq.test(tb))
-        t_exp <- chi$expected[1,1]
-        list(chi2 = unname(chi$statistic) * ifelse(t > t_exp, 1, -1),
-             p = unname(chi$p.value))
-    }
+    
     sums <- rowSums(x)
     result <- as.data.frame(
         do.call(rbind, apply(x, 2, function(y) keyness(as.numeric(y[1]), 
-                                                       as.numeric(y[2]), 
-                                                       sums[1], sums[2])))
+                                                              as.numeric(y[2]), 
+                                                              sums[1], sums[2])))
     )
-    result$target = as.vector(x[1,])
-    result$reference = as.vector(x[2,])
-    return(result)
+
+    data.frame(feature = colnames(x), 
+               chi2 = result$chi2,
+               p = result$p,
+               n_target = as.vector(x[1,]),
+               n_reference = as.vector(x[2,]),
+               stringsAsFactors = FALSE)
 }
 
+#' @rdname keyness
+#' @param t (scalar) frequency of target 
+#' @param f (scalar) frequency of reference
+#' @param sum_t total of all target words
+#' @param sum_f total of all reference words
+#' @keywords internal
+keyness <- function(t, f, sum_t, sum_f) {
+
+    tb <- as.table(rbind(c(t, f), c(sum_t - t, sum_f - f)))
+    suppressWarnings(chi <- stats::chisq.test(tb))
+    t_exp <- chi$expected[1,1]
+    list(chi2 = unname(chi$statistic) * ifelse(t > t_exp, 1, -1),
+         p = unname(chi$p.value))
+}
 
 #' @rdname keyness
 #' @details 
@@ -222,13 +247,19 @@ keyness_exact <- function(x) {
     result <- as.data.frame(
         do.call(rbind, 
                 apply(x, 2, function(y) { 
-                    et <- stats::fisher.test(matrix(c(as.numeric(y), as.numeric(sums - y)), nrow = 2))
+                    et <- stats::fisher.test(matrix(c(as.numeric(y), 
+                                                      as.numeric(sums - y)), 
+                                                    nrow = 2))
                     data.frame(or = as.numeric(et$estimate), p = et$p.value)
                 }))
     )
-    result$target = as.vector(x[1,])
-    result$reference = as.vector(x[2,])
-    return(result)
+
+    data.frame(feature = colnames(x), 
+               or = result$or,
+               p = result$p,
+               n_target = as.vector(x[1,]),
+               n_reference = as.vector(x[2,]),
+               stringsAsFactors = FALSE)
 }
 
 
@@ -270,7 +301,7 @@ keyness_lr <- function(x, correction = c("default", "yates", "williams", "none")
                                            b + ifelse(cor_app, ifelse(correction_sign, 0.5, -0.5), 0),
                                            c + ifelse(cor_app, ifelse(correction_sign, 0.5, -0.5), 0))]
     }
-
+    
     dt[, G2 := (2 * (a * log(a / E11 + epsilon) + 
                          b * log(b / ((a+b)*(b+d) / N) + epsilon) +
                          c * log(c / ((a+c)*(c+d) / N) + epsilon) +
@@ -280,22 +311,25 @@ keyness_lr <- function(x, correction = c("default", "yates", "williams", "none")
     if (correction == "williams"){
         # William's correction cannot be used if there are any zeros in the table
         # \url{http://influentialpoints.com/Training/g-likelihood_ratio_test.htm}
-        dt[, q := ifelse(a * b * c * d == 0, 1, 1 + (N/(a + b) + N/(c + d) - 1) * (N/(a + c) + N/(b + d) - 1) / (6 * N) )]
+        dt[, q := ifelse(a * b * c * d == 0, 
+                         1, 
+                         1 + (N/(a + b) + N/(c + d) - 1) * (N/(a + c) + N/(b + d) - 1) / (6 * N) )]
         dt[, G2 := G2 / q]
     }
     
     # compute p-values
     dt[, p := 1 - stats::pchisq(abs(G2), 1)]
     
-    result <- as.data.frame(dt[, list(G2, p)])
-    rownames(result) <- dt$feature
-    result$target = as.vector(x[1,])
-    result$reference = as.vector(x[2,])
-    return(result)
+    data.frame(feature = dt$feature, 
+               G2 = dt[, G2],
+               p = dt[, p],
+               n_target = as.vector(x[1,]),
+               n_reference = as.vector(x[2,]),
+               stringsAsFactors = FALSE)
 }
 
 #' @rdname keyness
-#' @details \code{keyness_pmi} computes the Pointwise Mutual Information statistic
+#' @details \code{keyness_pmi} computes the Pointwise Mutual Information stat
 #'   using vectorized computation
 #' @examples
 #' quanteda:::keyness_pmi(mydfm)
@@ -316,15 +350,13 @@ keyness_pmi <- function(x) {
     #normalized pmi
     #dt[, pmi :=   log(a  / E11) * ifelse(a > E11, 1, -1)/(-log(a/N)) ]
     
-    
     # compute p-values
     dt[, p := 1 - stats::pchisq(abs(pmi), 1)]
     
-    result <- as.data.frame(dt[, list(pmi, p)])
-    rownames(result) <- dt$feature
-    result$target = as.vector(x[1,])
-    result$reference = as.vector(x[2,])
-    return(result)
+    data.frame(feature = dt$feature, 
+               pmi = dt[, pmi],
+               p = dt[, p],
+               n_target = as.vector(x[1,]),
+               n_reference = as.vector(x[2,]),
+               stringsAsFactors = FALSE)
 }
-
-

@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>create a dictionary — dictionary • quanteda</title>
+<title>Create a dictionary — dictionary • quanteda</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,12 +34,24 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-144616-24', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
   </head>
 
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -46,23 +59,88 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">quanteda</a>
+      <a class="navbar-brand" href="../index.html">Quanteda</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Quick Start
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/quickstart.html">Quick Start Guide</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_cn.html">快速入门指南</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/quickstart_ja.html">クイック・スタートガイド</a>
+    </li>
+  </ul>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="../articles/pkgdown/comparison.html">Features</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/examples/phrase.html">Multi-word expressions</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/plotting.html">Textual data visualization</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/lsa.html">Latent Semantic Analysis (LSA)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/chinese.html">Chinese text analysis</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/examples/twitter.html">Social media analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Replications
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/pkgdown/replication/digital-humanities.html">Text Analysis with R for Students of Literature</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/text2vec.html">Word embedding (word2vec)</a>
+    </li>
+    <li>
+      <a href="../articles/pkgdown/replication/qss.html">Quantitative Social Science Ch. 5.1</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../articles/design.html">Design</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/quanteda/quanteda">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -74,30 +152,29 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>create a dictionary</h1>
+    <h1>Create a dictionary</h1>
     </div>
 
     
-    <p>Create a <span class="pkg">quanteda</span> dictionary class object, either from a list or by importing from a 
-foreign format.  Currently supported input file formats are the Wordstat,
-LIWC, Lexicoder v2 and v3, and Yoshikoder formats.  The import using the 
-LIWC format works with 
-all currently available dictionary files supplied as part of the LIWC 2001, 
-2007, and 2015 software (see References).</p>
+    <p>Create a <span class="pkg">quanteda</span> dictionary class object, either from a list or by
+importing from a foreign format.  Currently supported input file formats are
+the Wordstat, LIWC, Lexicoder v2 and v3, and Yoshikoder formats.  The import
+using the LIWC format works with all currently available dictionary files
+supplied as part of the LIWC 2001, 2007, and 2015 software (see References).</p>
     
 
-    <pre class="usage"><span class='fu'>dictionary</span>(<span class='no'>...</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>separator</span> <span class='kw'>=</span> <span class='st'>" "</span>,
+    <pre class="usage"><span class='fu'>dictionary</span>(<span class='no'>x</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>separator</span> <span class='kw'>=</span> <span class='st'>" "</span>,
   <span class='kw'>tolower</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>encoding</span> <span class='kw'>=</span> <span class='st'>"auto"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>a named list of character vector dictionary entries, including <a href='valuetype.html'>valuetype</a> pattern
-matches, and including multi-word expressions separated by <code>concatenator</code>.  The argument 
-may be an explicit list or named set of elements that can be turned into a list.  See examples.
-This argument may be omitted if the dictionary is read from <code>file</code>.</p></td>
+      <th>x</th>
+      <td><p>a named list of character vector dictionary entries, including
+<a href='valuetype.html'>valuetype</a> pattern matches, and including multi-word expressions
+separated by <code>concatenator</code>.  See examples. This argument may be
+omitted if the dictionary is read from <code>file</code>.</p></td>
     </tr>
     <tr>
       <th>file</th>
@@ -105,19 +182,19 @@ This argument may be omitted if the dictionary is read from <code>file</code>.</
     </tr>
     <tr>
       <th>format</th>
-      <td><p>character identifier for the format of the foreign dictionary. 
+      <td><p>character identifier for the format of the foreign dictionary.
 If not supplied, the format is guessed from the dictionary file's
-extension.
-Available options are:</p><dl class='dl-horizontal'>
-<dt><code>"wordstat"</code></dt><dd><p>format used by 
-Provalis Research's Wordstat software</p></dd> <dt><code>"LIWC"</code></dt><dd><p>format used by 
-the Linguistic Inquiry and Word Count software</p></dd> <dt><code>"yoshikoder"</code></dt><dd><p>format used by Yoshikoder software</p></dd> <dt><code>"lexicoder"</code></dt><dd><p>format used
-by Lexicoder</p></dd> <dt><code>"YAML"</code></dt><dd><p>the standard YAML format</p></dd></dl></td>
+extension. Available options are:</p><dl class='dl-horizontal'>
+<dt><code>"wordstat"</code></dt><dd><p>format used by Provalis Research's Wordstat
+software</p></dd> <dt><code>"LIWC"</code></dt><dd><p>format used by the Linguistic Inquiry and
+Word Count software</p></dd> <dt><code>"yoshikoder"</code></dt><dd><p>format used by Yoshikoder
+software</p></dd> <dt><code>"lexicoder"</code></dt><dd><p>format used by Lexicoder</p></dd>
+<dt><code>"YAML"</code></dt><dd><p>the standard YAML format</p></dd></dl></td>
     </tr>
     <tr>
       <th>separator</th>
-      <td><p>the character in between multi-word dictionary values. 
-This defaults to <code>" "</code>.</p></td>
+      <td><p>the character in between multi-word dictionary values. This
+defaults to <code>" "</code>.</p></td>
     </tr>
     <tr>
       <th>tolower</th>
@@ -125,8 +202,8 @@ This defaults to <code>" "</code>.</p></td>
     </tr>
     <tr>
       <th>encoding</th>
-      <td><p>additional optional encoding value for reading in imported 
-dictionaries. This uses the iconv labels for encoding.  See the 
+      <td><p>additional optional encoding value for reading in imported
+dictionaries. This uses the iconv labels for encoding.  See the
 "Encoding" section of the help for file.</p></td>
     </tr>
     </table>
@@ -136,20 +213,32 @@ dictionaries. This uses the iconv labels for encoding.  See the
     <p>A dictionary class object, essentially a specially classed named list
   of characters.</p>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Dictionaries can be subsetted using
+  <code><a href='dictionary-class.html'>[</a></code> and
+  <code><a href='dictionary-class.html'>[[</a></code>, operating the same as the equivalent
+  <a href='dictionary-class.html'>list</a> operators.</p>
+<p>Dictionaries can be coerced from lists using <code><a href='as.dictionary.html'>as.dictionary</a></code>,
+  coerced to named lists of characters using
+  <code><a href='dictionary-class.html'>as.list</a></code>, and checked using
+  <code><a href='as.dictionary.html'>is.dictionary</a></code>.</p>
+    
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Wordstat dictionaries page, from Provalis Research 
-  <a href = 'http://provalisresearch.com/products/content-analysis-software/wordstat-dictionary/'>http://provalisresearch.com/products/content-analysis-software/wordstat-dictionary/</a>.
-    Pennebaker, J.W., Chung, C.K., Ireland, M., Gonzales, A., &amp; Booth, R.J. 
-  (2007). The development and psychometric properties of LIWC2007. [Software 
-  manual]. Austin, TX (<a href = 'www.liwc.net'>www.liwc.net</a>).
-    Yoshikoder page, from Will Lowe 
-  <a href = 'http://conjugateprior.org/software/yoshikoder/'>http://conjugateprior.org/software/yoshikoder/</a>.
-    Lexicoder format, <a href = 'http://www.lexicoder.com'>http://www.lexicoder.com</a></p>
+    <p>Wordstat dictionaries page, from Provalis Research
+  <a href='http://provalisresearch.com/products/content-analysis-software/wordstat-dictionary/'>http://provalisresearch.com/products/content-analysis-software/wordstat-dictionary/</a>.</p>  
+<p>Pennebaker, J.W., Chung, C.K., Ireland, M., Gonzales, A., &amp; Booth, R.J.
+  (2007). The development and psychometric properties of LIWC2007. [Software
+  manual]. Austin, TX (<a href='www.liwc.net'>www.liwc.net</a>).</p>
+<p>Yoshikoder page, from Will Lowe
+  <a href='http://conjugateprior.org/software/yoshikoder/'>http://conjugateprior.org/software/yoshikoder/</a>.</p>
+<p>Lexicoder format, <a href='http://www.lexicoder.com'>http://www.lexicoder.com</a></p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><a href='dfm.html'>dfm</a></p>
+    <p><a href='dfm.html'>dfm</a>, <code><a href='as.dictionary.html'>as.dictionary</a></code>,
+  <code><a href='dictionary-class.html'>as.list</a></code>, <code><a href='as.dictionary.html'>is.dictionary</a></code></p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -160,8 +249,8 @@ dictionaries. This uses the iconv labels for encoding.  See the
                           <span class='kw'>taxation</span> <span class='kw'>=</span> <span class='st'>"taxation"</span>,
                           <span class='kw'>taxregex</span> <span class='kw'>=</span> <span class='st'>"tax*"</span>,
                           <span class='kw'>country</span> <span class='kw'>=</span> <span class='st'>"america"</span>))
-<span class='fu'>head</span>(<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>mycorpus</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>mydict</span>))</div><div class='output co'>#&gt; Document-feature matrix of: 30 documents, 6 features (71.7% sparse).
-#&gt; (showing first 6 documents and first 6 features)
+<span class='fu'>head</span>(<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>mycorpus</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>mydict</span>))</div><div class='output co'>#&gt; Document-feature matrix of: 6 documents, 6 features (63.9% sparse).
+#&gt; 6 x 6 sparse Matrix of class "dfm"
 #&gt;                 features
 #&gt; docs             christmas opposition taxing taxation taxregex country
 #&gt;   1901-McKinley          0          2      0        1        1       0
@@ -170,20 +259,36 @@ dictionaries. This uses the iconv labels for encoding.  See the
 #&gt;   1913-Wilson            0          0      0        1        1       0
 #&gt;   1917-Wilson            0          0      0        0        0       2
 #&gt;   1921-Harding           0          0      0        1        2      15</div><div class='input'>
-<span class='co'># also works</span>
-<span class='no'>mydict2</span> <span class='kw'>&lt;-</span> <span class='fu'>dictionary</span>(<span class='kw'>christmas</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Christmas"</span>, <span class='st'>"Santa"</span>, <span class='st'>"holiday"</span>),
-                      <span class='kw'>opposition</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Opposition"</span>, <span class='st'>"reject"</span>, <span class='st'>"notincorpus"</span>))
-<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>mycorpus</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>mydict2</span>)</div><div class='output co'>#&gt; Document-feature matrix of: 30 documents, 2 features (81.7% sparse).</div><div class='input'>
-<span class='fu'>not_run</span>({
-  <span class='co'># import the Laver-Garry dictionary from http://bit.ly/1FH2nvf</span>
-  <span class='no'>lgdict</span> <span class='kw'>&lt;-</span> <span class='fu'>dictionary</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='st'>"http://www.kenbenoit.net/courses/essex2014qta/LaverGarry.cat"</span>,
-                       <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"wordstat"</span>)
-  <span class='fu'>head</span>(<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>data_corpus_inaugural</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>lgdict</span>))
+<span class='co'># subset a dictionary</span>
+<span class='no'>mydict</span>[<span class='fl'>1</span>:<span class='fl'>2</span>]</div><div class='output co'>#&gt; Dictionary object with 2 key entries.
+#&gt; - [christmas]:
+#&gt;   - christmas, santa, holiday
+#&gt; - [opposition]:
+#&gt;   - opposition, reject, notincorpus</div><div class='input'><span class='no'>mydict</span>[<span class='fu'>c</span>(<span class='st'>"christmas"</span>, <span class='st'>"opposition"</span>)]</div><div class='output co'>#&gt; Dictionary object with 2 key entries.
+#&gt; - [christmas]:
+#&gt;   - christmas, santa, holiday
+#&gt; - [opposition]:
+#&gt;   - opposition, reject, notincorpus</div><div class='input'><span class='no'>mydict</span><span class='kw'>[[</span><span class='st'>"opposition"</span>]]</div><div class='output co'>#&gt; [1] "opposition"  "reject"      "notincorpus"</div><div class='input'>
+<span class='co'># combine dictionaries</span>
+<span class='fu'>c</span>(<span class='no'>mydict</span>[<span class='st'>"christmas"</span>], <span class='no'>mydict</span>[<span class='st'>"country"</span>])</div><div class='output co'>#&gt; Dictionary object with 2 key entries.
+#&gt; - [christmas]:
+#&gt;   - christmas, santa, holiday
+#&gt; - [country]:
+#&gt;   - america</div><div class='input'>
+</div><span class='co'># NOT RUN {</span>
+<span class='co'># import the Laver-Garry dictionary from Provalis Research</span>
+<span class='no'>dictfile</span> <span class='kw'>&lt;-</span> <span class='fu'>tempfile</span>()
+<span class='fu'>download.file</span>(<span class='st'>"https://provalisresearch.com/Download/LaverGarry.zip"</span>,
+              <span class='no'>dictfile</span>, <span class='kw'>mode</span> <span class='kw'>=</span> <span class='st'>"wb"</span>)
+<span class='fu'>unzip</span>(<span class='no'>dictfile</span>, <span class='kw'>exdir</span> <span class='kw'>=</span> (<span class='no'>td</span> <span class='kw'>&lt;-</span> <span class='fu'>tempdir</span>()))
+<span class='no'>lgdict</span> <span class='kw'>&lt;-</span> <span class='fu'>dictionary</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'>paste</span>(<span class='no'>td</span>, <span class='st'>"LaverGarry.cat"</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"/"</span>))
+<span class='fu'>head</span>(<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>data_corpus_inaugural</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>lgdict</span>))
 
-  <span class='co'># import a LIWC formatted dictionary from http://www.moralfoundations.org</span>
-  <span class='no'>mfdict</span> <span class='kw'>&lt;-</span> <span class='fu'>dictionary</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='st'>"http://ow.ly/VMRkL"</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"LIWC"</span>)
-  <span class='fu'>head</span>(<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>data_corpus_inaugural</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>mfdict</span>))
-})</div></pre>
+<span class='co'># import a LIWC formatted dictionary from http://www.moralfoundations.org</span>
+<span class='fu'>download.file</span>(<span class='st'>"https://goo.gl/5gmwXq"</span>, <span class='no'>tf</span> <span class='kw'>&lt;-</span> <span class='fu'>tempfile</span>())
+<span class='no'>mfdict</span> <span class='kw'>&lt;-</span> <span class='fu'>dictionary</span>(<span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>tf</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"LIWC"</span>)
+<span class='fu'>head</span>(<span class='fu'><a href='dfm.html'>dfm</a></span>(<span class='no'>data_corpus_inaugural</span>, <span class='kw'>dictionary</span> <span class='kw'>=</span> <span class='no'>mfdict</span>))
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -191,6 +296,8 @@ dictionaries. This uses the iconv labels for encoding.  See the
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
 
       <li><a href="#references">References</a></li>
 

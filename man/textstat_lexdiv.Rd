@@ -2,10 +2,10 @@
 % Please edit documentation in R/textstat_lexdiv.R
 \name{textstat_lexdiv}
 \alias{textstat_lexdiv}
-\title{calculate lexical diversity}
+\title{Calculate lexical diversity}
 \usage{
 textstat_lexdiv(x, measure = c("all", "TTR", "C", "R", "CTTR", "U", "S",
-  "Maas"), log.base = 10, drop = TRUE, ...)
+  "Maas"), log.base = 10, ...)
 }
 \arguments{
 \item{x}{an input object, such as a \link[=dfm]{document-feature matrix}
@@ -16,15 +16,11 @@ object}
 \item{log.base}{a numeric value defining the base of the logarithm (for
 measures using logs)}
 
-\item{drop}{if \code{TRUE}, the result is returned as a numeric vector if 
-only a single measure is requested; otherwise, a data.frame is returned 
-with each column consisting of a requested measure.}
-
 \item{...}{not used}
 }
 \value{
-a data.frame or vector of lexical diversity statistics, each row or
-  vector element corresponding to an input document
+\code{textstat_lexdiv} returns a data.frame of documents and
+  their lexical diversity scores.
 }
 \description{
 Calculate the lexical diversity or complexity of text(s).
@@ -87,12 +83,9 @@ This implements only the static measures of lexical diversity, not more
 }
 \examples{
 mydfm <- dfm(corpus_subset(data_corpus_inaugural, Year > 1980), verbose = FALSE)
-(results <- textstat_lexdiv(mydfm, c("CTTR", "TTR", "U")))
-cor(textstat_lexdiv(mydfm, "all"))
+(result <- textstat_lexdiv(mydfm, c("CTTR", "TTR", "U")))
+cor(textstat_lexdiv(mydfm, "all")[,-1])
 
-# with different settings of drop
-textstat_lexdiv(mydfm, "TTR", drop = TRUE)
-textstat_lexdiv(mydfm, "TTR", drop = FALSE)
 }
 \references{
 Covington, M.A. & McFall, J.D. (2010). Cutting the Gordian Knot: 
@@ -107,7 +100,7 @@ Covington, M.A. & McFall, J.D. (2010). Cutting the Gordian Knot:
   evaluation. \emph{Language Testing}, 24(4), 459--488.
   
   McCarthy, P.M. & Jarvis, S. (2010). MTLD, vocd-D, and HD-D: A validation 
-  study of sophisticated approaces to lexical diversity assessment. 
+  study of sophisticated approaches to lexical diversity assessment. 
   \emph{Behaviour Research Methods}, 42(2), 381--392.
   
   Michalke, Meik.  (2014) \emph{koRpus: An R Package for Text Analysis}. 

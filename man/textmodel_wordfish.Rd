@@ -2,13 +2,13 @@
 % Please edit documentation in R/textmodel_wordfish.R
 \name{textmodel_wordfish}
 \alias{textmodel_wordfish}
-\title{wordfish text model}
+\title{Wordfish text model}
 \usage{
 textmodel_wordfish(x, dir = c(1, 2), priors = c(Inf, Inf, 3, 1),
   tol = c(1e-06, 1e-08), dispersion = c("poisson", "quasipoisson"),
   dispersion_level = c("feature", "overall"), dispersion_floor = 0,
-  sparse = TRUE, threads = quanteda_options("threads"), abs_err = FALSE,
-  svd_sparse = TRUE, residual_floor = 0.5)
+  sparse = FALSE, abs_err = FALSE, svd_sparse = TRUE,
+  residual_floor = 0.5)
 }
 \arguments{
 \item{x}{the dfm on which the model will be fit}
@@ -26,7 +26,7 @@ tolerance in the difference in parameter values from the iterative
 conditional maximum likelihood (from conditionally estimating 
 document-level, then feature-level parameters).}
 
-\item{dispersion}{sets whether a quasi-poisson quasi-likelihood should be 
+\item{dispersion}{sets whether a quasi-Poisson quasi-likelihood should be 
 used based on a single dispersion parameter (\code{"poisson"}), or 
 quasi-Poisson (\code{"quasipoisson"})}
 
@@ -40,10 +40,10 @@ terms with rare term or document frequencies that appear to be severely
 underdispersed.  Default is 0, but this only applies if \code{dispersion = 
 "quasipoisson"}.}
 
-\item{sparse}{specifies whether the \code{"dfm"} is coerced to dense}
-
-\item{threads}{specifies the number of threads to use; set to 1 to override
-the package settings and use a serial version of the function}
+\item{sparse}{specifies whether the \code{"dfm"} is coerced to dense.  While
+setting this to \code{TRUE} will make it possible to handle larger dfm
+objects (and make execution faster), it will generate slightly different
+results each time, because the sparse SVD routine has a stochastic element.}
 
 \item{abs_err}{specifies how the convergence is considered}
 
@@ -76,30 +76,39 @@ The returns match those of Will Lowe's R implementation of
   implementation of the model that used a regularization parameter of 
   se\eqn{(\sigma) = 3}, through the third element in \code{priors}.
 }
+\note{
+In the rare situation where a warning message of "The algorithm did not
+  converge." shows up, removing some documents may work.
+}
 \examples{
-textmodel_wordfish(data_dfm_lbgexample, dir = c(1,5))
+(wf <- textmodel_wordfish(data_dfm_lbgexample, dir = c(1,5)))
+summary(wf, n = 10)
+coef(wf)
+predict(wf)
+predict(wf, se.fit = TRUE)
+predict(wf, interval = "confidence")
 
 \dontrun{
-ie2010dfm <- dfm(data_corpus_irishbudget2010, verbose = FALSE)
-(wfm1 <- textmodel_wordfish(ie2010dfm, dir = c(6,5)))
-(wfm2a <- textmodel_wordfish(ie2010dfm, dir = c(6,5), 
+ie2010dwf <- dfm(data_corpus_irishbudget2010, verbose = FALSE)
+(wf1 <- textmodel_wordfish(ie2010dfm, dir = c(6,5)))
+(wf2a <- textmodel_wordfish(ie2010dfm, dir = c(6,5), 
                              dispersion = "quasipoisson", dispersion_floor = 0))
-(wfm2b <- textmodel_wordfish(ie2010dfm, dir = c(6,5), 
+(wf2b <- textmodel_wordfish(ie2010dfm, dir = c(6,5), 
                              dispersion = "quasipoisson", dispersion_floor = .5))
-plot(wfm2a@phi, wfm2b@phi, xlab = "Min underdispersion = 0", ylab = "Min underdispersion = .5",
+plot(wf2a$phi, wf2b$phi, xlab = "Min underdispersion = 0", ylab = "Min underdispersion = .5",
      xlim = c(0, 1.0), ylim = c(0, 1.0))
-plot(wfm2a@phi, wfm2b@phi, xlab = "Min underdispersion = 0", ylab = "Min underdispersion = .5",
+plot(wf2a$phi, wf2b$phi, xlab = "Min underdispersion = 0", ylab = "Min underdispersion = .5",
      xlim = c(0, 1.0), ylim = c(0, 1.0), type = "n")
-underdispersedTerms <- sample(which(wfm2a@phi < 1.0), 5)
+underdispersedTerms <- sample(which(wf2a$phi < 1.0), 5)
 which(featnames(ie2010dfm) \%in\% names(topfeatures(ie2010dfm, 20)))
-text(wfm2a@phi, wfm2b@phi, wfm2a@features, 
+text(wf2a$phi, wf2b$phi, wf2a$features, 
      cex = .8, xlim = c(0, 1.0), ylim = c(0, 1.0), col = "grey90")
-text(wfm2a@phi[underdispersedTerms], wfm2b@phi[underdispersedTerms], 
-     wfm2a@features[underdispersedTerms], 
+text(wf2a$phi['underdispersedTerms'], wf2b$phi['underdispersedTerms'], 
+     wf2a$features['underdispersedTerms'], 
      cex = .8, xlim = c(0, 1.0), ylim = c(0, 1.0), col = "black")
 if (require(austin)) {
-    wfmodelAustin <- austin::wordfish(quanteda::as.wfm(ie2010dfm), dir = c(6,5))
-    cor(wfm1@theta, wfmodelAustin$theta)
+    wf_austin <- austin::wordfish(quanteda::as.wfm(ie2010dfm), dir = c(6,5))
+    cor(wf1$theta, wf_austin$theta)
 }}
 }
 \references{
@@ -110,6 +119,9 @@ Jonathan Slapin and Sven-Oliver Proksch.  2008. "A Scaling Model
   Lowe, Will and Kenneth Benoit. 2013. "Validating Estimates of Latent Traits
   from Textual Data Using Human Judgment as a Benchmark." \emph{Political Analysis}
   21(3), 298-313. \url{http://doi.org/10.1093/pan/mpt002}
+}
+\seealso{
+\code{\link{predict.textmodel_wordfish}}
 }
 \author{
 Benjamin Lauderdale, Haiyan Wang, and Kenneth Benoit

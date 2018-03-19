@@ -13,14 +13,14 @@ test_that("test that tokens_group is working", {
     
     expect_equal(
         as.list(quanteda:::tokens_group(toks, c(2, 1, 2, 1))),
-        list('2' = c('a', 'b', 'c', 'd', 'A', 'B', 'C'),
-             '1' = c('e', 'f', 'g', 'h', 'X', 'Y', 'Z'))
+        list('1' = c('e', 'f', 'g', 'h', 'X', 'Y', 'Z'),
+             '2' = c('a', 'b', 'c', 'd', 'A', 'B', 'C'))
     )
     
     expect_equal(
         as.list(quanteda:::tokens_group(toks, c('Z', 'A', 'Z', 'A'))),
-        list('Z' = c('a', 'b', 'c', 'd', 'A', 'B', 'C'),
-             'A' = c('e', 'f', 'g', 'h', 'X', 'Y', 'Z'))
+        list('A' = c('e', 'f', 'g', 'h', 'X', 'Y', 'Z'),
+             'Z' = c('a', 'b', 'c', 'd', 'A', 'B', 'C'))
     )
     
 })
@@ -51,13 +51,17 @@ test_that("dfm_group and tokens_group are equivalent", {
     expect_identical(
         dfm_group(dfm(toks), c(1, 1, 2)),
         dfm(quanteda:::tokens_group(toks, c(1, 1, 2))))
+    
+    expect_identical(
+        dfm_group(dfm(toks), c(1, 1, 1)),
+        dfm(quanteda:::tokens_group(toks, c(1, 1, 1))))
 })
 
 test_that("generate_groups works for tokens objects", {
     toks <- tokens(data_corpus_irishbudget2010)
     expect_equal(
         quanteda:::generate_groups(toks, rep(c("A", "B"), each = 7)),
-        rep(c("A", "B"), each = 7)
+        factor(rep(c("A", "B"), each = 7))
     )
     expect_equal(
         quanteda:::generate_groups(toks, factor(rep(c("A", "B"), each = 7))),
@@ -81,7 +85,7 @@ test_that("generate_groups works for corpus objects", {
     toks <- data_corpus_irishbudget2010
     expect_equal(
         quanteda:::generate_groups(toks, rep(c("A", "B"), each = 7)),
-        rep(c("A", "B"), each = 7)
+        factor(rep(c("A", "B"), each = 7))
     )
     expect_equal(
         quanteda:::generate_groups(toks, factor(rep(c("A", "B"), each = 7))),
@@ -103,7 +107,8 @@ test_that("generate_groups works for corpus objects", {
     sents <- corpus_reshape(data_corpus_irishbudget2010, to = "sentences")
     expect_equal(
         quanteda:::generate_groups(sents, "_document"),
-        factor(metadoc(sents, "document"))
+        factor(metadoc(sents, "document"),
+               levels = unique(metadoc(sents, "document")))
     )
     
 })

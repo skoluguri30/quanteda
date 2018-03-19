@@ -2,7 +2,7 @@
 % Please edit documentation in R/dfm-methods.R
 \name{featnames}
 \alias{featnames}
-\title{get the feature labels from a dfm}
+\title{Get the feature labels from a dfm}
 \usage{
 featnames(x)
 }
@@ -10,7 +10,7 @@ featnames(x)
 \item{x}{the dfm whose features will be extracted}
 }
 \value{
-character vector of the features
+character vector of the feature labels
 }
 \description{
 Get the features from a document-feature matrix, which are stored as the

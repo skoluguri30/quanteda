@@ -1,4 +1,6 @@
-#' get or set for document-level variables
+# docvars ------
+
+#' Get or set document-level variables
 #' 
 #' Get or set variables associated with a document in a \link{corpus},
 #' \link{tokens} or \link{dfm} object.
@@ -19,6 +21,11 @@ docvars <- function(x, field = NULL) {
     UseMethod("docvars")
 }
 
+#' @export
+docvars.default <- function(x, field = NULL) {
+    stop(friendly_class_undefined_message(class(x), "docvars"))
+}
+
 #' @noRd
 #' @export
 docvars.corpus <- function(x, field = NULL) {
@@ -31,7 +38,7 @@ docvars.corpus <- function(x, field = NULL) {
 
 #' @noRd
 #' @export
-docvars.tokenizedTexts <- function(x, field = NULL) {
+docvars.tokens <- function(x, field = NULL) {
     check_fields(x, field)
     dvars <- attr(x, "docvars")
     if (is.null(field))
@@ -61,19 +68,7 @@ docvars.kwic <- function(x) {
     select_fields(dvars)
 }
 
-## internal function to return the docvars for all docvars functions
-get_docvars <- function(dvars, field = NULL) {
-    if (is.null(field)) {
-        if (is.null(dvars)) {
-            return(data.frame())
-        } else {
-            return(dvars)
-        }
-    } else {
-        return(dvars[, field, drop = TRUE])
-    }
-}
-
+# docvars<- ------
 
 #' @rdname docvars
 #' @param value the new values of the document-level variable
@@ -88,14 +83,12 @@ get_docvars <- function(dvars, field = NULL) {
 #' @section Index access to docvars in a corpus:
 #' Another way to access and set docvars is through indexing of the corpus 
 #' \code{j} element, such as \code{data_corpus_irishbudget2010[, c("foren", 
-#' "name"]} or for a single docvar, 
+#' "name"]}; or, for a single docvar, 
 #' \code{data_corpus_irishbudget2010[["name"]]}.  The latter also permits 
-#' assignment, including the easy creation of new document varibles, e.g. 
+#' assignment, including the easy creation of new document variables, e.g. 
 #' \code{data_corpus_irishbudget2010[["newvar"]] <- 
 #' 1:ndoc(data_corpus_irishbudget2010)}. See \code{\link{[.corpus}} for details.
 #' 
-#' Assigning docvars to a \link{tokens} object is not supported.  (You should 
-#' only be manipulating these variables at the corpus level.)
 #' @return \code{docvars<-} assigns \code{value} to the named \code{field}
 #' @examples 
 #' # assigning document variables to a corpus
@@ -113,24 +106,27 @@ get_docvars <- function(dvars, field = NULL) {
     UseMethod("docvars<-")
 }
 
+#' @export
+"docvars<-.default" <- function(x, field = NULL, value) {
+    stop(friendly_class_undefined_message(class(x), "docvars<-"))
+}
 
-#' @noRd
 #' @export
 "docvars<-.corpus" <- function(x, field = NULL, value) {
-    if ("texts" %in% field) stop("You should use texts() instead to replace the corpus texts.")
+    if ("texts" %in% field) 
+        stop("You should use texts() instead to replace the corpus texts.")
     if (is.null(field)) {
         field <- names(value)
         if (is.null(field))
-            field <- paste("docvar", seq_len(ncol(as.data.frame(value))), sep="")
+            field <- paste("docvar", seq_len(ncol(as.data.frame(value))), 
+                           sep = "")
     }
     documents(x)[field] <- value
     x
 }
 
-
 #' @export
-"docvars<-.tokenizedTexts" <- function(x, field = NULL, value) {
-    
+"docvars<-.tokens" <- function(x, field = NULL, value) {
     if (is.null(field) && (is.data.frame(value) || is.null(value))) {
         attr(x, "docvars") <- value
     } else {
@@ -162,8 +158,11 @@ get_docvars <- function(dvars, field = NULL) {
     return(x)
 }
 
-#' get or set document-level meta-data
+# metadoc -------
+
+#' Get or set document-level meta-data
 #' 
+#' @description
 #' Get or set document-level meta-data.  Document-level meta-data are a special 
 #' type of \link{docvars}, meant to contain information about documents that 
 #' would not be used as a "variable" for analysis. An example could be the 
@@ -195,6 +194,10 @@ get_docvars <- function(dvars, field = NULL) {
 metadoc <- function(x, field = NULL) 
     UseMethod("metadoc")
 
+#' @export
+metadoc.default <- function(x, field = NULL) {
+    stop(friendly_class_undefined_message(class(x), "metadoc"))
+}
 
 #' @noRd
 #' @export
@@ -203,7 +206,8 @@ metadoc.corpus <- function(x, field = NULL) {
         field <- paste0("_", field)
         check_fields(x, field)
     }
-    dvars <- documents(x)[, which(substring(names(documents(x)), 1, 1) == "_"), drop = FALSE]
+    dvars <- documents(x)[, which(substring(names(documents(x)), 1, 1) == "_"), 
+                          drop = FALSE]
     get_docvars(dvars, field)
 }
 
@@ -233,11 +237,16 @@ metadoc.dfm <- function(x, field = NULL) {
 #' @param value the new value of the new meta-data field
 #' @export
 "metadoc<-" <- function(x, field = NULL, value) 
-    UseMethod("metadoc")
+    UseMethod("metadoc<-")
+
+#' @export
+"metadoc<-.default" <- function(x, field = NULL, value) {
+    stop(friendly_class_undefined_message(class(x), "metadoc<-"))
+}
 
 #' @noRd
 #' @export
-"metadoc<-" <- function(x, field = NULL, value) {
+"metadoc<-.corpus" <- function(x, field = NULL, value) {
     # CHECK TO SEE THAT VALUE LIST IS IN VALID DOCUMENT-LEVEL METADATA LIST
     # (this check not yet implemented)
     if (is.null(field)) {
@@ -251,6 +260,21 @@ metadoc.dfm <- function(x, field = NULL) {
     x
 }
 
+# Internal functions -----
+
+## internal function to return the docvars for all docvars functions
+get_docvars <- function(dvars, field = NULL) {
+    if (is.null(field)) {
+        if (is.null(dvars)) {
+            return(data.frame())
+        } else {
+            return(dvars)
+        }
+    } else {
+        return(dvars[, field, drop = TRUE])
+    }
+}
+
 ## helper function to check fields and report error message if
 ## a field is not a valid docvar name
 check_fields <- function(x, field = NULL) {
@@ -260,7 +284,37 @@ check_fields <- function(x, field = NULL) {
     }
 }
 
-## internal function to select docvara fields
+# new docvar functions
+
+## helper function to get all docvars
+docvars_internal <- function(x) {
+    if (is.corpus(x)) {
+        return(documents(x))
+    } else if (is.tokens(x)) {
+        return(attr(x, 'docvars'))
+    } else if (is.dfm(x)) {
+        return(x@docvars)
+    }
+}
+
+get_docvars2 <- function(x, fields) {
+    is_field <- check_docvars(x, fields)
+    if (any(is_field)) {
+        return(docvars_internal(x)[,is_field, drop = FALSE])
+    } else {
+        return(NULL)
+    }
+}
+
+## helper function to check fields
+check_docvars <- function(x, fields) {
+    dvars <- docvars_internal(x)
+    if (is.null(dvars)) 
+        return(rep(FALSE, length(fields)))
+    return(fields %in% names(dvars))
+}
+
+## internal function to select docvar fields
 select_fields <- function(x, types = c('user', 'system')) {
 
     names <- names(x)
@@ -269,13 +323,13 @@ select_fields <- function(x, types = c('user', 'system')) {
     
     result <- data.frame(row.names = row.names(x))
     if ('text' %in% types) {
-        result <- cbind(result, x[,is_text, drop = FALSE])
+        result <- cbind(result, x[is_text])
     } 
     if ('system' %in% types) {
-        result <- cbind(result, x[,is_system & !is_text, drop = FALSE])
+        result <- cbind(result, x[is_system & !is_text])
     }
     if ('user' %in% types) {
-        result <- cbind(result, x[,!is_system & !is_text, drop = FALSE])
+        result <- cbind(result, x[!is_system & !is_text])
     } 
     return(result)
 }

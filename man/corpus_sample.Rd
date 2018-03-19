@@ -2,7 +2,7 @@
 % Please edit documentation in R/corpus_sample.R
 \name{corpus_sample}
 \alias{corpus_sample}
-\title{randomly sample documents from a corpus}
+\title{Randomly sample documents from a corpus}
 \usage{
 corpus_sample(x, size = ndoc(x), replace = FALSE, prob = NULL,
   by = NULL, ...)
@@ -30,15 +30,15 @@ A corpus object with number of documents equal to \code{size}, drawn
   the documents selected.
 }
 \description{
-Takes a random sample or documents or features of the specified size from a 
-corpus or document-feature matrix, with or without replacement.  Works just 
-as \code{\link{sample}} works for the documents and their associated 
+Take a random sample or documents of the specified size from a corpus or
+document-feature matrix, with or without replacement.  Works just as
+\code{\link{sample}} works for the documents and their associated 
 document-level variables.
 }
 \examples{
 # sampling from a corpus
 summary(corpus_sample(data_corpus_inaugural, 5)) 
-summary(corpus_sample(data_corpus_inaugural, 10, replace=TRUE))
+summary(corpus_sample(data_corpus_inaugural, 10, replace = TRUE))
 
 # sampling sentences within document
 doccorpus <- corpus(c(one = "Sentence one.  Sentence two.  Third sentence.",

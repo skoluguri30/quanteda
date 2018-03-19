@@ -6,17 +6,7 @@
 #' \code{http://www.speech.cs.cmu.edu/cgi-bin/cmudict}.
 "data_int_syllables"
 
-#' deprecated name for nsyllable
-#' 
-#' Deprecated function name; use \code{\link{nsyllable}} instead.
-#' @export
-#' @keywords internal deprecated
-syllables <- function(x, ...) {
-    .Deprecated("nsyllable")
-    nsyllable(x, ...)
-}
-
-#' count syllables in a text
+#' Count syllables in a text
 #' 
 #' @description Returns a count of the number of syllables in texts. For English
 #'   words, the syllable count is exact and looked up from the CMU pronunciation
@@ -59,14 +49,22 @@ syllables <- function(x, ...) {
 #' nsyllable(tokens(txt, remove_punct = TRUE))
 #' # punctuation is not counted
 #' nsyllable(tokens(txt), use.names = TRUE)
-nsyllable <- function(x, syllable_dictionary = quanteda::data_int_syllables, use.names = FALSE) {
+nsyllable <- function(x, syllable_dictionary = quanteda::data_int_syllables, 
+                      use.names = FALSE) {
     UseMethod("nsyllable")
+}
+
+#' @export
+nsyllable.default <- function(x, syllable_dictionary = quanteda::data_int_syllables, 
+                              use.names = FALSE) {
+    stop(friendly_class_undefined_message(class(x), "nsyllable"))
 }
 
 #' @rdname nsyllable
 #' @noRd
 #' @export
-nsyllable.character <- function(x, syllable_dictionary = quanteda::data_int_syllables, use.names = FALSE) { 
+nsyllable.character <- function(x, syllable_dictionary = quanteda::data_int_syllables, 
+                                use.names = FALSE) { 
     # look up syllables
     result <- syllable_dictionary[char_tolower(x)]
     if (use.names) {
@@ -94,7 +92,8 @@ nsyllable.character <- function(x, syllable_dictionary = quanteda::data_int_syll
 #' nsyllable(toksh)
 #' }
 #' @export
-nsyllable.tokens <- function(x, syllable_dictionary = quanteda::data_int_syllables, use.names = FALSE) { 
+nsyllable.tokens <- function(x, syllable_dictionary = quanteda::data_int_syllables, 
+                             use.names = FALSE) { 
     types <- types(x)
     if (attr(x, 'padding')) {
         vocab_sylls <- nsyllable(c("", types), use.names = use.names)
@@ -105,61 +104,41 @@ nsyllable.tokens <- function(x, syllable_dictionary = quanteda::data_int_syllabl
     }
 }
 
-#' @rdname nsyllable
-#' @noRd
-#' @export
-nsyllable.tokenizedTexts <- function(x, syllable_dictionary = quanteda::data_int_syllables, use.names = FALSE) { 
-    
-    # make tokenized list into a data table
-    syllablesDT <- data.table(docIndex = rep(seq_along(x), lengths(x)),
-                              word = unlist(x), 
-                              serial = seq_along(unlist(x)))
-    
-    # call the syllables data.table function
-    nSyllables <- nsyllable.data.table(syllablesDT, syllable_dictionary)    
-    
-    # restore names
-    names(nSyllables) <- names(x)    
-    
-    nSyllables
-}
-
-
-nsyllable.data.table <- function(x, syllable_dictionary = quanteda::data_int_syllables, ...) {
-    word <- serial <- NULL
-    
-    # retrieve or validate syllable list
-    data_int_syllables <- NULL
-    if (is.null(syllable_dictionary)) {
-        #data(data_int_syllables, envir = environment())
-        #syllable_dictionary <- data_int_syllables
-    } else {
-        if (!is.integer(syllable_dictionary))
-            stop("user-supplied syllable_dictionary must be named integer vector.")
-    }
-    
-    # make syllable list into a data table
-    syllable_dictionaryDT <- data.table(word = names(syllable_dictionary), syllables = syllable_dictionary)
-    setkey(syllable_dictionaryDT, word)
-    
-    # lowercase the tokenizedTexts object, needed for the matching in the next step
-    x[, word := char_tolower(word)]
-
-    # set the key for x
-    setkey(x, word)
-    
-    # merge words to get syllables
-    # suppressWarnings so it won't complain about mixed encodings
-    suppressWarnings(syllDT <- syllable_dictionaryDT[x])
-    
-    # look up vowel counts for those not in the syllables list
-    syllDT[is.na(syllables), syllables := stringi::stri_count_regex(word, "[aeiouy]+")]
-    # put back into original order
-    syllDT <- syllDT[order(serial)]
-    # split back to a list
-    syllcount <- split(syllDT[, syllables], syllDT$docIndex)
-
-    syllcount
-}
+# nsyllable.data.table <- function(x, syllable_dictionary = quanteda::data_int_syllables, ...) {
+#     word <- serial <- syllables <- NULL
+#     
+#     # retrieve or validate syllable list
+#     data_int_syllables <- NULL
+#     if (is.null(syllable_dictionary)) {
+#         #data(data_int_syllables, envir = environment())
+#         #syllable_dictionary <- data_int_syllables
+#     } else {
+#         if (!is.integer(syllable_dictionary))
+#             stop("user-supplied syllable_dictionary must be named integer vector.")
+#     }
+#     
+#     # make syllable list into a data table
+#     syllable_dictionaryDT <- data.table(word = names(syllable_dictionary), syllables = syllable_dictionary)
+#     setkey(syllable_dictionaryDT, word)
+#     
+#     # lowercase the tokens object, needed for the matching in the next step
+#     x[, word := char_tolower(word)]
+# 
+#     # set the key for x
+#     setkey(x, word)
+#     
+#     # merge words to get syllables
+#     # suppressWarnings so it won't complain about mixed encodings
+#     suppressWarnings(syllDT <- syllable_dictionaryDT[x])
+#     
+#     # look up vowel counts for those not in the syllables list
+#     syllDT[is.na(syllables), syllables := stringi::stri_count_regex(word, "[aeiouy]+")]
+#     # put back into original order
+#     syllDT <- syllDT[order(serial)]
+#     # split back to a list
+#     syllcount <- split(syllDT[, syllables], syllDT$docIndex)
+# 
+#     syllcount
+# }
 
 

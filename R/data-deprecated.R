@@ -1,4 +1,4 @@
-#' @title datasets with deprecated or defunct names
+#' @title Datasets with deprecated or defunct names
 #'   
 #' @description These are datasets that have been renamed but that have been
 #'   temporarily retained for backward compatibility, or that have been renamed
@@ -21,11 +21,6 @@ NULL
 #' @details \code{ie2010Corpus} is defunct; please use 
 #'   \code{data_corpus_irishbudget2010} 
 NULL
-
-#' @rdname data-deprecated
-#' @details \code{inaugTexts} is deprecated; please use
-#'   \code{data_char_inaugural} instead.
-"inaugTexts"
 
 #' @rdname data-deprecated
 #' @name data_char_inaugural

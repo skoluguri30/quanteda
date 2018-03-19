@@ -41,6 +41,7 @@ namespace quanteda{
     typedef tbb::concurrent_vector<int> IntParams;
     typedef tbb::concurrent_vector<long> LongParams;
     typedef tbb::concurrent_vector<double> DoubleParams;
+    typedef tbb::concurrent_vector<std::string> StringParams;
     typedef tbb::spin_mutex Mutex;
 #else
     typedef int IntParam;
@@ -50,6 +51,7 @@ namespace quanteda{
     typedef std::vector<int> IntParams;
     typedef std::vector<long> LongParams;
     typedef std::vector<double> DoubleParams;
+    typedef std::vector<std::string> StringParams;
 #endif    
     
 
@@ -125,32 +127,14 @@ namespace quanteda{
     
     struct hash_ngram {
             std::size_t operator() (const Ngram &vec) const {
-            unsigned int add = 0;
             unsigned int seed = 0;
             for (std::size_t i = 0; i < vec.size(); i++) {
-                add = vec[i] << (8 * i);
-                if (seed <= UINT_MAX - add) { // check if addition will overflow seed
-                    seed += add;
-                } else {
-                    return std::hash<unsigned int>()(seed);
-                }
+                seed += vec[i] * (256 ^ i);
             }
             return std::hash<unsigned int>()(seed);
         }
     };
     
-    /*
-    struct hash_ngram {
-        std::size_t operator() (const Ngram &vec) const {
-            unsigned int hash = 0;
-            hash ^= std::hash<unsigned int>()(vec[1]) + 0x9e3779b9;
-            for (std::size_t i = 1; i < vec.size(); i++) {
-                hash ^= std::hash<unsigned int>()(vec[i]) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
-            }
-            return hash;
-        }
-    };
-    */
     struct equal_ngram {
         bool operator() (const Ngram &vec1, const Ngram &vec2) const { 
             return (vec1 == vec2);
@@ -164,6 +148,8 @@ namespace quanteda{
     typedef tbb::concurrent_unordered_set<Ngram, hash_ngram, equal_ngram> SetNgrams;
     typedef tbb::concurrent_vector<Ngram> VecNgrams;
     typedef tbb::concurrent_unordered_set<unsigned int> SetUnigrams;
+    typedef std::tuple<unsigned int, unsigned int, double> Triplet;
+    typedef tbb::concurrent_vector<Triplet> Triplets; // for fcm_mt, ca_mt, wordfish_mt
 #else
     typedef unsigned int IdNgram;
     typedef std::unordered_multimap<Ngram, unsigned int, hash_ngram, equal_ngram> MultiMapNgrams;
@@ -171,6 +157,8 @@ namespace quanteda{
     typedef std::unordered_set<Ngram, hash_ngram, equal_ngram> SetNgrams;
     typedef std::vector<Ngram> VecNgrams;
     typedef std::unordered_set<unsigned int> SetUnigrams;
+    typedef std::tuple<unsigned int, unsigned int, double> Triplet;
+    typedef std::vector<Triplet> Triplets; // for fcm_mt, ca_mt, wordfish_mt
 #endif    
 /*
     inline std::vector<std::size_t> register_ngrams(List words_, SetNgrams &set_words) {
@@ -238,15 +226,6 @@ namespace quanteda{
         return spans;
     }
     
-
-// These typedefs are used in fcm_mt, ca, wordfish_mt
-#if QUANTEDA_USE_TBB
-    typedef std::tuple<unsigned int, unsigned int, double> Triplet;
-    typedef tbb::concurrent_vector<Triplet> Triplets;
-#else
-    typedef std::tuple<unsigned int, unsigned int, double> Triplet;
-    typedef std::vector<Triplet> Triplets;
-#endif
 }
 
 #endif
