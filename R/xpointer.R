@@ -73,7 +73,7 @@ docnames.xtokens <- function(x) {
 }
 
 
-#' @method "tokens_select" xtokens
+#' @method tokens_select xtokens
 #' @export
 #' @noRd
 #' @examples 
@@ -83,21 +83,26 @@ docnames.xtokens <- function(x) {
 #' xtoks2 <- tokens_select(xtoks, stopwords(), padding = TRUE)
 #' head(xtoks2)
 tokens_select.xtokens <- function(x, pattern, selection = c("keep", "remove"), 
-                                 valuetype = c("glob", "regex", "fixed"),
-                                 case_insensitive = TRUE, padding = FALSE, ...) {
+                                 valuetype = c("glob", "regex", "fixed"), window = 0,
+                                 case_insensitive = TRUE, padding = FALSE, 
+                                 verbose = quanteda_options("verbose")) {
     
     selection <- match.arg(selection)
     valuetype <- match.arg(valuetype)
     attrs <- attributes(x)
     types <- types(x)
     
-    features_id <- features2id(pattern, types, valuetype, case_insensitive, attr(x, 'concatenator'))
-    if ("" %in% pattern) features_id <- c(features_id, list(0)) # append padding index
+    ids <- pattern2id(pattern, types, valuetype, case_insensitive, attr(x, 'concatenator'))
+    if ("" %in% pattern) ids <- c(ids, list(0)) # append padding index
     
+    if (verbose) message_select(selection, length(ids), 0)
+    if (any(window < 0)) stop('window sizes cannot be negative')
+    if (length(window) > 2) stop("window must be a integer vector of length 1 or 2")
+    if (length(window) == 1) window <- rep(window, 2)
     if (selection == 'keep') {
-        result <- quanteda:::qatd_cpp_xpointer_select(x, types, features_id, 1, padding)
+        result <- quanteda:::qatd_cpp_xpointer_select(x, types, ids, 1, padding, window[1], window[2])
     } else {
-        result <- quanteda:::qatd_cpp_xpointer_select(x, types, features_id, 2, padding)
+        result <- quanteda:::qatd_cpp_xpointer_select(x, types, ids, 2, padding, window[1], window[2])
     }
     attributes(result, FALSE) <- attrs
     return(result)
@@ -117,14 +122,15 @@ tokens_select.xtokens <- function(x, pattern, selection = c("keep", "remove"),
 #' xtoks2 <- tokens_compound(xtoks, dict)
 tokens_compound.xtokens <- function(x, pattern,
                                    concatenator = "_", valuetype = c("glob", "regex", "fixed"),
-                                   case_insensitive = TRUE, join = TRUE) {
+                                   case_insensitive = TRUE, join = TRUE,
+                                   verbose = quanteda_options("verbose")) {
     
     valuetype <- match.arg(valuetype)
     attrs <- attributes(x)
     attrs$names <- NULL
     types <- types(x)
     
-    seqs_id <- features2id(pattern, types, valuetype, case_insensitive, remove_unigram = TRUE)
+    seqs_id <- pattern2id(pattern, types, valuetype, case_insensitive, remove_unigram = TRUE)
     if (length(seqs_id) == 0) return(x) # do nothing
     x <- qatd_cpp_xpointer_compound(x, seqs_id, types, concatenator, join)
     attributes(x, FALSE) <- attrs
