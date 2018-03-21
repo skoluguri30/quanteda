@@ -64,7 +64,7 @@ textmodel_wordscores.dfm <- function(x, y, scale = c("linear", "logit"), smooth 
     data <- as.dfm(x)
     scores <- y
     scale <- match.arg(scale)
-    
+
     if (nrow(data) < 2)
         stop("wordscores model requires at least two training documents.")
     if (nrow(data) != length(scores))
@@ -74,8 +74,10 @@ textmodel_wordscores.dfm <- function(x, y, scale = c("linear", "logit"), smooth 
     if (!is.numeric(scores[inRefSet]))
         stop("wordscores model requires numeric scores.")
     
+    .Deprecated(msg = 'smooth is deprecated; use dfm_smooth instead')
+    if (smooth != 0) data <- dfm_smooth(data, smoothing = smooth)
+
     setscores <- scores[inRefSet] # only non-NA reference texts
-    if (smooth) data <- data + 1 # smooth if not 0
     x <- data[inRefSet, ]         # select only the reference texts
     
     Fwr <- dfm_weight(x, "prop")          # normalize words to term frequencies "Fwr"
