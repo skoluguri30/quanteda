@@ -83,8 +83,8 @@ test_that("predict.textmodel_wordscores with rescaling works with additional ref
     refscores[which(docnames(data_dfm_lbgexample) == "R1")] <- -1
     refscores[which(docnames(data_dfm_lbgexample) == "R5")] <- 1
 
-    ws1999 <- textmodel_wordscores(data_dfm_lbgexample, refscores, 
-                                   scale = "linear", smooth = 1)
+    ws1999 <- textmodel_wordscores(dfm_smooth(data_dfm_lbgexample, smooth = 1), refscores,
+                                   scale = "linear")
     expect_identical(
         predict(ws1999, rescaling = "mv")[c(1, 5)],
         c(R1 = -1, R5 = 1)
@@ -165,7 +165,35 @@ test_that("test wordscores predict is same for virgin texts with and without ref
 #     )
 # })
 
+test_that("smooth argument prints deprecation warning", {
+    y <- c(seq(-1.5, 1.5, .75), NA)
+    expect_warning(
+        textmodel_wordscores(data_dfm_lbgexample, y, smooth = 1),
+        "smooth is deprecated"
+    )
+}
 
+test_that("deprecated smooth argument still works", {
+    y <- c(seq(-1.5, 1.5, .75), NA)
+
+    # smooth by 1
+    expect_equal(
+        textmodel_wordscores(data_dfm_lbgexample, y, smooth = 1),
+        textmodel_wordscores(dfm_smooth(data_dfm_lbgexample, 1), y)
+    )
+
+    # smooth by 0.5
+    expect_equal(
+        textmodel_wordscores(data_dfm_lbgexample, y, smooth = 0.5),
+        textmodel_wordscores(dfm_smooth(data_dfm_lbgexample, 0.5), y)
+    )
+
+    # smooth by 2
+    expect_equal(
+        textmodel_wordscores(data_dfm_lbgexample, y, smooth = 2),
+        textmodel_wordscores(dfm_smooth(data_dfm_lbgexample, 2), y)
+    )
+}
 
 test_that("coef and coefficients are the same", {
     ws <- textmodel_wordscores(data_dfm_lbgexample, c(seq(-1.5, 1.5, .75), NA))
