@@ -6,6 +6,8 @@ xtoks <- as.xtokens(toks)
 
 print(object.size(toks), units = 'MB')
 print(object.size(xtoks) + sum(ntoken(toks)) * 4, units = 'MB')
+as.numeric(object.size(toks)) / 
+as.numeric(object.size(xtoks) + sum(ntoken(toks)) * 4)
 
 microbenchmark::microbenchmark(
     tokens = tokens_select(toks, stopwords(), valuetype = 'fixed', padding = TRUE),
@@ -15,6 +17,11 @@ microbenchmark::microbenchmark(
 
 toks_sent <- tokens_segment(toks, c(".", "?", "!"), valuetype = "fixed", pattern_position = "after")
 xtoks_sent <- as.xtokens(toks_sent)
+
+print(object.size(toks_sent), units = 'MB')
+print(object.size(xtoks_sent) + sum(ntoken(toks_sent)) * 4, units = 'MB')
+as.numeric(object.size(toks_sent)) / 
+as.numeric(object.size(xtoks_sent) + sum(ntoken(toks_sent)) * 4)
 
 microbenchmark::microbenchmark(
     tokens = tokens_select(toks_sent, stopwords(), valuetype = 'fixed', padding = TRUE),
