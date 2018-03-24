@@ -139,7 +139,7 @@ dfm_weight.dfm <- function(
         weight[match(names(weights), names(weight))] <- weights
         weight <- diag(weight)
         colnames(weight) <- colnames(x)
-        return(as.dfm(x %*% weight))
+        return(as.dfm(as(x %*% weight, 'dgCMatrix')))
         
     ### for scheme weights
     } else {      
